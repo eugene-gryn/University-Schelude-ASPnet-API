@@ -1,0 +1,110 @@
+﻿<Window x:Name="Sheldue_app" x:Class="MainDesktop.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MainDesktop"
+        xmlns:custom="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
+        xmlns:tb ="http://www.hardcodet.net/taskbar"
+        mc:Ignorable="d"
+        Title="Shelude" Icon="/image/calendar.ico" MinWidth="400" Height="450" Width="800">
+
+
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel>
+
+            <tb:TaskbarIcon x:Name="TrayIcon"
+                            Visibility="Hidden"
+                            ToolTipText = "Sheldue"
+                            TrayMouseDoubleClick="TrayIcon_TrayMouseDoubleClick"
+                            MenuActivation="LeftOrRightClick"
+                            IconSource="/image/calendar.ico">
+                <tb:TaskbarIcon.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Name="ShowTrayItem" Click="ShowTrayItem_Click" Header="Show" />
+                        <MenuItem Name="CloseTrayItem" Click="CloseTrayItem_Click" Header="Close" />
+                    </ContextMenu>
+                </tb:TaskbarIcon.ContextMenu>
+            </tb:TaskbarIcon>
+            <DockPanel>
+                <Menu
+                    IsMainMenu="True" 
+                    x:Name="MainDockMenu"
+                    DockPanel.Dock="Top">
+                    <!--Main contex menu of this app-->
+                    <MenuItem x:Name="M_MenuUser" Header="_User">
+                        <MenuItem x:Name="M_MenuUserProfile" Click="M_MenuUserProfile_Click" Header="Profile..."/>
+                        <MenuItem x:Name="M_MenuUserLogout" Click="M_MenuUserLogout_Click" Header="Logout"/>
+                    </MenuItem>
+                    <MenuItem x:Name="M_MenuSheldue" Header="_Sheldue"></MenuItem>
+                    <MenuItem x:Name="M_MenuBot" Click="M_MenuBot_Click" Header="_Bot"></MenuItem>
+                    <MenuItem 
+                        HorizontalAlignment="Right"
+                        x:Name="M_MenuExit"
+                        Header="_Exit" 
+                        Click="M_MenuExit_Click"/>
+                </Menu>
+                <WrapPanel>
+                    <StackPanel Margin="10, 10, 10, 10" Width="300">
+                        <Label x:Name="SheldueLabel" Margin="0, 0, 0, 10" HorizontalAlignment="Center">Sheldue name</Label>
+                        <Label x:Name="SubjectLable" Margin="0, 0, 0, 5" HorizontalAlignment="Center">Subject name</Label>
+                        <ProgressBar Minimum="0" Maximum="100" x:Name="CoupleProgressBar" Height="20"></ProgressBar>
+                        <Grid Margin="0, 10, 0, 0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="100*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="100*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Label x:Name="CurrentCoupleBeginTimeLable" Grid.Column="0" Content="Begin time:"/>
+                            <Label x:Name="CurrentCoupleCurrentTimeLable" Grid.Column="2" Content="Current time:"/>
+                            <Label x:Name="CurrentCoupleEndTimeLable" Grid.Column="5" Content="End time:"/>
+                        </Grid>
+                    </StackPanel>
+                    <StackPanel Margin="10, 0">
+                        <StackPanel Margin="0, 5" HorizontalAlignment="Center" Orientation="Horizontal">
+                            <Button x:Name="PickShelduePastButton" Margin="10, 0"  Click="PickShelduePastButton_Click" Content="-="/>
+                            <DatePicker x:Name="PickSheldueDate" SelectedDateChanged="PickSheldueDate_SelectedDateChanged" SelectedDateFormat="Long" FirstDayOfWeek="Monday" Text="Day Today" Width="200"/>
+                            <Button x:Name="PickSheldueFutureButton" Margin="10, 0" Click="PickSheldueFutureButton_Click" Content="=-"/>
+                        </StackPanel>
+                        <Label HorizontalAlignment="Center">Couple list:</Label>
+                        <ListView x:Name="AllCouplesListView" Height="100" Width="Auto" BorderBrush="Black">
+                            <ListView.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem x:Name="GoogleMeetMenuItem" Click="GoogleMeetMenuItem_Click" Header="Paste google-meet link" />
+                                    <MenuItem x:Name="DeleteSubjectMenuItem" Click="DeleteSubjectMenuItem_Click" Header="Delete subject" />
+                                </ContextMenu>
+                            </ListView.ContextMenu>
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn DisplayMemberBinding="{Binding Time}" Header="Time" Width="80"/>
+                                    <GridViewColumn DisplayMemberBinding="{Binding Name}" Header="Subject name" Width="230"/>
+                                    <GridViewColumn DisplayMemberBinding="{Binding Homework}" Header="Home" Width="50"/>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                        <StackPanel Margin="0, 10">
+                            <Label HorizontalAlignment="Center" Content="Add new Couple"/>
+                            <StackPanel Margin="0, 5" HorizontalAlignment="Center" Orientation="Horizontal">
+                                <Label Content="Begin:"/>
+                                <custom:TimePicker x:Name="BeginTimePicker" Margin="10, 0" Width="100"/>
+                                <Label Content="End:"/>
+                                <custom:TimePicker x:Name="EndTimePicker" Margin="10, 0" Width="100"/>
+                            </StackPanel>
+                            <custom:WatermarkTextBox Width="300" x:Name="SubjectNameTextBox" Margin="0, 5" Watermark="Enter the name of subject"></custom:WatermarkTextBox>
+                            <StackPanel HorizontalAlignment="Center" Margin="0, 5" Orientation="Horizontal">
+                                <CheckBox x:Name="isPracticeCheckBox" Margin="10, 0" Content="isPractise"/>
+                                <Button x:Name="AddCoupleButton" Click="AddCoupleButton_Click" Margin="10, 0" Width="100">Add</Button>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </WrapPanel>
+            </DockPanel>
+        </StackPanel>
+    </ScrollViewer>
+
+</Window>

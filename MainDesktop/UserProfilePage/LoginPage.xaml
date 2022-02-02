@@ -1,0 +1,25 @@
+﻿<Page x:Class="MainDesktop.UserProfilePage.LoginPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:MainDesktop.UserProfilePage"
+      mc:Ignorable="d" 
+      d:DesignHeight="120" d:DesignWidth="300"
+      Title="Page1">
+
+    <StackPanel>
+        <Label HorizontalAlignment="Center">Login</Label>
+        <WrapPanel Margin="0, 10" HorizontalAlignment="Center" Orientation="Horizontal">
+            <StackPanel Margin="0, 0, 20, 0">
+                <Label Padding="0" FontSize="10">Login</Label>
+                <TextBox x:Name="LoginTextBox"  KeyDown="TextBoxKeyEnter" Width="100" />
+            </StackPanel>
+            <StackPanel>
+                <Label Padding="0" FontSize="10">Password</Label>
+                <PasswordBox x:Name="PasswordTextBox" Width="100" KeyDown="TextBoxKeyEnter" PasswordChar="*"/>
+            </StackPanel>
+        </WrapPanel>
+        <Button Click="ButtonEnter_Click" Width="100">Enter</Button>
+    </StackPanel>
+</Page>
