@@ -13,6 +13,7 @@ namespace SheldueLogic
             Logged = false;
             list.LoadListOfUsers(new TestLoader());
             Sheldues = new List<SheldueObj.SubjectWeek>();
+            Sheldues.Add(new SheldueObj.SubjectWeek());
             list = new UsersList(new TestLoader());
         }
 
@@ -27,6 +28,11 @@ namespace SheldueLogic
             NotificatedBeforeCouple = notificatedBeforeCouple;
             NotificatedAboutCouple = notificatedAboutCouple;
             NotificatedHomeworkCouple = notificatedHomeworkCouple;
+
+            if(Sheldues.Count == 0)
+            {
+                Sheldues.Add(new SheldueObj.SubjectWeek());
+            }
         }
 
         public bool Login(string name, string pass)
