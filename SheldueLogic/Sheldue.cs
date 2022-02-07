@@ -1,19 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SheldueLogic
 {
     public class Sheldue
     {
+        public bool NotificatedBeforeCouple;
+        public bool NotificatedAboutCouple;
+        public bool NotificatedHomeworkCouple;
+
+        public UserProfile profile = new UserProfile();
+        private UsersList list = new UsersList(new TestLoader());   // NOT NESSESARY
+
+        // Info about user
+        public string GetProfileName => profile.Login;
+
+        public string ImageIcon { get => profile.Image; set => profile.Image = value; }
+        public List<SheldueObj.SubjectWeek> Sheldues { get => profile.sheldues; set => profile.sheldues = value; }
+
+
+
         public Sheldue()
         {
             Logged = false;
             list.LoadListOfUsers(new TestLoader());
-            Sheldues = new List<SheldueObj.SubjectWeek>();
-            Sheldues.Add(new SheldueObj.SubjectWeek());
+            Sheldues = new List<SheldueObj.SubjectWeek>
+            {
+                new SheldueObj.SubjectWeek()
+            };
             list = new UsersList(new TestLoader());
         }
 
@@ -29,7 +43,7 @@ namespace SheldueLogic
             NotificatedAboutCouple = notificatedAboutCouple;
             NotificatedHomeworkCouple = notificatedHomeworkCouple;
 
-            if(Sheldues.Count == 0)
+            if (Sheldues.Count == 0)
             {
                 Sheldues.Add(new SheldueObj.SubjectWeek());
             }
@@ -37,7 +51,7 @@ namespace SheldueLogic
 
         public bool Login(string name, string pass)
         {
-            if(list.Login(new UserProfile(name), pass))
+            if (list.Login(new UserProfile(name), pass))
             {
                 profile = list.getRegisteredUser(new UserProfile(name), pass);
                 Logged = true;
@@ -55,18 +69,18 @@ namespace SheldueLogic
         /// <returns>Couple near with time or empty couple if no availible</returns>
         public SheldueObj.Couple GetNearCouple(DayOfWeek weekDay, TimeSpan time)
         {
-            var day = Sheldue.ConvertDaysOfWeek(weekDay);
+            SheldueObj.DaysOfWeek day = Sheldue.ConvertDaysOfWeek(weekDay);
 
             SheldueObj.Couple NearCouple = new SheldueObj.Couple();
 
-            var SheldueDay = Sheldues[CurrentWeek].days[(int)day];
+            SheldueObj.Day SheldueDay = Sheldues[CurrentWeek].days[(int)day];
             for (int i = 0; i < SheldueDay.Couples.Count; i++)
             {
                 SheldueObj.Couple couple = SheldueDay.Couples[i];
 
                 if (couple.isCoupleFitInTime(time) || (couple.begin > time))
                 {
-                    if (!String.IsNullOrEmpty(couple.subject.Name))
+                    if (!string.IsNullOrEmpty(couple.subject.Name))
                     {
                         NearCouple = couple;
                         break;
@@ -82,37 +96,50 @@ namespace SheldueLogic
             profile.sheldues = converter.GetSubjectWeek(filename);
         }
 
-        public string ImageIcon { get { return profile.Image; } set { profile.Image = value; } }
-        public List<SheldueObj.SubjectWeek> Sheldues { get { return profile.sheldues; } set { profile.sheldues = value; } }
-
         /// <summary>
         /// Returns Week
         /// </summary>
-        public int CurrentWeek { get {
+        public int CurrentWeek
+        {
+            get
+            {
                 if (Sheldues.Count == 2)
                 {
-                    if ((DateTime.Now.DayOfYear / 7) % 2 == 0) return 0;
-                    else return 1;
+                    if ((DateTime.Now.DayOfYear / 7) % 2 == 0)
+                    {
+                        return 0;
+                    }
+                    else
+                    {
+                        return 1;
+                    }
                 }
-                else return 0;} }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
         public int PlanWeek(DateTime date)
         {
             if (Sheldues.Count == 2)
             {
-                if ((date.DayOfYear / 7) % 2 == 0) return 0;
-                else return 1;
+                if ((date.DayOfYear / 7) % 2 == 0)
+                {
+                    return 0;
+                }
+                else
+                {
+                    return 1;
+                }
             }
-            else return 0;
+            else
+            {
+                return 0;
+            }
         }
 
-        // Info about user
-        public string GetProfileName { get { return profile.Login; } }
-
         public bool Logged { get; private set; }
-
-        public UserProfile profile = new UserProfile();
-
-        UsersList list = new UsersList(new TestLoader());   // NOT NESSESARY
 
         public static SheldueObj.DaysOfWeek ConvertDaysOfWeek(DayOfWeek day)
         {
@@ -136,9 +163,5 @@ namespace SheldueLogic
                     return 0;
             }
         }
-
-        public bool NotificatedBeforeCouple;
-        public bool NotificatedAboutCouple;
-        public bool NotificatedHomeworkCouple;
     }
 }

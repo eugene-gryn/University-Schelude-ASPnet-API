@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SheldueLogic.SheldueObj
+﻿namespace SheldueLogic.SheldueObj
 {
     public class SubjectWeek
     {
+        public Day[] days;
+        public string WeekName;
+        public SheldueTiming timing;
+
+
         public SubjectWeek()
         {
             WeekName = "";
@@ -38,15 +37,9 @@ namespace SheldueLogic.SheldueObj
         {
             for (int i = 0; i < other.days.Length; i++)
             {
-                this.days[i] = new Day(other.days[i]);
+                days[i] = new Day(other.days[i]);
             }
-            this.timing = new SheldueTiming(other.timing);
+            timing = new SheldueTiming(other.timing);
         }
-
-        public Day[] days;
-
-        public string WeekName;
-
-        public SheldueTiming timing;
     }
 }

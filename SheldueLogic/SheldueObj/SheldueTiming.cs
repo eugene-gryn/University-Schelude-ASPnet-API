@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SheldueLogic.SheldueObj
 {
     public class SheldueTiming
     {
+        public CoupleDefaultTime[] times;
+        public int Size;
+
         public SheldueTiming()
         {
 
@@ -15,7 +14,11 @@ namespace SheldueLogic.SheldueObj
 
         public SheldueTiming(int size)
         {
-            if(size > 0) this.Size = size;
+            if (size > 0)
+            {
+                Size = size;
+            }
+
             times = new CoupleDefaultTime[Size];
         }
         public SheldueTiming(in SheldueTiming other)
@@ -23,17 +26,17 @@ namespace SheldueLogic.SheldueObj
             times = new CoupleDefaultTime[other.Size];
             for (int i = 0; i < other.Size; i++)
             {
-                this.times[i] = other.times[i];
+                times[i] = other.times[i];
             }
         }
 
         public void SetTiming(int i, TimeSpan beg, TimeSpan end)
         {
-            if (i < times.Length && i >= 0) times[i] = new CoupleDefaultTime(beg, end);
+            if (i < times.Length && i >= 0)
+            {
+                times[i] = new CoupleDefaultTime(beg, end);
+            }
         }
-
-        public CoupleDefaultTime[] times;
-        public int Size;
     }
 
     public struct CoupleDefaultTime

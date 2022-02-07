@@ -1,10 +1,6 @@
-﻿using System;
+﻿using ExcelDataReader;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using ExcelDataReader;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -17,6 +13,8 @@ namespace SheldueLogic.SheldueObj
 
     public class ExcelSheldueConverter : ISheldueConverter
     {
+        private const int TIME_ROW = 1;
+
         public ExcelSheldueConverter()
         {
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
@@ -27,12 +25,13 @@ namespace SheldueLogic.SheldueObj
         /// </summary>
         /// <param name="filename">File of the Excel data</param>
         /// <returns>Getet info in usable format</returns>
-        List<List<string>> ExactData(string filename) {
+        private List<List<string>> ExactData(string filename)
+        {
             List<List<string>> file = new List<List<string>>();
 
-            using (var stream = File.Open(filename, FileMode.Open, FileAccess.Read))
+            using (FileStream stream = File.Open(filename, FileMode.Open, FileAccess.Read))
             {
-                using (var reader = ExcelReaderFactory.CreateReader(stream))
+                using (IExcelDataReader reader = ExcelReaderFactory.CreateReader(stream))
                 {
                     do
                     {
@@ -41,10 +40,16 @@ namespace SheldueLogic.SheldueObj
                             file.Add(new List<string>());
                             for (int i = 0; i < reader.FieldCount; i++)
                             {
-                                var line = reader.GetValue(i);
+                                object line = reader.GetValue(i);
 
-                                if (line != null) file[file.Count - 1].Add(line.ToString());
-                                else file[file.Count - 1].Add("");
+                                if (line != null)
+                                {
+                                    file[file.Count - 1].Add(line.ToString());
+                                }
+                                else
+                                {
+                                    file[file.Count - 1].Add("");
+                                }
                             }
                         }
                     } while (reader.NextResult());
@@ -53,8 +58,7 @@ namespace SheldueLogic.SheldueObj
             return file;
         }
 
-
-        int GetCouplesCount(List<List<string>> table)
+        private int GetCouplesCount(List<List<string>> table)
         {
             int COLUMN_OF_COUPLES = 0;
 
@@ -62,13 +66,19 @@ namespace SheldueLogic.SheldueObj
             int result;
             for (int row = 2; row < table.Count; row++)
             {
-                if (int.TryParse(table[row][COLUMN_OF_COUPLES], out result)) RealCount++;
-                else break;
+                if (int.TryParse(table[row][COLUMN_OF_COUPLES], out result))
+                {
+                    RealCount++;
+                }
+                else
+                {
+                    break;
+                }
             }
             return RealCount;
         }
 
-        int GetDaysCount(List<List<string>> table)
+        private int GetDaysCount(List<List<string>> table)
         {
             int ROW_OF_DAYS = 1;
 
@@ -76,7 +86,10 @@ namespace SheldueLogic.SheldueObj
             int RealCount = 0;
             for (int days = 2; days < table[ROW_OF_DAYS].Count; days++)
             {
-                if (!String.IsNullOrEmpty(table[ROW_OF_DAYS][days])) RealCount++;
+                if (!string.IsNullOrEmpty(table[ROW_OF_DAYS][days]))
+                {
+                    RealCount++;
+                }
             }
             return RealCount;
         }
@@ -86,7 +99,7 @@ namespace SheldueLogic.SheldueObj
         /// </summary>
         /// <param name="subjectName">String of subject name</param>
         /// <returns>Is that subject is pratice</returns>
-        bool isSubjectPractise(ref string subjectName)
+        private bool isSubjectPractise(ref string subjectName)
         {
             Regex practiceView = new Regex(@"\*(\w+)");
 
@@ -95,7 +108,10 @@ namespace SheldueLogic.SheldueObj
                 subjectName = subjectName.Remove(0, 1);
                 return true;
             }
-            else return false;
+            else
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -103,7 +119,7 @@ namespace SheldueLogic.SheldueObj
         /// </summary>
         /// <param name="timeRow">string from parse time</param>
         /// <returns>Time begin couple</returns>
-        TimeSpan TableCoupleTimeToTimeBEGIN(string timeRow)
+        private TimeSpan TableCoupleTimeToTimeBEGIN(string timeRow)
         {
             Regex time = new Regex(@"((\d{1}|\d{2})(\:|\.)(\d{2}))-((\d{1}|\d{2})(\:|\.)(\d{2}))");
 
@@ -112,12 +128,13 @@ namespace SheldueLogic.SheldueObj
 
             return new TimeSpan(int.Parse(match.Groups[2].Value), int.Parse(match.Groups[4].Value), 0);
         }
+
         /// <summary>
         /// Parses end default time of couple
         /// </summary>
         /// <param name="timeRow">string from parse time</param>
         /// <returns>Time end couple</returns>
-        TimeSpan TableCoupleTimeToTimeEND(string timeRow)
+        private TimeSpan TableCoupleTimeToTimeEND(string timeRow)
         {
             Regex time = new Regex(@"((\d{1}|\d{2})(\:|\.)(\d{2}))-((\d{1}|\d{2})(\:|\.)(\d{2}))");
 
@@ -133,7 +150,7 @@ namespace SheldueLogic.SheldueObj
         /// <param name="table">parse file</param>
         /// <param name="CountCouples">count couples to parse</param>
         /// <returns>Timed class of the sheldue</returns>
-        SheldueTiming ParseSheldueTimings(List<List<string>> table, int CountCouples)
+        private SheldueTiming ParseSheldueTimings(List<List<string>> table, int CountCouples)
         {
             SheldueTiming timings = new SheldueTiming(CountCouples);
 
@@ -165,8 +182,10 @@ namespace SheldueLogic.SheldueObj
             CountOfDays = GetDaysCount(table);
 
             // Init week
-            SubjectWeek valueWeek = new SubjectWeek(table[0][0], CountOfCouples);
-            valueWeek.timing = ParseSheldueTimings(table, CountOfCouples);
+            SubjectWeek valueWeek = new SubjectWeek(table[0][0], CountOfCouples)
+            {
+                timing = ParseSheldueTimings(table, CountOfCouples)
+            };
 
             // Constructing week
             for (int couple = 0; couple < CountOfCouples; couple++)
@@ -175,7 +194,8 @@ namespace SheldueLogic.SheldueObj
                 {
                     // <!!--<>--!!> Добавление уже существующих пар, вместо конструкции новой пары
 
-                    if (!String.IsNullOrEmpty(table[couple + 2][day + 2])) {
+                    if (!string.IsNullOrEmpty(table[couple + 2][day + 2]))
+                    {
                         string SubName = table[couple + 2][day + 2];
                         bool isPractice = isSubjectPractise(ref SubName);
 
@@ -200,7 +220,7 @@ namespace SheldueLogic.SheldueObj
         /// <returns>List of SubjectWeeks from parsed file</returns>
         public List<SubjectWeek> GetSubjectWeek(string filename)
         {
-            var table = ExactData(filename);
+            List<List<string>> table = ExactData(filename);
             List<SubjectWeek> weeks = new List<SubjectWeek>();
 
             while (table.Count > 0)
@@ -211,6 +231,5 @@ namespace SheldueLogic.SheldueObj
             return weeks;
         }
 
-        int TIME_ROW = 1;
     }
 }

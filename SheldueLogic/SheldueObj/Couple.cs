@@ -1,22 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SheldueLogic.SheldueObj
 {
     public class Couple
     {
-        public bool isEmpty() => subject.Name == "" && subject.GoogleMeetUrl == null;
-
         public TimeSpan begin;
         public TimeSpan end;
         public Subject subject;
+        public int HomeworkCount;
 
-        public int homework;
 
-        public bool isTimeBeforeCouple(TimeSpan time, 
+
+        public bool isEmpty()
+        {
+            return string.IsNullOrEmpty(subject.Name) && string.IsNullOrEmpty(subject.GoogleMeetUrl);
+        }
+
+        // НАБОР КОСТЫЛЕЙ (пофиксить)
+        public bool isTimeBeforeCouple(TimeSpan time,
             ref bool NotificatedBeforeCouple,
             ref bool NotificatedAboutCouple,
             ref bool NotificatedHomeworkCouple)
@@ -28,7 +29,10 @@ namespace SheldueLogic.SheldueObj
                 NotificatedHomeworkCouple = false;
                 return true;
             }
-            else return false;
+            else
+            {
+                return false;
+            }
         }
         public bool isTimeAboutCouple(TimeSpan time,
             ref bool NotificatedBeforeCouple,
@@ -42,7 +46,10 @@ namespace SheldueLogic.SheldueObj
                 NotificatedHomeworkCouple = false;
                 return true;
             }
-            else return false;
+            else
+            {
+                return false;
+            }
         }
         public bool isTimeHomework(TimeSpan time,
             ref bool NotificatedBeforeCouple,
@@ -56,21 +63,28 @@ namespace SheldueLogic.SheldueObj
                 NotificatedHomeworkCouple = true;
                 return true;
             }
-            else return false;
+            else
+            {
+                return false;
+            }
         }
+
 
         public Couple(TimeSpan begin, TimeSpan end, Subject subject, int homework = 0)
         {
             this.begin = begin;
             this.end = end;
             this.subject = subject;
-            this.homework = homework;
+            this.HomeworkCount = homework;
 
         }
         public Couple()
         {
         }
 
-        public bool isCoupleFitInTime(TimeSpan time) => ((begin < time) && (time < end));
+        public bool isCoupleFitInTime(TimeSpan time)
+        {
+            return ((begin < time) && (time < end));
+        }
     }
 }

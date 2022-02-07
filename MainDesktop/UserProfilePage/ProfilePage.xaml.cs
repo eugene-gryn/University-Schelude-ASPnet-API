@@ -1,18 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Win32;
+using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Microsoft.Win32;
 
 
 namespace MainDesktop.UserProfilePage
@@ -22,6 +13,9 @@ namespace MainDesktop.UserProfilePage
     /// </summary>
     public partial class ProfilePage : Page
     {
+        private SheldueLogic.Sheldue sheldue;
+
+
         public ProfilePage(SheldueLogic.Sheldue sheldue)
         {
             InitializeComponent();
@@ -29,13 +23,15 @@ namespace MainDesktop.UserProfilePage
             this.sheldue = sheldue;
 
             LabelLoginName.Content = sheldue.GetProfileName;
-            if (sheldue.ImageIcon == null) sheldue.ImageIcon = "https://interactive-examples.mdn.mozilla.net/media/cc0-images/grapefruit-slice-332-332.jpg";
+            if (sheldue.ImageIcon == null)
+            {
+                sheldue.ImageIcon = "https://interactive-examples.mdn.mozilla.net/media/cc0-images/grapefruit-slice-332-332.jpg";
+            }
+
             UpdateImage(sheldue.ImageIcon);
         }
 
-        SheldueLogic.Sheldue sheldue;
-
-        void UpdateImage(string path)
+        private void UpdateImage(string path)
         {
             sheldue.ImageIcon = path;
             BitmapImage bi3 = new BitmapImage();
@@ -48,9 +44,11 @@ namespace MainDesktop.UserProfilePage
 
         private void UpdateImageButton_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openImage = new OpenFileDialog();
-            openImage.Filter = "png | *.png | jpg | *.jpg";
-            openImage.Multiselect = false;
+            OpenFileDialog openImage = new OpenFileDialog
+            {
+                Filter = "png | *.png | jpg | *.jpg",
+                Multiselect = false
+            };
 
             if (openImage.ShowDialog() == true)
             {
@@ -72,9 +70,11 @@ namespace MainDesktop.UserProfilePage
 
         private void LoadNewSheldueButton_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openDialog = new OpenFileDialog();
-            openDialog.Filter = " Excel file | *.xlsx";
-            openDialog.Multiselect = false;
+            OpenFileDialog openDialog = new OpenFileDialog
+            {
+                Filter = " Excel file | *.xlsx",
+                Multiselect = false
+            };
 
             if (openDialog.ShowDialog() == true)
             {

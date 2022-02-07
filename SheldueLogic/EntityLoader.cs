@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace SheldueLogic
 {
@@ -22,18 +18,29 @@ namespace SheldueLogic
             {
                 return new UserProfile("test");
             }
-            else return new UserProfile("");
+            else
+            {
+                return new UserProfile("");
+            }
         }
 
         public ICollection<UserProfile> GetUsers()
         {
-            List <UserProfile> users = new List<UserProfile>();
-            users.Add(new UserProfile("test"));
+            List<UserProfile> users = new List<UserProfile>
+            {
+                new UserProfile("test")
+            };
             return users;
         }
 
-        public bool isValidPassword(UserProfile porfile, string password) => porfile.Login == "test" && password == "test";
+        public bool isValidPassword(UserProfile porfile, string password)
+        {
+            return porfile.Login == "test" && password == "test";
+        }
 
-        public bool RegisterNewUser(UserProfile porfile, string password) => !GetUser(porfile, password).isNull();
+        public bool RegisterNewUser(UserProfile porfile, string password)
+        {
+            return !GetUser(porfile, password).isNull();
+        }
     }
 }

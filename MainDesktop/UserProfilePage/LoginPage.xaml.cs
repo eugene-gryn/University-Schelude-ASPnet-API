@@ -1,17 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace MainDesktop.UserProfilePage
 {
@@ -20,6 +9,9 @@ namespace MainDesktop.UserProfilePage
     /// </summary>
     public partial class LoginPage : Page
     {
+        private SheldueLogic.Sheldue sheldue;
+        private UserProfile profile;
+
         public LoginPage(SheldueLogic.Sheldue sheldue, UserProfile profile)
         {
             InitializeComponent();
@@ -28,12 +20,17 @@ namespace MainDesktop.UserProfilePage
             this.profile = profile;
         }
 
-        SheldueLogic.Sheldue sheldue;
-
         private void ButtonEnter_Click(object sender, RoutedEventArgs e)
         {
-            if (!sheldue.Login(LoginTextBox.Text, PasswordTextBox.Password)) MessageBox.Show("Error!", "Wrong password or login");
-            else MessageBox.Show("Valid password!", "Successfully login", MessageBoxButton.OK, MessageBoxImage.Information);
+            if (!sheldue.Login(LoginTextBox.Text, PasswordTextBox.Password))
+            {
+                MessageBox.Show("Error!", "Wrong password or login");
+            }
+            else
+            {
+                MessageBox.Show("Valid password!", "Successfully login", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
             profile.initContent();
         }
 
@@ -46,7 +43,5 @@ namespace MainDesktop.UserProfilePage
             }
         }
 
-
-        UserProfile profile;
     }
 }

@@ -1,27 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Xceed.Wpf.Toolkit;
-using Xceed.Wpf.AvalonDock;
+﻿using Microsoft.Win32;
 using Notification.Wpf;
-using Microsoft.Win32;
-using System.Text.RegularExpressions;
-
 using SheldueLogic;
 using SheldueLogic.SheldueObj;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Text.RegularExpressions;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace MainDesktop
 {
@@ -30,8 +17,15 @@ namespace MainDesktop
     /// </summary>
     public partial class MainWindow : Window
     {
-        Brush LectionBrush = Brushes.LightGray;
-        Brush PraticeBrush = Brushes.White;
+        private Brush LectionBrush = Brushes.LightGray;
+        private Brush PraticeBrush = Brushes.White;
+
+        private Sheldue sheldue = new Sheldue();
+        private Couple NearCouple = new Couple();
+        private bool RealClose = false;
+        private JsonSaveLoader json = new JsonSaveLoader();
+        private string saveFileName = "settings.ini";
+        private System.Windows.Threading.DispatcherTimer everySecondTimer = new System.Windows.Threading.DispatcherTimer();
 
 
         public static void PlayDefaultSound()
@@ -43,10 +37,10 @@ namespace MainDesktop
                 {
                     if (key != null)
                     {
-                        Object o = key.GetValue(null); // pass null to get (Default)
+                        object o = key.GetValue(null); // pass null to get (Default)
                         if (o != null)
                         {
-                            System.Media.SoundPlayer theSound = new System.Media.SoundPlayer((String)o);
+                            System.Media.SoundPlayer theSound = new System.Media.SoundPlayer((string)o);
                             theSound.Play();
                             found = true;
                         }
@@ -55,36 +49,46 @@ namespace MainDesktop
             }
             catch
             { }
-            if (!found) System.Media.SystemSounds.Beep.Play(); // consolation prize
+            if (!found)
+            {
+                System.Media.SystemSounds.Beep.Play(); // consolation prize
+            }
         }
-
 
         public static void Error(string msg)
         {
             System.Windows.MessageBox.Show(msg, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
         }
+
         public static void Notification(string message, string title, NotificationType type, int duration)
         {
             NotificationManager notification = new NotificationManager();
-            var content = new NotificationContent();
+            NotificationContent content = new NotificationContent
+            {
 
-            //Init content of notification
-            content.Message = message;
-            content.Title = title;
-            content.Type = type;
+                //Init content of notification
+                Message = message,
+                Title = title,
+                Type = type
+            };
 
             notification.Show(content, null, new TimeSpan(0, 0, duration));
         }
 
+        private bool IsTodayCouple()
+        {
+            return NearCouple.subject.Name == (string)SubjectLable.Content;
+        }
 
-        bool IsTodayCouple() => NearCouple.subject.Name == (string)SubjectLable.Content;
-
+        /// <summary>
+        /// Method which update timer (НЕ ПРАВИЛЬНО, ПОТОМУ ЧТО НАДО ЭТО ВСЕ ПЕРЕНЕСТИ КАК-ТО В БИЗНЕС ЛОГИКУ)
+        /// </summary>
         private void InitCoupleTimer()
         {
-            var nowTime = DateTime.Now.TimeOfDay;
+            TimeSpan nowTime = DateTime.Now.TimeOfDay;
 
             NearCouple = sheldue.GetNearCouple(DateTime.Today.DayOfWeek, nowTime);
-            if (String.IsNullOrEmpty(NearCouple.subject.Name))
+            if (string.IsNullOrEmpty(NearCouple.subject.Name))
             {
                 NearCouple = sheldue.GetNearCouple(DateTime.Today.AddDays(1).DayOfWeek, new TimeSpan(0, 0, 0));
                 SubjectLable.Content = DateTime.Today.AddDays(1).DayOfWeek.ToString() + " | " + NearCouple.subject.Name;
@@ -111,8 +115,8 @@ namespace MainDesktop
 
             if (IsTodayCouple() && NearCouple.begin < nowTime && nowTime < NearCouple.end)
             {
-                double now = (double)(NearCouple.end.Ticks - nowTime.Ticks);
-                double time = (double)(NearCouple.end.Ticks - NearCouple.begin.Ticks);
+                double now = NearCouple.end.Ticks - nowTime.Ticks;
+                double time = NearCouple.end.Ticks - NearCouple.begin.Ticks;
                 double aaa = now / time;
                 CoupleProgressBar.Value = 100.0 * (1.0 - aaa);
             }
@@ -122,29 +126,47 @@ namespace MainDesktop
             }
         }
 
+        /// <summary>
+        /// Update couple list view ()
+        /// </summary>
         private void CoupleViewUpdate()
         {
             if (sheldue.Logged && sheldue.Sheldues.Count > 0)
             {
                 List<CouplesView> list = new List<CouplesView>();
-                var day = Sheldue.ConvertDaysOfWeek(PickSheldueDate.SelectedDate.Value.DayOfWeek);
+                DaysOfWeek day = Sheldue.ConvertDaysOfWeek(PickSheldueDate.SelectedDate.Value.DayOfWeek);
 
-                foreach (var couple in sheldue.Sheldues[sheldue.PlanWeek(PickSheldueDate.SelectedDate.Value)].days[(int)day].Couples)
+                foreach (Couple couple in sheldue.Sheldues[sheldue.PlanWeek(PickSheldueDate.SelectedDate.Value)].days[(int)day].Couples)
                 {
-                    if (!String.IsNullOrEmpty(couple.subject.Name)) list.Add(new CouplesView(couple));
+                    if (!string.IsNullOrEmpty(couple.subject.Name))
+                    {
+                        list.Add(new CouplesView(couple));
+                    }
                 }
 
                 list.Sort((CouplesView a, CouplesView b) =>
                 {
-                    if (a.couple.begin == b.couple.begin) return 0;
-                    else if (a.couple.begin > b.couple.begin) return 1;
-                    else return -1;
+                    if (a.couple.begin == b.couple.begin)
+                    {
+                        return 0;
+                    }
+                    else if (a.couple.begin > b.couple.begin)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        return -1;
+                    }
                 });
 
                 AllCouplesListView.ItemsSource = list;
             }
         }
 
+        /// <summary>
+        /// Notyfi about couple (ЭТО НЕ ПРАВИЛЬНО НУЖНО ЧЕРЕЗ БИЗНЕС ЛОГИКУ ЭТО ВСЕ ОБРАБАТЫВАТЬ)
+        /// </summary>
         private void CoupleNotification()
         {
             if (NearCouple.subject.Name != "")
@@ -156,20 +178,23 @@ namespace MainDesktop
                     ))
                 {
                     // Init notification
-                    var notificationManager = new NotificationManager(Dispatcher);
-                    var content = new NotificationContent();
+                    NotificationManager notificationManager = new NotificationManager(Dispatcher);
+                    NotificationContent content = new NotificationContent
+                    {
 
-                    //Init content of notification
-                    content.Message = "Join couple";
-                    content.Title = NearCouple.subject.Name;
-                    content.Type = NotificationType.Information;
+                        //Init content of notification
+                        Message = "Join couple",
+                        Title = NearCouple.subject.Name,
+                        Type = NotificationType.Information
+                    };
 
                     //Play default notification of windows
                     PlayDefaultSound();
 
                     // Button to open link in google meet
                     content.LeftButtonContent = "Open meet link";
-                    if (NearCouple.subject.GoogleMeetUrl != null) {
+                    if (NearCouple.subject.GoogleMeetUrl != null)
+                    {
                         string link = NearCouple.subject.GoogleMeetUrl;
                         content.LeftButtonAction = new Action(() =>
                         {
@@ -191,13 +216,15 @@ namespace MainDesktop
                     ))
                 {
                     // Init notification
-                    var notificationManager = new NotificationManager(Dispatcher);
-                    var content = new NotificationContent();
+                    NotificationManager notificationManager = new NotificationManager(Dispatcher);
+                    NotificationContent content = new NotificationContent
+                    {
 
-                    //Init content of notification
-                    content.Message = "Join couple";
-                    content.Title = NearCouple.subject.Name;
-                    content.Type = NotificationType.Information;
+                        //Init content of notification
+                        Message = "Join couple",
+                        Title = NearCouple.subject.Name,
+                        Type = NotificationType.Information
+                    };
 
                     //Play default notification of windows
                     PlayDefaultSound();
@@ -231,27 +258,19 @@ namespace MainDesktop
             }
         }
 
+        /// <summary>
+        /// Erase empty couples (ЭТО КОСТЫЛЬ, НУЖНО УЗНАТЬ ГДЕ МАССИВ ЗАСОРЯЕТСЯ)
+        /// </summary>
         private void EraseEmptyCouples()
         {
-            foreach (var sheldue in sheldue.Sheldues)
+            for (int i = 0; i < sheldue.Sheldues.Count; i++)
             {
-                foreach (var day in sheldue.days)
+                SubjectWeek shelduee = sheldue.Sheldues[i];
+                for (int i1 = 0; i1 < shelduee.days.Length; i1++)
                 {
-                    foreach (var couple in day.Couples)
-                    {
-                        if (couple.isEmpty()) day.Couples.Remove(couple);
-                    } 
-                } 
-            }
-            foreach (var shelduee in sheldue.Sheldues)
-            {
-                foreach (var day in shelduee.days)
-                {
-                    foreach (var couple in day.Couples)
-                    {
-                        if (couple.isEmpty()) day.Couples.Remove(couple);
-                    } 
-                } 
+                    Day day = shelduee.days[i1];
+                    day.Couples.RemoveAll((SheldueLogic.SheldueObj.Couple couple) => couple.isEmpty());
+                }
             }
         }
 
@@ -261,7 +280,7 @@ namespace MainDesktop
 
             try
             {
-                var loadedSheldue = json.LoadObj(saveFileName);
+                Sheldue loadedSheldue = json.LoadObj(saveFileName);
                 if (loadedSheldue != null)
                 {
                     sheldue = loadedSheldue;
@@ -275,9 +294,11 @@ namespace MainDesktop
 
             // Label Contex menu
             ContextMenu ContexMenuLabelName = new ContextMenu();
-            MenuItem xMenuItem = new MenuItem();
-            // init
-            xMenuItem.Header = "Paste google-meet url";
+            MenuItem xMenuItem = new MenuItem
+            {
+                // init
+                Header = "Paste google-meet url"
+            };
             xMenuItem.Click += XMenuItem_Click;
             // add
             ContexMenuLabelName.Items.Add(xMenuItem);
@@ -293,16 +314,6 @@ namespace MainDesktop
             everySecondTimer.Start();
         }
 
-        Sheldue sheldue = new Sheldue();
-        Couple NearCouple = new Couple();
-        bool RealClose = false;
-
-        JsonSaveLoader json = new JsonSaveLoader();
-        string saveFileName = "settings.ini";
-
-        System.Windows.Threading.DispatcherTimer everySecondTimer = new System.Windows.Threading.DispatcherTimer();
-
-
         /// <summary>
         /// Function where code runs every second
         /// </summary>
@@ -315,7 +326,7 @@ namespace MainDesktop
                 // Init timer based on couple
                 InitCoupleTimer();
                 // Update table view couple
-                var index = AllCouplesListView.SelectedIndex;
+                int index = AllCouplesListView.SelectedIndex;
                 CoupleViewUpdate();
                 AllCouplesListView.SelectedIndex = index;
                 // Notification Checker
@@ -333,22 +344,24 @@ namespace MainDesktop
         private void M_MenuExit_Click(object sender, RoutedEventArgs e)
         {
             RealClose = true;
-            this.Close();
+            Close();
         }
 
         private void M_MenuUserProfile_Click(object sender, RoutedEventArgs e)
         {
-            UserProfilePage.UserProfile profile = new UserProfilePage.UserProfile(sheldue);
-            profile.ShowInTaskbar = false;
-            profile.Owner = Application.Current.MainWindow;
+            UserProfilePage.UserProfile profile = new UserProfilePage.UserProfile(sheldue)
+            {
+                ShowInTaskbar = false,
+                Owner = Application.Current.MainWindow
+            };
             profile.Show();
-            this.IsEnabled = false;
+            IsEnabled = false;
             profile.Closed += Profile_Closed;
         }
 
         private void Profile_Closed(object sender, EventArgs e)
         {
-            this.IsEnabled = true;
+            IsEnabled = true;
         }
 
         private void M_MenuUserLogout_Click(object sender, RoutedEventArgs e)
@@ -377,14 +390,14 @@ namespace MainDesktop
         {
             if (sheldue.Logged && sheldue.Sheldues.Count > 0)
             {
-                var day = Sheldue.ConvertDaysOfWeek(PickSheldueDate.SelectedDate.Value.DayOfWeek);
-                ref var CouplesList = ref sheldue.Sheldues[sheldue.CurrentWeek].days[(int)day].Couples;
+                DaysOfWeek day = Sheldue.ConvertDaysOfWeek(PickSheldueDate.SelectedDate.Value.DayOfWeek);
+                ref List<Couple> CouplesList = ref sheldue.Sheldues[sheldue.CurrentWeek].days[(int)day].Couples;
 
                 if (BeginTimePicker != null &&
                     EndTimePicker != null &&
                     BeginTimePicker.Value < EndTimePicker.Value &&
-                    !String.IsNullOrEmpty(SubjectNameTextBox.Text) &&
-                    !String.IsNullOrWhiteSpace(SubjectNameTextBox.Text) &&
+                    !string.IsNullOrEmpty(SubjectNameTextBox.Text) &&
+                    !string.IsNullOrWhiteSpace(SubjectNameTextBox.Text) &&
                     isPracticeCheckBox.IsChecked != null)
                 {
                     CouplesList.Add(new Couple(
@@ -406,7 +419,7 @@ namespace MainDesktop
         // Open tray
         private void TrayIcon_TrayMouseDoubleClick(object sender, RoutedEventArgs e)
         {
-            this.Show();
+            Show();
             TrayIcon.Visibility = Visibility.Hidden;
         }
 
@@ -418,7 +431,7 @@ namespace MainDesktop
                 e.Cancel = true;
             }
 
-            this.Hide();
+            Hide();
             TrayIcon.Visibility = Visibility.Visible;
 
             try
@@ -436,12 +449,12 @@ namespace MainDesktop
         private void CloseTrayItem_Click(object sender, RoutedEventArgs e)
         {
             RealClose = true;
-            this.Close();
+            Close();
         }
 
         private void ShowTrayItem_Click(object sender, RoutedEventArgs e)
         {
-            this.Show();
+            Show();
             TrayIcon.Visibility = Visibility.Hidden;
         }
 
@@ -452,11 +465,11 @@ namespace MainDesktop
                 if (AllCouplesListView.SelectedItems.Count > 0)
                 {
                     // Gets current day of week
-                    var day = Sheldue.ConvertDaysOfWeek(PickSheldueDate.SelectedDate.Value.DayOfWeek);
+                    DaysOfWeek day = Sheldue.ConvertDaysOfWeek(PickSheldueDate.SelectedDate.Value.DayOfWeek);
                     // Gets Couple list of today
-                    ref var CouplesList = ref sheldue.Sheldues[sheldue.PlanWeek(PickSheldueDate.SelectedDate.Value)].days[(int)day].Couples;
+                    ref List<Couple> CouplesList = ref sheldue.Sheldues[sheldue.PlanWeek(PickSheldueDate.SelectedDate.Value)].days[(int)day].Couples;
                     // Gets index of selected subject in today sheldue
-                    var index = CouplesList.IndexOf(((CouplesView)AllCouplesListView.SelectedItem).couple);
+                    int index = CouplesList.IndexOf(((CouplesView)AllCouplesListView.SelectedItem).couple);
 
                     // Open dialog to change google meet url
                     Regex link = new Regex(@"(https://meet.google.com/)(\w+)");
@@ -490,11 +503,11 @@ namespace MainDesktop
                 if (AllCouplesListView.SelectedItems.Count > 0)
                 {
                     // Gets current day of week
-                    var day = Sheldue.ConvertDaysOfWeek(PickSheldueDate.SelectedDate.Value.DayOfWeek);
+                    DaysOfWeek day = Sheldue.ConvertDaysOfWeek(PickSheldueDate.SelectedDate.Value.DayOfWeek);
                     // Gets Couple list of today
-                    ref var CouplesList = ref sheldue.Sheldues[sheldue.PlanWeek(PickSheldueDate.SelectedDate.Value)].days[(int)day].Couples;
+                    ref List<Couple> CouplesList = ref sheldue.Sheldues[sheldue.PlanWeek(PickSheldueDate.SelectedDate.Value)].days[(int)day].Couples;
                     // Gets index of selected subject in today sheldue
-                    var index = CouplesList.IndexOf(((CouplesView)AllCouplesListView.SelectedItem).couple);
+                    int index = CouplesList.IndexOf(((CouplesView)AllCouplesListView.SelectedItem).couple);
 
                     CouplesList.RemoveAt(index);
                     MainWindow.Notification("Removed!", "Remove", NotificationType.Success, 5);
@@ -515,24 +528,35 @@ namespace MainDesktop
         {
             try
             {
-                if (!String.IsNullOrEmpty((string)SubjectLable.Content))
+                if (!string.IsNullOrEmpty((string)SubjectLable.Content))
                 {
 
                     // Gets current day of week
-                    var day = Sheldue.ConvertDaysOfWeek(PickSheldueDate.SelectedDate.Value.DayOfWeek);
+                    DaysOfWeek day = Sheldue.ConvertDaysOfWeek(PickSheldueDate.SelectedDate.Value.DayOfWeek);
                     // Gets Couple list of today
-                    ref var CouplesList = ref sheldue.Sheldues[sheldue.PlanWeek(PickSheldueDate.SelectedDate.Value)].days[(int)day].Couples;
+                    ref List<Couple> CouplesList = ref sheldue.Sheldues[sheldue.PlanWeek(PickSheldueDate.SelectedDate.Value)].days[(int)day].Couples;
                     // Gets index of selected subject in today sheldue
-                    var index = CouplesList.FindIndex(0, (Couple a) =>
+                    int index = CouplesList.FindIndex(0, (Couple a) =>
                     {
                         if ((string)SubjectLable.Content == a.subject.Name)
                         {
-                            if (SubjectLable.Background == LectionBrush && !a.subject.isPractice) return true;
-                            else if (SubjectLable.Background != LectionBrush && a.subject.isPractice) return true;
-                            else return false;
+                            if (SubjectLable.Background == LectionBrush && !a.subject.isPractice)
+                            {
+                                return true;
+                            }
+                            else if (SubjectLable.Background != LectionBrush && a.subject.isPractice)
+                            {
+                                return true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
                         }
-                        else return false;
-
+                        else
+                        {
+                            return false;
+                        }
                     });
 
                     if (index > -1)

@@ -1,17 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SheldueLogic;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using SheldueLogic;
 
 namespace MainDesktop.UserProfilePage
 {
@@ -20,6 +8,9 @@ namespace MainDesktop.UserProfilePage
     /// </summary>
     public partial class UserProfile : Window
     {
+        private Sheldue sheldue;
+
+
         public UserProfile(Sheldue sheldue)
         {
             this.sheldue = sheldue;
@@ -29,12 +20,15 @@ namespace MainDesktop.UserProfilePage
             initContent();
         }
 
+        /// <summary>
+        /// (BAD FUNCTION КОСТЫЛЬ)
+        /// </summary>
         public void initContent()
         {
             if (sheldue.Logged)
             {
-                this.Height = 300;
-                this.Width = 300;
+                Height = 300;
+                Width = 300;
                 WindowMain.Content = new ProfilePage(sheldue);
             }
             else
@@ -42,8 +36,5 @@ namespace MainDesktop.UserProfilePage
                 WindowMain.Content = new LoginPage(sheldue, this);
             }
         }
-
-        Sheldue sheldue;
-
     }
 }
