@@ -71,7 +71,7 @@ namespace SheldueLogic
         {
             SheldueObj.DaysOfWeek day = Sheldue.ConvertDaysOfWeek(weekDay);
 
-            SheldueObj.Couple NearCouple = new SheldueObj.Couple();
+            SheldueObj.Couple NearCouple = new SheldueObj.Couple(new TimeSpan(0), new TimeSpan(0), new SheldueObj.Subject("Нет ближайших предметов", false));
 
             SheldueObj.Day SheldueDay = Sheldues[CurrentWeek].days[(int)day];
             for (int i = 0; i < SheldueDay.Couples.Count; i++)
@@ -105,7 +105,7 @@ namespace SheldueLogic
             {
                 if (Sheldues.Count == 2)
                 {
-                    if ((DateTime.Now.DayOfYear / 7) % 2 == 0)
+                    if (((DateTime.Now.DayOfYear + 3) / 7) % 2 != 0)
                     {
                         return 0;
                     }
@@ -124,7 +124,7 @@ namespace SheldueLogic
         {
             if (Sheldues.Count == 2)
             {
-                if ((date.DayOfYear / 7) % 2 == 0)
+                if (((date.DayOfYear + 3) / 7) % 2 != 0)
                 {
                     return 0;
                 }
