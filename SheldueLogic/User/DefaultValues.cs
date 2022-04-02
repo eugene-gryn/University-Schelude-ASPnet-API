@@ -14,7 +14,9 @@ namespace SheldueLogic.User
         {
             NotyfiAboutCouple = true,
             NotifyBeforeCouple = true,
-            NotifyAboutHomework = true
+            NotifyAboutHomework = true, 
+            NotifyAboutDeadlineHomework = true,
+            NotifyAboutLoseDeadlineHomework = true
         };
     }
 }

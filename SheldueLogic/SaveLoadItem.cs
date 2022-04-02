@@ -1,7 +1,5 @@
-﻿
-
+﻿using System.IO;
 using Newtonsoft.Json;
-using System.IO;
 
 namespace SheldueLogic
 {
@@ -15,16 +13,16 @@ namespace SheldueLogic
     {
         public Sheldue LoadObj(string filename)
         {
-            using (StreamReader writer = new StreamReader(filename))
+            using (var writer = new StreamReader(filename))
             {
-                string str = writer.ReadToEnd();
+                var str = writer.ReadToEnd();
                 return JsonConvert.DeserializeObject<Sheldue>(str);
             }
         }
 
         public void SaverObj(string filename, object obj)
         {
-            using (StreamWriter writer = new StreamWriter(filename))
+            using (var writer = new StreamWriter(filename))
             {
                 writer.Write(JsonConvert.SerializeObject(obj));
             }

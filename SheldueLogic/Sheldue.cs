@@ -8,7 +8,6 @@ namespace SheldueLogic
 {
     public class Sheldue
     {
-        private readonly UsersList list = new UsersList(new TestLoader()); // NOT NESSESARY
         public bool NotificatedAboutCouple;
         public bool NotificatedBeforeCouple;
         public bool NotificatedHomeworkCouple;
@@ -19,12 +18,10 @@ namespace SheldueLogic
         public Sheldue()
         {
             Logged = false;
-            list.LoadListOfUsers(new TestLoader());
             Sheldues = new List<SubjectWeek>
             {
                 new SubjectWeek()
             };
-            list = new UsersList(new TestLoader());
         }
 
         [JsonConstructor]
@@ -35,7 +32,6 @@ namespace SheldueLogic
             Sheldues = sheldues;
             Logged = logged;
             this.profile = profile;
-            this.list = new UsersList(new TestLoader());
             NotificatedBeforeCouple = notificatedBeforeCouple;
             NotificatedAboutCouple = notificatedAboutCouple;
             NotificatedHomeworkCouple = notificatedHomeworkCouple;
