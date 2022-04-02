@@ -10,11 +10,9 @@ namespace SheldueLogic.SheldueObj
 
         public Day()
         {
-            for (int i = 0; i < 7; i++)
-            {
-                Couples.Add(new Couple());
-            }
+            for (var i = 0; i < 7; i++) Couples.Add(new Couple());
         }
+
         public Day(in Day other)
         {
             Couples = new List<Couple>(other.Couples);

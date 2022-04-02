@@ -15,18 +15,13 @@ namespace SheldueLogic
         public UserProfile GetUser(UserProfile porfile, string password)
         {
             if (porfile.Login == "test" && password == "test")
-            {
                 return new UserProfile("test");
-            }
-            else
-            {
-                return new UserProfile("");
-            }
+            return new UserProfile("");
         }
 
         public ICollection<UserProfile> GetUsers()
         {
-            List<UserProfile> users = new List<UserProfile>
+            var users = new List<UserProfile>
             {
                 new UserProfile("test")
             };

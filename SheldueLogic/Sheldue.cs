@@ -1,38 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using SheldueLogic.SheldueObj;
 
 namespace SheldueLogic
 {
     public class Sheldue
     {
-        public bool NotificatedBeforeCouple;
+        private readonly UsersList list = new UsersList(new TestLoader()); // NOT NESSESARY
         public bool NotificatedAboutCouple;
+        public bool NotificatedBeforeCouple;
         public bool NotificatedHomeworkCouple;
 
-        public UserProfile profile = new UserProfile();
-        private UsersList list = new UsersList(new TestLoader());   // NOT NESSESARY
-
-        // Info about user
-        public string GetProfileName => profile.Login;
-
-        public string ImageIcon { get => profile.Image; set => profile.Image = value; }
-        public List<SheldueObj.SubjectWeek> Sheldues { get => profile.sheldues; set => profile.sheldues = value; }
-
+        public UserProfile profile;
 
 
         public Sheldue()
         {
             Logged = false;
             list.LoadListOfUsers(new TestLoader());
-            Sheldues = new List<SheldueObj.SubjectWeek>
+            Sheldues = new List<SubjectWeek>
             {
-                new SheldueObj.SubjectWeek()
+                new SubjectWeek()
             };
             list = new UsersList(new TestLoader());
         }
 
-        [Newtonsoft.Json.JsonConstructor]
-        public Sheldue(string imageIcon, List<SheldueObj.SubjectWeek> sheldues, bool logged, UserProfile profile, UsersList list, bool notificatedBeforeCouple, bool notificatedAboutCouple, bool notificatedHomeworkCouple)
+        [JsonConstructor]
+        public Sheldue(string imageIcon, List<SubjectWeek> sheldues, bool logged, UserProfile profile, UsersList list,
+            bool notificatedBeforeCouple, bool notificatedAboutCouple, bool notificatedHomeworkCouple)
         {
             ImageIcon = imageIcon;
             Sheldues = sheldues;
@@ -43,17 +39,49 @@ namespace SheldueLogic
             NotificatedAboutCouple = notificatedAboutCouple;
             NotificatedHomeworkCouple = notificatedHomeworkCouple;
 
-            if (Sheldues.Count == 0)
+            if (Sheldues.Count == 0) Sheldues.Add(new SubjectWeek());
+        }
+
+        // Info about user
+        public string GetProfileName => profile.Login;
+
+        public string ImageIcon
+        {
+            get => profile.Image;
+            set => profile.Image = value;
+        }
+
+        public List<SubjectWeek> Sheldues
+        {
+            get => profile.Sheldues;
+            set => profile.Sheldues = value;
+        }
+
+        /// <summary>
+        ///     Returns Week
+        /// </summary>
+        public int CurrentWeek
+        {
+            get
             {
-                Sheldues.Add(new SheldueObj.SubjectWeek());
+                if (Sheldues.Count == 2)
+                {
+                    if ((DateTime.Now.DayOfYear + 3) / 7 % 2 != 0)
+                        return 0;
+                    return 1;
+                }
+
+                return 0;
             }
         }
+
+        public bool Logged { get; private set; }
 
         public bool Login(string name, string pass)
         {
             if (list.Login(new UserProfile(name), pass))
             {
-                profile = list.getRegisteredUser(new UserProfile(name), pass);
+                profile = list.GetRegisteredUser(new UserProfile(name), pass);
                 Logged = true;
                 return true;
             }
@@ -62,103 +90,69 @@ namespace SheldueLogic
         }
 
         /// <summary>
-        /// Gets couple based on parametr time
+        ///     Gets couple based on parametr time
         /// </summary>
         /// <param name="weekDay">Whats week day of couple</param>
         /// <param name="time">Whats time need to be geted couple from</param>
         /// <returns>Couple near with time or empty couple if no availible</returns>
-        public SheldueObj.Couple GetNearCouple(DayOfWeek weekDay, TimeSpan time)
+        public Couple GetNearCouple(DayOfWeek weekDay, TimeSpan time)
         {
-            SheldueObj.DaysOfWeek day = Sheldue.ConvertDaysOfWeek(weekDay);
+            var day = ConvertDaysOfWeek(weekDay);
 
-            SheldueObj.Couple NearCouple = new SheldueObj.Couple(new TimeSpan(0), new TimeSpan(0), new SheldueObj.Subject("Нет ближайших предметов", false));
+            var NearCouple = new Couple(new TimeSpan(0), new TimeSpan(0),
+                new Subject("Нет ближайших предметов", false));
 
-            SheldueObj.Day SheldueDay = Sheldues[CurrentWeek].days[(int)day];
-            for (int i = 0; i < SheldueDay.Couples.Count; i++)
+            var SheldueDay = Sheldues[CurrentWeek].days[(int) day];
+            for (var i = 0; i < SheldueDay.Couples.Count; i++)
             {
-                SheldueObj.Couple couple = SheldueDay.Couples[i];
+                var couple = SheldueDay.Couples[i];
 
-                if (couple.isCoupleFitInTime(time) || (couple.begin > time))
-                {
+                if (couple.isCoupleFitInTime(time) || couple.begin > time)
                     if (!string.IsNullOrEmpty(couple.subject.Name))
                     {
                         NearCouple = couple;
                         break;
                     }
-                }
             }
 
             return NearCouple;
         }
 
-        public void LoadSheldueFromExcel(SheldueObj.ISheldueConverter converter, string filename)
+        public void LoadSheldueFromExcel(ISheldueConverter converter, string filename)
         {
-            profile.sheldues = converter.GetSubjectWeek(filename);
+            profile.Sheldues = converter.GetSubjectWeek(filename);
         }
 
-        /// <summary>
-        /// Returns Week
-        /// </summary>
-        public int CurrentWeek
-        {
-            get
-            {
-                if (Sheldues.Count == 2)
-                {
-                    if (((DateTime.Now.DayOfYear + 3) / 7) % 2 != 0)
-                    {
-                        return 0;
-                    }
-                    else
-                    {
-                        return 1;
-                    }
-                }
-                else
-                {
-                    return 0;
-                }
-            }
-        }
         public int PlanWeek(DateTime date)
         {
             if (Sheldues.Count == 2)
             {
-                if (((date.DayOfYear + 3) / 7) % 2 != 0)
-                {
+                if ((date.DayOfYear + 3) / 7 % 2 != 0)
                     return 0;
-                }
-                else
-                {
-                    return 1;
-                }
+                return 1;
             }
-            else
-            {
-                return 0;
-            }
+
+            return 0;
         }
 
-        public bool Logged { get; private set; }
-
-        public static SheldueObj.DaysOfWeek ConvertDaysOfWeek(DayOfWeek day)
+        public static DaysOfWeek ConvertDaysOfWeek(DayOfWeek day)
         {
             switch (day)
             {
                 case DayOfWeek.Sunday:
-                    return SheldueObj.DaysOfWeek.Sunday;
+                    return DaysOfWeek.Sunday;
                 case DayOfWeek.Monday:
-                    return SheldueObj.DaysOfWeek.Monday;
+                    return DaysOfWeek.Monday;
                 case DayOfWeek.Tuesday:
-                    return SheldueObj.DaysOfWeek.Tuesday;
+                    return DaysOfWeek.Tuesday;
                 case DayOfWeek.Wednesday:
-                    return SheldueObj.DaysOfWeek.Wednesday;
+                    return DaysOfWeek.Wednesday;
                 case DayOfWeek.Thursday:
-                    return SheldueObj.DaysOfWeek.Thursday;
+                    return DaysOfWeek.Thursday;
                 case DayOfWeek.Friday:
-                    return SheldueObj.DaysOfWeek.Friday;
+                    return DaysOfWeek.Friday;
                 case DayOfWeek.Saturday:
-                    return SheldueObj.DaysOfWeek.Saturday;
+                    return DaysOfWeek.Saturday;
                 default:
                     return 0;
             }

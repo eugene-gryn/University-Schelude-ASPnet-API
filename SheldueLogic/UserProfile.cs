@@ -7,14 +7,14 @@ namespace SheldueLogic
         public string Login;
         public string Image;
 
-        public List<SheldueObj.SubjectWeek> sheldues;
+        public List<SheldueObj.SubjectWeek> Sheldues { get; set; }
 
 
         public UserProfile(string login)
         {
             Login = login;
             Image = null;
-            sheldues = new List<SheldueObj.SubjectWeek>();
+            Sheldues = new List<SheldueObj.SubjectWeek>();
         }
 
         public bool Equals(UserProfile obj)

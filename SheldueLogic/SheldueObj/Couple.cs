@@ -6,9 +6,21 @@ namespace SheldueLogic.SheldueObj
     {
         public TimeSpan begin;
         public TimeSpan end;
-        public Subject subject;
         public int HomeworkCount;
+        public Subject subject;
 
+
+        public Couple(TimeSpan begin, TimeSpan end, Subject subject, int homework = 0)
+        {
+            this.begin = begin;
+            this.end = end;
+            this.subject = subject;
+            HomeworkCount = homework;
+        }
+
+        public Couple()
+        {
+        }
 
 
         public bool isEmpty()
@@ -29,11 +41,10 @@ namespace SheldueLogic.SheldueObj
                 NotificatedHomeworkCouple = false;
                 return true;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
+
         public bool isTimeAboutCouple(TimeSpan time,
             ref bool NotificatedBeforeCouple,
             ref bool NotificatedAboutCouple,
@@ -46,11 +57,10 @@ namespace SheldueLogic.SheldueObj
                 NotificatedHomeworkCouple = false;
                 return true;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
+
         public bool isTimeHomework(TimeSpan time,
             ref bool NotificatedBeforeCouple,
             ref bool NotificatedAboutCouple,
@@ -63,28 +73,13 @@ namespace SheldueLogic.SheldueObj
                 NotificatedHomeworkCouple = true;
                 return true;
             }
-            else
-            {
-                return false;
-            }
-        }
 
-
-        public Couple(TimeSpan begin, TimeSpan end, Subject subject, int homework = 0)
-        {
-            this.begin = begin;
-            this.end = end;
-            this.subject = subject;
-            this.HomeworkCount = homework;
-
-        }
-        public Couple()
-        {
+            return false;
         }
 
         public bool isCoupleFitInTime(TimeSpan time)
         {
-            return ((begin < time) && (time < end));
+            return begin < time && time < end;
         }
     }
 }

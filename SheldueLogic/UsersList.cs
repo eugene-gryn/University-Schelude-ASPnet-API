@@ -4,8 +4,8 @@ namespace SheldueLogic
 {
     public class UsersList
     {
-        private IUserLoader loader;
-        private List<UserProfile> users = new List<UserProfile>();
+        private List<UserProfile> _users = new List<UserProfile>();
+        private readonly IUserLoader loader;
 
 
         public UsersList(IUserLoader loader)
@@ -15,15 +15,15 @@ namespace SheldueLogic
 
         public void LoadListOfUsers(IUserLoader loader)
         {
-            users = new List<UserProfile>(loader.GetUsers());
+            _users = new List<UserProfile>(loader.GetUsers());
         }
 
-        protected bool isRegistered(UserProfile profile, string pass)
+        protected bool IsRegistered(UserProfile profile, string pass)
         {
             return !loader.GetUser(profile, pass).isNull();
         }
 
-        public UserProfile getRegisteredUser(UserProfile profile, string pass)
+        public UserProfile GetRegisteredUser(UserProfile profile, string pass)
         {
             return loader.GetUser(profile, pass);
         }
@@ -35,7 +35,7 @@ namespace SheldueLogic
 
         public bool Login(UserProfile profile, string pass)
         {
-            return isRegistered(profile, pass);
+            return IsRegistered(profile, pass);
         }
     }
 }

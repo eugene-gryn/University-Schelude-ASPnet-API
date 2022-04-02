@@ -1,14 +1,14 @@
-﻿using SheldueLogic;
-using System.Windows;
+﻿using System.Windows;
+using SheldueLogic;
 
 namespace MainDesktop.UserProfilePage
 {
     /// <summary>
-    /// Interaction logic for UserProfile.xaml
+    ///     Interaction logic for UserProfile.xaml
     /// </summary>
     public partial class UserProfile : Window
     {
-        private Sheldue sheldue;
+        private readonly Sheldue sheldue;
 
 
         public UserProfile(Sheldue sheldue)
@@ -21,7 +21,7 @@ namespace MainDesktop.UserProfilePage
         }
 
         /// <summary>
-        /// (BAD FUNCTION КОСТЫЛЬ)
+        ///     (BAD FUNCTION КОСТЫЛЬ)
         /// </summary>
         public void initContent()
         {

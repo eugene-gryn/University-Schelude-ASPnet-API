@@ -1,18 +1,19 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using SheldueLogic;
 
 namespace MainDesktop.UserProfilePage
 {
     /// <summary>
-    /// Interaction logic for Page1.xaml
+    ///     Interaction logic for Page1.xaml
     /// </summary>
     public partial class LoginPage : Page
     {
-        private SheldueLogic.Sheldue sheldue;
-        private UserProfile profile;
+        private readonly UserProfile profile;
+        private readonly Sheldue sheldue;
 
-        public LoginPage(SheldueLogic.Sheldue sheldue, UserProfile profile)
+        public LoginPage(Sheldue sheldue, UserProfile profile)
         {
             InitializeComponent();
 
@@ -23,13 +24,10 @@ namespace MainDesktop.UserProfilePage
         private void ButtonEnter_Click(object sender, RoutedEventArgs e)
         {
             if (!sheldue.Login(LoginTextBox.Text, PasswordTextBox.Password))
-            {
                 MessageBox.Show("Error!", "Wrong password or login");
-            }
             else
-            {
-                MessageBox.Show("Valid password!", "Successfully login", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
+                MessageBox.Show("Valid password!", "Successfully login", MessageBoxButton.OK,
+                    MessageBoxImage.Information);
 
             profile.initContent();
         }
@@ -42,6 +40,5 @@ namespace MainDesktop.UserProfilePage
                 ButtonEnter_Click(sender, e);
             }
         }
-
     }
 }
