@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using SheldueLogic.SheldueObj;
+using SheldueLogic.User;
 
 namespace SheldueLogic
 {
@@ -47,8 +48,8 @@ namespace SheldueLogic
 
         public string ImageIcon
         {
-            get => profile.Image;
-            set => profile.Image = value;
+            get => profile.ImageLocation;
+            set => profile.ImageLocation = value;
         }
 
         public List<SubjectWeek> Sheldues

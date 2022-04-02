@@ -1,31 +1,42 @@
 ﻿using System.Collections.Generic;
+using SheldueLogic.SheldueObj;
+using SheldueLogic.User.Exceptions;
+using SheldueLogic.User.Password;
 
-namespace SheldueLogic
+namespace SheldueLogic.User
 {
     public class UserProfile
     {
-        public string Login;
-        public string Image;
-
-
-        public List<SheldueObj.SubjectWeek> Sheldues { get; set; }
-
-
-        public UserProfile(string login)
+        public UserProfile(string login, PasswordHandler password, string name,
+            string image = "", Settings.Settings settings = null)
         {
             Login = login;
-            Image = null;
-            Sheldues = new List<SheldueObj.SubjectWeek>();
+            Password = password;
+
+            Name = name;
+
+            ImageLocation = string.IsNullOrEmpty(image) ? image : DefaultValues.Image;
+            Settings = settings ?? DefaultValues.settings;
+
+
+            // OLD CODE
+            Sheldues = new List<SubjectWeek>();
         }
 
-        public bool Equals(UserProfile obj)
-        {
-            return Login == obj.Login;
-        }
+        public string Login { get; set; }
+        public string ImageLocation { get; set; }
+        public string Name { get; set; }
+        public PasswordHandler Password { get; set; }
+        public Settings.Settings Settings { get; set; }
 
-        public bool isNull()
+        // OLD CODE
+        public List<SubjectWeek> Sheldues { get; set; }
+
+
+        public void ChangePassword(string newPassword)
         {
-            return string.IsNullOrEmpty(Login);
+            if (!Password.PasswordVerify(newPassword)) Password.SetPassword(newPassword);
+            else throw new PasswordsIsNotDifferentException("The changed password is equal to last password");
         }
     }
 }

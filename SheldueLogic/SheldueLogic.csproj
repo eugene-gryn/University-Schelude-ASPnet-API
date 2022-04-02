@@ -74,8 +74,12 @@
     <Compile Include="SheldueObj\SheldueConverter.cs" />
     <Compile Include="SheldueObj\Subject.cs" />
     <Compile Include="SheldueObj\SubjectWeek.cs" />
-    <Compile Include="User\Password\DefaultPasswordHandler.cs" />
+    <Compile Include="User\DefaultValues.cs" />
+    <Compile Include="User\Exceptions\PasswordsIsNotDifferentException.cs" />
+    <Compile Include="User\Password\Default\DefaultCreator.cs" />
+    <Compile Include="User\Password\Default\DefaultPasswordHandler.cs" />
     <Compile Include="User\Password\PasswordHandler.cs" />
+    <Compile Include="User\Settings\Settings.cs" />
     <Compile Include="User\UserProfile.cs" />
     <Compile Include="UsersList.cs" />
   </ItemGroup>

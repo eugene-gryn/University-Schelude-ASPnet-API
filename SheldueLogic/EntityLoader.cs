@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SheldueLogic.User;
 
 namespace SheldueLogic
 {
@@ -10,32 +11,5 @@ namespace SheldueLogic
         bool isValidPassword(UserProfile porfile, string password);
     }
 
-    public class TestLoader : IUserLoader
-    {
-        public UserProfile GetUser(UserProfile porfile, string password)
-        {
-            if (porfile.Login == "test" && password == "test")
-                return new UserProfile("test");
-            return new UserProfile("");
-        }
 
-        public ICollection<UserProfile> GetUsers()
-        {
-            var users = new List<UserProfile>
-            {
-                new UserProfile("test")
-            };
-            return users;
-        }
-
-        public bool isValidPassword(UserProfile porfile, string password)
-        {
-            return porfile.Login == "test" && password == "test";
-        }
-
-        public bool RegisterNewUser(UserProfile porfile, string password)
-        {
-            return !GetUser(porfile, password).isNull();
-        }
-    }
 }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SheldueLogic.User.Password
+﻿namespace SheldueLogic.User.Password.Default
 {
     public class DefaultPasswordHandler : PasswordHandler
     {
@@ -15,7 +9,6 @@ namespace SheldueLogic.User.Password
 
         public DefaultPasswordHandler()
         {
-            
         }
 
         public override bool PasswordVerify(string password)
