@@ -2,10 +2,11 @@
 
 namespace SheldueLogic
 {
-    public struct UserProfile
+    public class UserProfile
     {
         public string Login;
         public string Image;
+
 
         public List<SheldueObj.SubjectWeek> Sheldues { get; set; }
 

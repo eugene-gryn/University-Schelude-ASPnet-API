@@ -74,7 +74,9 @@
     <Compile Include="SheldueObj\SheldueConverter.cs" />
     <Compile Include="SheldueObj\Subject.cs" />
     <Compile Include="SheldueObj\SubjectWeek.cs" />
-    <Compile Include="UserProfile.cs" />
+    <Compile Include="User\Password\DefaultPasswordHandler.cs" />
+    <Compile Include="User\Password\PasswordHandler.cs" />
+    <Compile Include="User\UserProfile.cs" />
     <Compile Include="UsersList.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -82,5 +84,6 @@
     <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
