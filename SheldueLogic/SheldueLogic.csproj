@@ -73,6 +73,9 @@
     <Compile Include="SheldueObj\SheldueConverter.cs" />
     <Compile Include="SheldueObj\Subject.cs" />
     <Compile Include="SheldueObj\SubjectWeek.cs" />
+    <Compile Include="UserLoad\Exception\NotFoundProfileException.cs" />
+    <Compile Include="UserLoad\ILoader.cs" />
+    <Compile Include="UserLoad\TestLoader\Test.cs" />
     <Compile Include="User\DefaultValues.cs" />
     <Compile Include="User\Exceptions\PasswordsIsNotDifferentException.cs" />
     <Compile Include="User\Password\Default\DefaultCreator.cs" />
