@@ -1,5 +1,5 @@
 ﻿using System.Windows;
-using SheldueLogic;
+using ScheduleLogic;
 
 namespace MainDesktop.UserProfilePage
 {
@@ -8,10 +8,10 @@ namespace MainDesktop.UserProfilePage
     /// </summary>
     public partial class UserProfile : Window
     {
-        private readonly Sheldue sheldue;
+        private readonly Schedule sheldue;
 
 
-        public UserProfile(Sheldue sheldue)
+        public UserProfile(Schedule sheldue)
         {
             this.sheldue = sheldue;
 

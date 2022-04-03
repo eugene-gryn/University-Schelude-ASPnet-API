@@ -1,4 +1,4 @@
-﻿namespace SheldueLogic.User.Settings
+﻿namespace ScheduleLogic.User.Settings
 {
     public class Settings
     {

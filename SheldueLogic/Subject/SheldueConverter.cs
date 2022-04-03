@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using ExcelDataReader;
 
-namespace SheldueLogic.SheldueObj
+namespace ScheduleLogic.Subject
 {
     public interface ISheldueConverter
     {

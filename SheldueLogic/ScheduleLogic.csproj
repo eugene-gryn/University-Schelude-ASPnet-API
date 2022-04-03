@@ -64,15 +64,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SaveLoadItem.cs" />
-    <Compile Include="Sheldue.cs" />
+    <Compile Include="StateHolding\ILoader.cs" />
+    <Compile Include="StateHolding\SaveLoadItem.cs" />
+    <Compile Include="Schedule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SheldueObj\SheldueTiming.cs" />
-    <Compile Include="SheldueObj\Couple.cs" />
-    <Compile Include="SheldueObj\Day.cs" />
-    <Compile Include="SheldueObj\SheldueConverter.cs" />
-    <Compile Include="SheldueObj\Subject.cs" />
-    <Compile Include="SheldueObj\SubjectWeek.cs" />
+    <Compile Include="Subject\SheldueTiming.cs" />
+    <Compile Include="Subject\Couple.cs" />
+    <Compile Include="Subject\Day.cs" />
+    <Compile Include="Subject\SheldueConverter.cs" />
+    <Compile Include="Subject\Subject.cs" />
+    <Compile Include="Subject\SubjectWeek.cs" />
     <Compile Include="UserLoad\Exception\NotFoundProfileException.cs" />
     <Compile Include="UserLoad\ILoader.cs" />
     <Compile Include="UserLoad\TestLoader\Test.cs" />
@@ -83,11 +84,9 @@
     <Compile Include="User\Password\PasswordHandler.cs" />
     <Compile Include="User\Settings\Settings.cs" />
     <Compile Include="User\UserProfile.cs" />
-    <Compile Include="UsersList.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />

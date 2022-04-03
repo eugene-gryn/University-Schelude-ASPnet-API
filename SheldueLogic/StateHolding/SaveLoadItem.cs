@@ -1,22 +1,16 @@
 ﻿using System.IO;
 using Newtonsoft.Json;
 
-namespace SheldueLogic
+namespace ScheduleLogic.StateHolding
 {
-    public interface ILoader
-    {
-        Sheldue LoadObj(string file);
-        void SaverObj(string file, object obj);
-    }
-
     public class JsonSaveLoader : ILoader
     {
-        public Sheldue LoadObj(string filename)
+        public Schedule LoadObj(string filename)
         {
             using (var writer = new StreamReader(filename))
             {
                 var str = writer.ReadToEnd();
-                return JsonConvert.DeserializeObject<Sheldue>(str);
+                return JsonConvert.DeserializeObject<Schedule>(str);
             }
         }
 

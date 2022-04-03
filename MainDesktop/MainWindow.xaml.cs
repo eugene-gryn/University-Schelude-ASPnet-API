@@ -10,8 +10,8 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using Microsoft.Win32;
 using Notification.Wpf;
-using SheldueLogic;
-using SheldueLogic.SheldueObj;
+using ScheduleLogic;
+using ScheduleLogic.Subject;
 using UserProfile = MainDesktop.UserProfilePage.UserProfile;
 
 namespace MainDesktop
@@ -29,7 +29,7 @@ namespace MainDesktop
         private bool RealClose = false;
         private string saveFileName = "settings.ini";
 
-        private Sheldue sheldue = new Sheldue();
+        private Schedule sheldue = new Schedule();
 
         public MainWindow()
         {
@@ -37,7 +37,7 @@ namespace MainDesktop
 
             try
             {
-                Sheldue loadedSheldue = json.LoadObj(saveFileName);
+                Schedule loadedSheldue = json.LoadObj(saveFileName);
                 if (loadedSheldue != null)
                 {
                     sheldue = loadedSheldue;
@@ -181,7 +181,7 @@ namespace MainDesktop
             if (sheldue.Logged && sheldue.Sheldues.Count > 0)
             {
                 List<CouplesView> list = new List<CouplesView>();
-                DaysOfWeek day = Sheldue.ConvertDaysOfWeek(PickSheldueDate.SelectedDate.Value.DayOfWeek);
+                DaysOfWeek day = Schedule.ConvertDaysOfWeek(PickSheldueDate.SelectedDate.Value.DayOfWeek);
 
                 foreach (Couple couple in sheldue.Sheldues[sheldue.PlanWeek(PickSheldueDate.SelectedDate.Value)]
                              .days[(int) day].Couples)
@@ -372,7 +372,7 @@ namespace MainDesktop
 
         private void M_MenuUserLogout_Click(object sender, RoutedEventArgs e)
         {
-            sheldue = new Sheldue();
+            sheldue = new Schedule();
         }
 
         private void PickShelduePastButton_Click(object sender, RoutedEventArgs e)
@@ -396,7 +396,7 @@ namespace MainDesktop
         {
             if (sheldue.Logged && sheldue.Sheldues.Count > 0)
             {
-                DaysOfWeek day = Sheldue.ConvertDaysOfWeek(PickSheldueDate.SelectedDate.Value.DayOfWeek);
+                DaysOfWeek day = Schedule.ConvertDaysOfWeek(PickSheldueDate.SelectedDate.Value.DayOfWeek);
                 ref List<Couple> CouplesList = ref sheldue.Sheldues[sheldue.CurrentWeek].days[(int) day].Couples;
 
                 if (BeginTimePicker != null &&
@@ -471,7 +471,7 @@ namespace MainDesktop
                 if (AllCouplesListView.SelectedItems.Count > 0)
                 {
                     // Gets current day of week
-                    DaysOfWeek day = Sheldue.ConvertDaysOfWeek(PickSheldueDate.SelectedDate.Value.DayOfWeek);
+                    DaysOfWeek day = Schedule.ConvertDaysOfWeek(PickSheldueDate.SelectedDate.Value.DayOfWeek);
                     // Gets Couple list of today
                     ref List<Couple> CouplesList = ref sheldue
                         .Sheldues[sheldue.PlanWeek(PickSheldueDate.SelectedDate.Value)].days[(int) day].Couples;
@@ -509,7 +509,7 @@ namespace MainDesktop
                 if (AllCouplesListView.SelectedItems.Count > 0)
                 {
                     // Gets current day of week
-                    DaysOfWeek day = Sheldue.ConvertDaysOfWeek(PickSheldueDate.SelectedDate.Value.DayOfWeek);
+                    DaysOfWeek day = Schedule.ConvertDaysOfWeek(PickSheldueDate.SelectedDate.Value.DayOfWeek);
                     // Gets Couple list of today
                     ref List<Couple> CouplesList = ref sheldue
                         .Sheldues[sheldue.PlanWeek(PickSheldueDate.SelectedDate.Value)].days[(int) day].Couples;
@@ -537,7 +537,7 @@ namespace MainDesktop
                 if (!string.IsNullOrEmpty((string) SubjectLable.Content))
                 {
                     // Gets current day of week
-                    DaysOfWeek day = Sheldue.ConvertDaysOfWeek(PickSheldueDate.SelectedDate.Value.DayOfWeek);
+                    DaysOfWeek day = Schedule.ConvertDaysOfWeek(PickSheldueDate.SelectedDate.Value.DayOfWeek);
                     // Gets Couple list of today
                     ref List<Couple> CouplesList = ref sheldue
                         .Sheldues[sheldue.PlanWeek(PickSheldueDate.SelectedDate.Value)].days[(int) day].Couples;

@@ -1,6 +1,6 @@
-﻿namespace SheldueLogic.SheldueObj
+﻿namespace ScheduleLogic.Subject
 {
-    public struct Subject
+    public class Subject
     {
         public string Name;
         public string GoogleMeetUrl;

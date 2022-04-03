@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using SheldueLogic;
+using ScheduleLogic;
 
 namespace MainDesktop.UserProfilePage
 {
@@ -11,9 +11,9 @@ namespace MainDesktop.UserProfilePage
     public partial class LoginPage : Page
     {
         private readonly UserProfile profile;
-        private readonly Sheldue sheldue;
+        private readonly Schedule sheldue;
 
-        public LoginPage(Sheldue sheldue, UserProfile profile)
+        public LoginPage(Schedule sheldue, UserProfile profile)
         {
             InitializeComponent();
 

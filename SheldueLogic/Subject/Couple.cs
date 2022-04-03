@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SheldueLogic.SheldueObj
+namespace ScheduleLogic.Subject
 {
     public class Couple
     {

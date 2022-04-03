@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using SheldueLogic.User;
-using SheldueLogic.User.Password.Default;
-using SheldueLogic.UserLoad.Exception;
+using ScheduleLogic.User;
+using ScheduleLogic.User.Password.Default;
+using ScheduleLogic.UserLoad.Exception;
 
-namespace SheldueLogic.UserLoad.TestLoader
+namespace ScheduleLogic.UserLoad.TestLoader
 {
     public class Test : ILoader
     {
@@ -33,7 +33,18 @@ namespace SheldueLogic.UserLoad.TestLoader
 
         public void RegisterUser(UserProfile profile)
         {
-            _list.Add(profile);
+            GetUsers().Add(profile);
+        }
+
+        public bool isRegistered(string login)
+        {
+            var users = GetUsers();
+
+            foreach (var user in users)
+                if (user.Login == login)
+                    return true;
+
+            return false;
         }
     }
 }

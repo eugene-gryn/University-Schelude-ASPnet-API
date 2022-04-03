@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using SheldueLogic.SheldueObj;
-using SheldueLogic.User.Exceptions;
-using SheldueLogic.User.Password;
+using ScheduleLogic.Subject;
+using ScheduleLogic.User.Exceptions;
+using ScheduleLogic.User.Password;
 
-namespace SheldueLogic.User
+namespace ScheduleLogic.User
 {
     public class UserProfile
     {

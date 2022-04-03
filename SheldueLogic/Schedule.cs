@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using SheldueLogic.SheldueObj;
-using SheldueLogic.User;
+using ScheduleLogic.Subject;
+using ScheduleLogic.User;
 
-namespace SheldueLogic
+namespace ScheduleLogic
 {
-    public class Sheldue
+    public class Schedule
     {
         public bool NotificatedAboutCouple;
         public bool NotificatedBeforeCouple;
@@ -15,7 +15,7 @@ namespace SheldueLogic
         public UserProfile profile;
 
 
-        public Sheldue()
+        public Schedule()
         {
             Logged = false;
             Sheldues = new List<SubjectWeek>
@@ -25,7 +25,7 @@ namespace SheldueLogic
         }
 
         [JsonConstructor]
-        public Sheldue(string imageIcon, List<SubjectWeek> sheldues, bool logged, UserProfile profile, UsersList list,
+        public Schedule(string imageIcon, List<SubjectWeek> sheldues, bool logged, UserProfile profile, UsersList list,
             bool notificatedBeforeCouple, bool notificatedAboutCouple, bool notificatedHomeworkCouple)
         {
             ImageIcon = imageIcon;
@@ -97,7 +97,7 @@ namespace SheldueLogic
             var day = ConvertDaysOfWeek(weekDay);
 
             var NearCouple = new Couple(new TimeSpan(0), new TimeSpan(0),
-                new Subject("Нет ближайших предметов", false));
+                new Subject.Subject("Нет ближайших предметов", false));
 
             var SheldueDay = Sheldues[CurrentWeek].days[(int) day];
             for (var i = 0; i < SheldueDay.Couples.Count; i++)

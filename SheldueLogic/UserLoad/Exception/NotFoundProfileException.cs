@@ -1,4 +1,4 @@
-﻿namespace SheldueLogic.UserLoad.Exception
+﻿namespace ScheduleLogic.UserLoad.Exception
 {
     public class NotFoundProfileException : System.Exception
     {

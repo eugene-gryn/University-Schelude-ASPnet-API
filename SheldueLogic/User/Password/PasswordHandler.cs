@@ -1,4 +1,4 @@
-﻿namespace SheldueLogic.User.Password
+﻿namespace ScheduleLogic.User.Password
 {
     public abstract class PasswordHandler
     {

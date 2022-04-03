@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SheldueLogic.SheldueObj
+namespace ScheduleLogic.Subject
 {
     public class Day
     {

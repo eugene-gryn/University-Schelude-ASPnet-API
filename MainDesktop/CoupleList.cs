@@ -1,4 +1,4 @@
-﻿using SheldueLogic.SheldueObj;
+﻿using ScheduleLogic.Subject;
 
 namespace MainDesktop
 {

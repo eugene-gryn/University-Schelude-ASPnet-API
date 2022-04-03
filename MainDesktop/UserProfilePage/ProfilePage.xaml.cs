@@ -4,8 +4,8 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
-using SheldueLogic;
-using SheldueLogic.SheldueObj;
+using ScheduleLogic;
+using ScheduleLogic.Subject;
 
 namespace MainDesktop.UserProfilePage
 {
@@ -14,10 +14,10 @@ namespace MainDesktop.UserProfilePage
     /// </summary>
     public partial class ProfilePage : Page
     {
-        private readonly Sheldue sheldue;
+        private readonly Schedule sheldue;
 
 
-        public ProfilePage(Sheldue sheldue)
+        public ProfilePage(Schedule sheldue)
         {
             InitializeComponent();
 
