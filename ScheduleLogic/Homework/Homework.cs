@@ -8,19 +8,21 @@ namespace ScheduleLogic.Homework
 {
     public class HomeWork
     {
-        public string LessonName { get; set; }
+        public Subject.Couples.Subject Subject { get; set; }
         public string HomeMade { get; set; }
         public bool IsCompleted { get; set; } = false;
         public byte HomeWorkPriority { get; set; }
-        DateTime time = new DateTime();
+        public DateTime DeadLine = new DateTime();
 
         public HomeWork()
         {
 
         }
-        public HomeWork(string lessonName, string homeMade)
+        public HomeWork(Subject.Couples.Subject Subject, string homeMade, DateTime deadline, byte HomeWorkPriority = 5)
         {
-            LessonName = lessonName;
+            DeadLine = deadline;
+            this.HomeWorkPriority = HomeWorkPriority;
+            this.Subject = Subject;
             HomeMade = homeMade;
         }
 

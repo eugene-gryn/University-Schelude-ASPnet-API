@@ -8,8 +8,7 @@ namespace ScheduleLogic.Homework
 {
     public class HomeWorkManagment
     {
-
-        List<HomeWork> homeWorks;
+        List<HomeWork> HomeWorks;
 
         HomeWork homeWork = new HomeWork();
         //для сериалізації
@@ -17,18 +16,13 @@ namespace ScheduleLogic.Homework
         {
 
         }
-        //для створення домашки
-        public HomeWorkManagment(DateTime deadline, byte HomeWorkPriority = 5)
-        {
-            Deadline = deadline;
-            this.HomeWorkPriority = HomeWorkPriority;
-        }
         //метод сортировки після визначення пріорітетності
         private void SortHomeWork(List<HomeWork> homeWorks)
         {
             var sorted = homeWorks.OrderBy(hw => hw.HomeWorkPriority);
+            // Пофиксить(исправлено для запуска было -> HomeWork += hw;)
             foreach (var hw in sorted)
-                Console.WriteLine(hw);
+                HomeWorks.Add(hw);
         }
         public void ChangeHomeWork(List<HomeWork> homeWorks, int index, string homeMade)
         {
@@ -36,11 +30,11 @@ namespace ScheduleLogic.Homework
         }
         public void DeleteHomeWork(List<HomeWork> homeWorks, int index)
         {
-            homeWorks[index].Remove();
+            homeWorks.RemoveAt(index);
         }
         public void ChangeDeadLine(List<HomeWork> homeWorks, int index, DateTime date)
         {
-            homeWorks[index].time = date;
+            homeWorks[index].DeadLine = date;
         }
         public bool IsReadyHW()
         {
