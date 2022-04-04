@@ -4,15 +4,12 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using ExcelDataReader;
+using ScheduleLogic.Subject.Couples;
 
-namespace ScheduleLogic.Subject
+namespace ScheduleLogic.Subject.FileCoupleConvertors.ExcelConvertor
 {
-    public interface ISheldueConverter
-    {
-        List<SubjectWeek> GetSubjectWeek(string filename);
-    }
 
-    public class ExcelSheldueConverter : ISheldueConverter
+    public class ExcelSheldueConverter : IConverter
     {
         private const int TIME_ROW = 1;
 
@@ -208,6 +205,11 @@ namespace ScheduleLogic.Subject
             table.RemoveRange(0, CountOfCouples + 2);
 
             return valueWeek;
+        }
+
+        List<Couple> IConverter.GetSubjectWeek(string filename)
+        {
+            var table = ExactData(filename);
         }
     }
 }

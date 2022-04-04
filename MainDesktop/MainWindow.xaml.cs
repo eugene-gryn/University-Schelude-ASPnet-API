@@ -124,7 +124,7 @@ namespace MainDesktop
 
         private bool IsTodayCouple()
         {
-            return NearCouple.subject.Name == (string) SubjectLable.Content;
+            return NearCouple.CoupleSubject.Name == (string) SubjectLable.Content;
         }
 
         /// <summary>
@@ -135,23 +135,23 @@ namespace MainDesktop
             TimeSpan nowTime = DateTime.Now.TimeOfDay;
 
             NearCouple = sheldue.GetNearCouple(DateTime.Today.DayOfWeek, nowTime);
-            if (string.IsNullOrEmpty(NearCouple.subject.Name))
+            if (string.IsNullOrEmpty(NearCouple.CoupleSubject.Name))
             {
                 NearCouple = sheldue.GetNearCouple(DateTime.Today.AddDays(1).DayOfWeek, new TimeSpan(0, 0, 0));
-                SubjectLable.Content = DateTime.Today.AddDays(1).DayOfWeek.ToString() + " | " + NearCouple.subject.Name;
+                SubjectLable.Content = DateTime.Today.AddDays(1).DayOfWeek.ToString() + " | " + NearCouple.CoupleSubject.Name;
             }
             else
             {
-                SubjectLable.Content = NearCouple.subject.Name;
+                SubjectLable.Content = NearCouple.CoupleSubject.Name;
             }
 
             SheldueLabel.Content = sheldue.Sheldues[sheldue.CurrentWeek].WeekName;
 
-            CurrentCoupleBeginTimeLable.Content = NearCouple.begin.ToString(@"hh\:mm\:ss");
-            CurrentCoupleEndTimeLable.Content = NearCouple.end.ToString(@"hh\:mm\:ss");
+            CurrentCoupleBeginTimeLable.Content = NearCouple.Begin.ToString(@"hh\:mm\:ss");
+            CurrentCoupleEndTimeLable.Content = NearCouple.End.ToString(@"hh\:mm\:ss");
             CurrentCoupleCurrentTimeLable.Content = nowTime.ToString(@"hh\:mm\:ss");
 
-            if (!NearCouple.subject.isPractice)
+            if (!NearCouple.CoupleSubject.isPractice)
             {
                 SubjectLable.Background = LectionBrush;
             }
@@ -160,10 +160,10 @@ namespace MainDesktop
                 SubjectLable.Background = PraticeBrush;
             }
 
-            if (IsTodayCouple() && NearCouple.begin < nowTime && nowTime < NearCouple.end)
+            if (IsTodayCouple() && NearCouple.Begin < nowTime && nowTime < NearCouple.End)
             {
-                double now = NearCouple.end.Ticks - nowTime.Ticks;
-                double time = NearCouple.end.Ticks - NearCouple.begin.Ticks;
+                double now = NearCouple.End.Ticks - nowTime.Ticks;
+                double time = NearCouple.End.Ticks - NearCouple.Begin.Ticks;
                 double aaa = now / time;
                 CoupleProgressBar.Value = 100.0 * (1.0 - aaa);
             }
@@ -186,7 +186,7 @@ namespace MainDesktop
                 foreach (Couple couple in sheldue.Sheldues[sheldue.PlanWeek(PickSheldueDate.SelectedDate.Value)]
                              .days[(int) day].Couples)
                 {
-                    if (!string.IsNullOrEmpty(couple.subject.Name))
+                    if (!string.IsNullOrEmpty(couple.CoupleSubject.Name))
                     {
                         list.Add(new CouplesView(couple));
                     }
@@ -194,11 +194,11 @@ namespace MainDesktop
 
                 list.Sort((CouplesView a, CouplesView b) =>
                 {
-                    if (a.couple.begin == b.couple.begin)
+                    if (a.couple.Begin == b.couple.Begin)
                     {
                         return 0;
                     }
-                    else if (a.couple.begin > b.couple.begin)
+                    else if (a.couple.Begin > b.couple.Begin)
                     {
                         return 1;
                     }
@@ -217,7 +217,7 @@ namespace MainDesktop
         /// </summary>
         private void CoupleNotification()
         {
-            if (NearCouple.subject.Name != "")
+            if (NearCouple.CoupleSubject.Name != "")
             {
                 if (NearCouple.isTimeBeforeCouple(DateTime.Now.TimeOfDay,
                         ref sheldue.NotificatedBeforeCouple,
@@ -231,7 +231,7 @@ namespace MainDesktop
                     {
                         //Init content of notification
                         Message = "Join couple",
-                        Title = NearCouple.subject.Name,
+                        Title = NearCouple.CoupleSubject.Name,
                         Type = NotificationType.Information
                     };
 
@@ -240,9 +240,9 @@ namespace MainDesktop
 
                     // Button to open link in google meet
                     content.LeftButtonContent = "Open meet link";
-                    if (NearCouple.subject.GoogleMeetUrl != null)
+                    if (NearCouple.CoupleSubject.GoogleMeetUrl != null)
                     {
-                        string link = NearCouple.subject.GoogleMeetUrl;
+                        string link = NearCouple.CoupleSubject.GoogleMeetUrl;
                         content.LeftButtonAction = new Action(() =>
                         {
                             Process.Start(new ProcessStartInfo
@@ -268,7 +268,7 @@ namespace MainDesktop
                     {
                         //Init content of notification
                         Message = "Join couple",
-                        Title = NearCouple.subject.Name,
+                        Title = NearCouple.CoupleSubject.Name,
                         Type = NotificationType.Information
                     };
 
@@ -277,9 +277,9 @@ namespace MainDesktop
 
                     // Button to open link in google meet
                     content.LeftButtonContent = "Open meet link";
-                    if (NearCouple.subject.GoogleMeetUrl != null)
+                    if (NearCouple.CoupleSubject.GoogleMeetUrl != null)
                     {
-                        string link = NearCouple.subject.GoogleMeetUrl;
+                        string link = NearCouple.CoupleSubject.GoogleMeetUrl;
                         content.LeftButtonAction = new Action(() =>
                         {
                             Process.Start(new ProcessStartInfo
@@ -315,7 +315,7 @@ namespace MainDesktop
                 for (int i1 = 0; i1 < shelduee.days.Length; i1++)
                 {
                     Day day = shelduee.days[i1];
-                    day.Couples.RemoveAll((Couple couple) => couple.isEmpty());
+                    day.Couples.RemoveAll((Couple couple) => couple.IsEmpty());
                 }
             }
         }
@@ -483,7 +483,7 @@ namespace MainDesktop
                     string linkStr = Clipboard.GetText();
                     if (link.IsMatch(linkStr))
                     {
-                        CouplesList[index].subject.GoogleMeetUrl = linkStr;
+                        CouplesList[index].CoupleSubject.GoogleMeetUrl = linkStr;
                         Notification("Added link: " + linkStr, "Link Added", NotificationType.Success, 5);
                     }
                     else
@@ -544,13 +544,13 @@ namespace MainDesktop
                     // Gets index of selected subject in today sheldue
                     int index = CouplesList.FindIndex(0, (Couple a) =>
                     {
-                        if ((string) SubjectLable.Content == a.subject.Name)
+                        if ((string) SubjectLable.Content == a.CoupleSubject.Name)
                         {
-                            if (SubjectLable.Background == LectionBrush && !a.subject.isPractice)
+                            if (SubjectLable.Background == LectionBrush && !a.CoupleSubject.isPractice)
                             {
                                 return true;
                             }
-                            else if (SubjectLable.Background != LectionBrush && a.subject.isPractice)
+                            else if (SubjectLable.Background != LectionBrush && a.CoupleSubject.isPractice)
                             {
                                 return true;
                             }
@@ -572,7 +572,7 @@ namespace MainDesktop
                         string linkStr = Clipboard.GetText();
                         if (link.IsMatch(linkStr))
                         {
-                            CouplesList[index].subject.GoogleMeetUrl = linkStr;
+                            CouplesList[index].CoupleSubject.GoogleMeetUrl = linkStr;
                             Notification("Added link: " + linkStr, "Link Added", NotificationType.Success, 5);
                         }
                         else

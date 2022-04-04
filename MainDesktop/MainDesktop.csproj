@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SheldueLogic\ScheduleLogic.csproj" />
+    <ProjectReference Include="..\ScheduleLogic\ScheduleLogic.csproj" />
   </ItemGroup>
 
   <ItemGroup>

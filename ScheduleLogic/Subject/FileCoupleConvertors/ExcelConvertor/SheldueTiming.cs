@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ScheduleLogic.Subject
+namespace ScheduleLogic.Subject.FileCoupleConvertors.ExcelConvertor
 {
     public class SheldueTiming
     {

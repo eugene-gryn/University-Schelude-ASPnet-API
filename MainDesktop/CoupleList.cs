@@ -1,4 +1,4 @@
-﻿using ScheduleLogic.Subject;
+﻿using ScheduleLogic.Subject.Couples;
 
 namespace MainDesktop
 {
@@ -11,18 +11,17 @@ namespace MainDesktop
             this.couple = couple;
         }
 
-        public string Time => couple.begin.ToString(@"hh\:mm") + " - " + couple.end.ToString(@"hh\:mm");
+        public string Time => couple.Begin.ToString(@"hh\:mm") + " - " + couple.End.ToString(@"hh\:mm");
 
         public string Name
         {
             get
             {
-                if (couple.subject.isPractice)
-                    return "* | " + couple.subject.Name;
-                return couple.subject.Name;
+                if (couple.CoupleSubject.isPractice)
+                    return "* | " + couple.CoupleSubject.Name;
+                return couple.CoupleSubject.Name;
             }
         }
 
-        public int Homework => couple.HomeworkCount;
     }
 }

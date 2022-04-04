@@ -1,4 +1,4 @@
-﻿namespace ScheduleLogic.Subject
+﻿namespace ScheduleLogic.Subject.Couples
 {
     public class Subject
     {

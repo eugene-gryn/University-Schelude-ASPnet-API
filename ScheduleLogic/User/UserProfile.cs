@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ScheduleLogic.Subject;
+using ScheduleLogic.Subject.Couples;
 using ScheduleLogic.User.Exceptions;
 using ScheduleLogic.User.Password;
 
@@ -18,9 +19,7 @@ namespace ScheduleLogic.User
             ImageLocation = string.IsNullOrEmpty(image) ? image : DefaultValues.Image;
             Settings = settings ?? DefaultValues.settings;
 
-
-            // OLD CODE
-            Sheldues = new List<SubjectWeek>();
+            Couples = new List<Couple>();
         }
 
         public string Login { get; set; }
@@ -29,9 +28,7 @@ namespace ScheduleLogic.User
         public PasswordHandler Password { get; set; }
         public Settings.Settings Settings { get; set; }
 
-        // OLD CODE
-        public List<SubjectWeek> Sheldues { get; set; }
-
+        public List<Couple> Couples;
 
         public void ChangePassword(string newPassword)
         {
