@@ -81,11 +81,12 @@
     <Compile Include="StateHolding\ILoader.cs" />
     <Compile Include="StateHolding\SaveLoadItem.cs" />
     <Compile Include="Subject\Couples\Couple.cs" />
+    <Compile Include="Subject\Couples\CoupleManager.cs" />
     <Compile Include="Subject\Couples\Exception\WrongTimeCoupleException.cs" />
     <Compile Include="Subject\Couples\Subject.cs" />
     <Compile Include="Subject\FileCoupleConvertors\IConverter.cs" />
     <Compile Include="Subject\FileCoupleConvertors\ExcelConvertor\SheldueConverter.cs" />
-    <Compile Include="Subject\FileCoupleConvertors\ExcelConvertor\SheldueTiming.cs" />
+    <Compile Include="Subject\FileCoupleConvertors\ExcelConvertor\ScheduleTiming.cs" />
     <Compile Include="UserLoad\Exception\NotFoundProfileException.cs" />
     <Compile Include="UserLoad\ILoader.cs" />
     <Compile Include="UserLoad\TestLoader\Test.cs" />

@@ -2,23 +2,23 @@
 
 namespace ScheduleLogic.Subject.FileCoupleConvertors.ExcelConvertor
 {
-    public class SheldueTiming
+    public class ScheduleTiming
     {
         public int Size;
         public CoupleDefaultTime[] times;
 
-        public SheldueTiming()
+        public ScheduleTiming()
         {
         }
 
-        public SheldueTiming(int size)
+        public ScheduleTiming(int size)
         {
             if (size > 0) Size = size;
 
             times = new CoupleDefaultTime[Size];
         }
 
-        public SheldueTiming(in SheldueTiming other)
+        public ScheduleTiming(in ScheduleTiming other)
         {
             times = new CoupleDefaultTime[other.Size];
             for (var i = 0; i < other.Size; i++) times[i] = other.times[i];

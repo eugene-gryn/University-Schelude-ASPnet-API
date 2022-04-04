@@ -13,4 +13,12 @@
     <PackageReference Include="coverlet.collector" Version="3.0.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ScheduleLogic\ScheduleLogic.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Schelude\Subejct\Subject\" />
+  </ItemGroup>
+
 </Project>
