@@ -10,6 +10,7 @@ namespace ScheduleLogic
         public Schedule(ILoader loginer)
         {
             Logged = false;
+
             Loginer = loginer;
         }
 
