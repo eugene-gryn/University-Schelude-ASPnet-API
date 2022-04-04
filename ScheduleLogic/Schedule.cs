@@ -22,7 +22,7 @@ namespace ScheduleLogic
         /// <summary>
         ///     Returns Week
         /// </summary>
-        public int CurrentWeek()
+        public static int CurrentWeek()
         {
             return (DateTime.Now.DayOfYear + 3) / 7 % 2 != 0 ? 0 : 1;
         }

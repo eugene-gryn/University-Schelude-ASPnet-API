@@ -5,7 +5,7 @@ namespace ScheduleLogic.Subject.Couples
 {
     public class Couple
     {
-        public Couple(TimeSpan begin, TimeSpan end, Subject coupleSubject)
+        public Couple(DateTime begin, DateTime end, Subject coupleSubject)
         {
             if (begin < end)
             {
@@ -25,8 +25,8 @@ namespace ScheduleLogic.Subject.Couples
             CoupleSubject = null;
         }
 
-        public TimeSpan Begin { get; set; }
-        public TimeSpan End { get; set; }
+        public DateTime Begin { get; set; }
+        public DateTime End { get; set; }
         public Subject CoupleSubject { get; set; }
 
 
@@ -37,7 +37,7 @@ namespace ScheduleLogic.Subject.Couples
                    string.IsNullOrEmpty(CoupleSubject?.GoogleMeetUrl);
         }
 
-        public bool IsCoupleFitInTime(TimeSpan time)
+        public bool IsCoupleFitInTime(DateTime time)
         {
             return Begin < time && time < End;
         }
