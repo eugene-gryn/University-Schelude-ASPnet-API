@@ -5,6 +5,6 @@ namespace ScheduleLogic.Subject.FileCoupleConvertors
 {
     public interface IConverter
     {
-        List<Couple> GetSubjectWeek(string filename);
+        CoupleManager GetSubjectWeek(string name, string filename);
     }
 }

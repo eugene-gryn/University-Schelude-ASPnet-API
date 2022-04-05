@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using ExcelDataReader;
 using ScheduleLogic.Subject.Couples;
+using ExcelDataReader;
 
 namespace ScheduleLogic.Subject.FileCoupleConvertors.ExcelConvertor
 {
-    public class ExcelSheldueConverter : IConverter
+    public class ExcelScheludeConverter : IConverter
     {
         private const int TIME_ROW = 1;
         private const int COLUMN_OF_COUPLES = 0;
@@ -28,24 +28,21 @@ namespace ScheduleLogic.Subject.FileCoupleConvertors.ExcelConvertor
         private readonly Regex time = new Regex(@"((\d{1}|\d{2})(\:|\.)(\d{2}))-((\d{1}|\d{2})(\:|\.)(\d{2}))");
 
 
-        public ExcelSheldueConverter()
+        public ExcelScheludeConverter()
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
         }
 
-        public List<Couple> GetSubjectWeek(string filename)
+        public CoupleManager GetSubjectWeek(string name, string filename)
         {
-            var couples = new List<Couple>();
+            var couples = new CoupleManager(name, new List<Couple>());
 
             var table = ExactData(filename);
 
             while (table.Count > 0)
             {
                 var weekCouples = GetOneWeek(ref table);
-                foreach (var couple in weekCouples.Couples)
-                {
-                    couples.Add(couple);
-                }
+                couples.Merge(weekCouples);
             }
 
             return couples;

@@ -16,6 +16,13 @@ namespace ScheduleLogic.Subject.Couples
             Couples = couples;
         }
 
+        public void Merge(CoupleManager other)
+        {
+            foreach (var couple in other.Couples)
+            {
+                this.Couples.Add(couple);
+            }
+        }
 
     }
 }
