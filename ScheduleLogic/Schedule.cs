@@ -7,6 +7,9 @@ namespace ScheduleLogic
 {
     public class Schedule
     {
+        private const int SCHELUDE_WEEKDAY_OFFSET = 1;
+
+
         public Schedule(ILoader loginer)
         {
             Logged = false;
@@ -26,6 +29,16 @@ namespace ScheduleLogic
         {
             return (DateTime.Now.DayOfYear + 3) / 7 % 2 != 0 ? 0 : 1;
         }
+
+        public static DateTime FirstDayOnWeek()
+        {
+            // Day of week
+            var offsetDay = 0 - (int) DateTime.Now.DayOfWeek + SCHELUDE_WEEKDAY_OFFSET;
+            offsetDay += CurrentWeek() == 0 ? 0 : -7;
+
+            return DateTime.Now.Date.AddDays(offsetDay);
+        }
+
         public int PlanWeek(DateTime date)
         {
             return (date.DayOfYear + 3) / 7 % 2 == 0 ? 1 : 0;
@@ -44,6 +57,7 @@ namespace ScheduleLogic
                 throw new NotFoundProfileException(login, password);
             }
         }
+
         public void Logout()
         {
             Profile = null;

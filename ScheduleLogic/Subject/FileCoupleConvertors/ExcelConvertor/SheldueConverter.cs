@@ -22,7 +22,6 @@ namespace ScheduleLogic.Subject.FileCoupleConvertors.ExcelConvertor
         private const int GROUP_END_TIME_MIN = 8;
         private const int GROUP_END_TIME_HS = 6;
         
-        private const int SCHELUDE_WEEKDAY_OFFSET = 1;
 
         private readonly Regex practiceView = new Regex(@"\*(\w+)");
         private readonly Regex time = new Regex(@"((\d{1}|\d{2})(\:|\.)(\d{2}))-((\d{1}|\d{2})(\:|\.)(\d{2}))");
@@ -39,9 +38,9 @@ namespace ScheduleLogic.Subject.FileCoupleConvertors.ExcelConvertor
 
             var table = ExactData(filename);
 
-            while (table.Count > 0)
+            for (int i = 0; table.Count > 0; i++)
             {
-                var weekCouples = GetOneWeek(ref table);
+                var weekCouples = GetOneWeek(ref table, i);
                 couples.Merge(weekCouples);
             }
 
@@ -169,21 +168,12 @@ namespace ScheduleLogic.Subject.FileCoupleConvertors.ExcelConvertor
             return timings;
         }
 
-        private DateTime firstDayOnWeek()
-        {
-            // Day of week
-            int offsetDay = (0 - (int)DateTime.Now.DayOfWeek + SCHELUDE_WEEKDAY_OFFSET);
-            offsetDay += (Schedule.CurrentWeek() == 0) ? 0 : -7;
-
-            return DateTime.Now.Date.AddDays(offsetDay);
-        }
-
         /// <summary>
         ///     Method cuts from table one week
         /// </summary>
         /// <param table="Table of the Excel document. Page with Sheldue"></param>
         /// <returns>Object of week sheldue</returns>
-        private CoupleManager GetOneWeek(ref List<List<string>> table)
+        private CoupleManager GetOneWeek(ref List<List<string>> table, int weekIndex)
         {
             // Define Week Info
             var countOfCouples = GetCouplesCount(table);
@@ -201,16 +191,13 @@ namespace ScheduleLogic.Subject.FileCoupleConvertors.ExcelConvertor
             {
                 for (var couple = 0; couple < countOfCouples; couple++)
                 {
-
-                    // <!!--<>--!!> Добавление уже существующих пар, вместо конструкции новой пары
-
                     if (!string.IsNullOrEmpty(table[couple + ROW_FIRST_COUPLE][day + ROW_FIRST_DAY]))
                     {
                         var subName = table[couple + ROW_FIRST_COUPLE][day + ROW_FIRST_DAY];
                         var isPractice = IsPracticeCuts(ref subName);
 
-                        var weekDay = firstDayOnWeek();
-                        weekDay = weekDay.AddDays(day).Date;
+                        var weekDay = Schedule.FirstDayOnWeek();
+                        weekDay = weekDay.AddDays(day).Date.AddDays(weekIndex * 7);
 
                         var begin = weekDay.AddTicks(oneWeek.Timing.times[couple].starts.Ticks);
                         var end = weekDay.AddTicks(oneWeek.Timing.times[couple].ends.Ticks);

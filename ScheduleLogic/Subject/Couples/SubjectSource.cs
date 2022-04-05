@@ -13,21 +13,18 @@ namespace ScheduleLogic.Subject.Couples
 
         static SubjectSource()
         {
-            Subjects = new HashSet<Subject>();
+            Subjects = new HashSet<Subject>(new Subject("", false));
         }
 
         public static Subject GetSubject(string name, bool isPractice)
         {
             var containSubj = new Subject(name, isPractice);
-            if (Subjects.Contains(containSubj))
-            {
-                return Subjects.First(subject => subject.Equals(containSubj));
-            }
-            else
-            {
-                Subjects.Add(containSubj);
-            }
 
+            if (!Subjects.Add(containSubj))
+            {
+                return Subjects.First(subject => subject.Equals(subject, containSubj));
+            }
+            
             return containSubj;
         }
     }

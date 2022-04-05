@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using ScheduleLogic.Subject.FileCoupleConvertors.ExcelConvertor;
 
@@ -22,6 +23,11 @@ namespace ScheduleLogic.Subject.Couples
             {
                 this.Couples.Add(couple);
             }
+        }
+
+        public List<Couple> FindByDate(DateTime date)
+        {
+            return Couples.FindAll(couple => couple.Begin.Date == date.Date);
         }
 
     }
