@@ -74,6 +74,7 @@
     <Compile Include="Subject\Couples\CoupleManager.cs" />
     <Compile Include="Subject\Couples\Exception\WrongTimeCoupleException.cs" />
     <Compile Include="Subject\Couples\Subject.cs" />
+    <Compile Include="Subject\Couples\SubjectSource.cs" />
     <Compile Include="Subject\FileCoupleConvertors\IConverter.cs" />
     <Compile Include="Subject\FileCoupleConvertors\ExcelConvertor\SheldueConverter.cs" />
     <Compile Include="Subject\FileCoupleConvertors\ExcelConvertor\ScheduleTiming.cs" />
