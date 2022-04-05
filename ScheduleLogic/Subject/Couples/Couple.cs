@@ -46,5 +46,10 @@ namespace ScheduleLogic.Subject.Couples
         {
             return !(Begin <= other.Begin || End <= other.Begin);
         }
+
+        public Couple Duplicate(DateTime begin, DateTime end)
+        {
+            return new Couple(begin, end, CoupleSubject);
+        }
     }
 }
