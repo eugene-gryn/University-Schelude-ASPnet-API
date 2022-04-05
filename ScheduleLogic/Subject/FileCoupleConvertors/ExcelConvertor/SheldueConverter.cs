@@ -216,7 +216,7 @@ namespace ScheduleLogic.Subject.FileCoupleConvertors.ExcelConvertor
                         var end = weekDay.AddTicks(oneWeek.Timing.times[couple].ends.Ticks);
 
                         var creationCouple = new Couple(begin, end,
-                            new Couples.Subject(subName, isPractice));
+                            Couples.SubjectSource.GetSubject(subName, isPractice));
 
                         oneWeek.Couples.Add(creationCouple);
                     }
