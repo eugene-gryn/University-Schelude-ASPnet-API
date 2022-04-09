@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using ScheduleLogic.Subject;
-using ScheduleLogic.Subject.Couples;
+﻿using ScheduleLogic.Subject.Couples;
 using ScheduleLogic.User.Exceptions;
 using ScheduleLogic.User.Password;
 
@@ -8,7 +6,8 @@ namespace ScheduleLogic.User
 {
     public class UserProfile
     {
-        public UserProfile(string login, PasswordHandler password, string name, CoupleManager userSchelude, string image = "", Settings.Settings settings = null)
+        public UserProfile(string login, PasswordHandler password, string name, CoupleManager userSchelude,
+            string image = "", Settings.Settings settings = null)
         {
             Login = login;
             Password = password;

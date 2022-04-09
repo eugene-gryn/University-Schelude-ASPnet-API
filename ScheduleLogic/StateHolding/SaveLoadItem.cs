@@ -5,12 +5,12 @@ namespace ScheduleLogic.StateHolding
 {
     public class JsonSaveLoader : ILoader
     {
-        public Schedule LoadObj(string filename)
+        public ScheduleEngine LoadObj(string filename)
         {
             using (var writer = new StreamReader(filename))
             {
                 var str = writer.ReadToEnd();
-                return JsonConvert.DeserializeObject<Schedule>(str);
+                return JsonConvert.DeserializeObject<ScheduleEngine>(str);
             }
         }
 

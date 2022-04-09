@@ -195,7 +195,7 @@ namespace ScheduleLogic.Subject.FileCoupleConvertors.ExcelConvertor
                         var subName = table[couple + ROW_FIRST_COUPLE][day + ROW_FIRST_DAY];
                         var isPractice = IsPracticeCuts(ref subName);
 
-                        var weekDay = Schedule.FirstDayOnWeek();
+                        var weekDay = ScheduleEngine.FirstDayOnWeek();
                         weekDay = weekDay.AddDays(day).Date.AddDays(weekIndex * 7);
 
                         var begin = weekDay.AddTicks(oneWeek.Timing.times[couple].starts.Ticks);

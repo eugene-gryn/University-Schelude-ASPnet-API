@@ -11,9 +11,9 @@ namespace MainDesktop.UserProfilePage
     public partial class LoginPage : Page
     {
         private readonly UserProfile profile;
-        private readonly Schedule sheldue;
+        private readonly ScheduleEngine sheldue;
 
-        public LoginPage(Schedule sheldue, UserProfile profile)
+        public LoginPage(ScheduleEngine sheldue, UserProfile profile)
         {
             InitializeComponent();
 

@@ -2,7 +2,7 @@
 {
     public interface ILoader
     {
-        Schedule LoadObj(string file);
+        ScheduleEngine LoadObj(string file);
         void SaverObj(string file, object obj);
     }
 }

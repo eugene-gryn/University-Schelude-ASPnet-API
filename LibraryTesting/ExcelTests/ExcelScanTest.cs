@@ -36,8 +36,8 @@ namespace LibraryTesting.ExcelTests
 
             var couples = reader.GetSubjectWeek(NAME, FILENAME);
 
-            var monday1 = couples.FindByDate(ScheduleLogic.Schedule.FirstDayOnWeek());
-            var monday2 = couples.FindByDate(ScheduleLogic.Schedule.FirstDayOnWeek().AddDays(7));
+            var monday1 = couples.FindByDate(ScheduleLogic.ScheduleEngine.FirstDayOnWeek());
+            var monday2 = couples.FindByDate(ScheduleLogic.ScheduleEngine.FirstDayOnWeek().AddDays(7));
 
             Assert.AreSame(monday1[0].CoupleSubject, monday2[0].CoupleSubject);
         }
@@ -52,8 +52,8 @@ namespace LibraryTesting.ExcelTests
             Continuetor continuetor = new Continuetor(WEEK_COUNT);
             continuetor.Duplicate(couples, REPEAT_DUBLICATE_COUNT);
 
-            var monday1 = couples.FindByDate(ScheduleLogic.Schedule.FirstDayOnWeek());
-            var monday2 = couples.FindByDate(ScheduleLogic.Schedule.FirstDayOnWeek().AddDays(14));
+            var monday1 = couples.FindByDate(ScheduleLogic.ScheduleEngine.FirstDayOnWeek());
+            var monday2 = couples.FindByDate(ScheduleLogic.ScheduleEngine.FirstDayOnWeek().AddDays(14));
 
             Assert.True(monday1[0].Begin.TimeOfDay == monday2[0].Begin.TimeOfDay);
         }

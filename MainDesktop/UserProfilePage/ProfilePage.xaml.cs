@@ -14,10 +14,10 @@ namespace MainDesktop.UserProfilePage
     /// </summary>
     public partial class ProfilePage : Page
     {
-        private readonly Schedule sheldue;
+        private readonly ScheduleEngine sheldue;
 
 
-        public ProfilePage(Schedule sheldue)
+        public ProfilePage(ScheduleEngine sheldue)
         {
             InitializeComponent();
 

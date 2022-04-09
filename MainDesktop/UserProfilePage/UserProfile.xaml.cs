@@ -8,10 +8,10 @@ namespace MainDesktop.UserProfilePage
     /// </summary>
     public partial class UserProfile : Window
     {
-        private readonly Schedule sheldue;
+        private readonly ScheduleEngine sheldue;
 
 
-        public UserProfile(Schedule sheldue)
+        public UserProfile(ScheduleEngine sheldue)
         {
             this.sheldue = sheldue;
 

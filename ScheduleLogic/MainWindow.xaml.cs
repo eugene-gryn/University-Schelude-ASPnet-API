@@ -6,19 +6,12 @@ using System.Media;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Forms;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Microsoft.Win32;
 using Notification.Wpf;
 using ScheduleLogic;
-using ScheduleLogic.StateHolding;
 using ScheduleLogic.Subject;
-using ScheduleLogic.Subject.Couples;
-using Application = System.Windows.Application;
-using Clipboard = System.Windows.Clipboard;
-using MessageBox = System.Windows.MessageBox;
-using SelectionMode = System.Windows.Controls.SelectionMode;
 using UserProfile = MainDesktop.UserProfilePage.UserProfile;
 
 namespace MainDesktop
