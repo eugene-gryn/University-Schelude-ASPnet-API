@@ -8,18 +8,16 @@ namespace ScheduleLogic.User
 {
     public class UserProfile
     {
-        public UserProfile(string login, PasswordHandler password, string name,
-            string image = "", Settings.Settings settings = null)
+        public UserProfile(string login, PasswordHandler password, string name, CoupleManager userSchelude, string image = "", Settings.Settings settings = null)
         {
             Login = login;
             Password = password;
 
             Name = name;
+            UserSchelude = userSchelude;
 
             ImageLocation = string.IsNullOrEmpty(image) ? image : DefaultValues.Image;
             Settings = settings ?? DefaultValues.settings;
-
-            Couples = new List<Couple>();
         }
 
         public string Login { get; set; }
@@ -28,7 +26,7 @@ namespace ScheduleLogic.User
         public PasswordHandler Password { get; set; }
         public Settings.Settings Settings { get; set; }
 
-        public List<Couple> Couples;
+        public CoupleManager UserSchelude { get; set; }
 
         public void ChangePassword(string newPassword)
         {

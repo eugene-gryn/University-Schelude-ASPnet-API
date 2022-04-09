@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Linq;
 using ScheduleLogic.Subject.Couples;
 using ScheduleLogic.User;
 using ScheduleLogic.UserLoad;
@@ -62,6 +63,8 @@ namespace ScheduleLogic
 
         public Couple NearCouple()
         {
+            var todayDates = Profile.UserSchelude.FindByDate(DateTime.Now.Date);
+            return todayDates.First(couple => DateTime.Now < couple.End);
         }
 
         public void Logout()
