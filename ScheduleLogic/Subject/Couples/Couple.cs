@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using ScheduleLogic.Subject.Couples.Exception;
 
 namespace ScheduleLogic.Subject.Couples
 {
-    public class Couple
+    public class Couple : IComparable<Couple>, IComparer<Couple>
     {
         public Couple(DateTime begin, DateTime end, Subject coupleSubject)
         {
@@ -28,6 +29,29 @@ namespace ScheduleLogic.Subject.Couples
         public DateTime Begin { get; set; }
         public DateTime End { get; set; }
         public Subject CoupleSubject { get; set; }
+
+        public int CompareTo(Couple other)
+        {
+            if (ReferenceEquals(this, other)) return 0;
+            if (ReferenceEquals(null, other)) return 1;
+            if (Collision(other)) return 0;
+
+            var beginComparison = Begin.CompareTo(other.Begin);
+            if (beginComparison != 0) return beginComparison;
+            return End.CompareTo(other.End);
+        }
+
+        public int Compare(Couple x, Couple y)
+        {
+            if (ReferenceEquals(x, y)) return 0;
+            if (ReferenceEquals(null, y)) return 1;
+            if (ReferenceEquals(null, x)) return -1;
+            if (x.Collision(y)) return 0;
+
+            var beginComparison = x.Begin.CompareTo(y.Begin);
+            if (beginComparison != 0) return beginComparison;
+            return x.End.CompareTo(y.End);
+        }
 
 
         public bool IsEmpty()

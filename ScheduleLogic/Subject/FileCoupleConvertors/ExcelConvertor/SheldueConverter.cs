@@ -34,7 +34,7 @@ namespace ScheduleLogic.Subject.FileCoupleConvertors.ExcelConvertor
 
         public CoupleManager GetSubjectWeek(string name, string filename)
         {
-            var couples = new CoupleManager(name, new List<Couple>());
+            var couples = new CoupleManager(name);
 
             var table = ExactData(filename);
 
@@ -178,10 +178,9 @@ namespace ScheduleLogic.Subject.FileCoupleConvertors.ExcelConvertor
             // Define Week Info
             var countOfCouples = GetCouplesCount(table);
             var countOfDays = GetDaysCount(table);
-            var couples = new List<Couple>();
 
             // Init week
-            var oneWeek = new CoupleManager(table[0][0], couples)
+            var oneWeek = new CoupleManager(table[0][0])
             {
                 Timing = ParseScheludeTimings(table, countOfCouples)
             };
@@ -205,7 +204,7 @@ namespace ScheduleLogic.Subject.FileCoupleConvertors.ExcelConvertor
                         var creationCouple = new Couple(begin, end,
                             Couples.SubjectSource.GetSubject(subName, isPractice));
 
-                        oneWeek.Couples.Add(creationCouple);
+                        oneWeek.AddCouple(creationCouple);
                     }
                 }
 

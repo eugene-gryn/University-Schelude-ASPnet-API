@@ -4,9 +4,9 @@ namespace ScheduleLogic.Subject.Couples
 {
     public class Subject : IEqualityComparer<Subject>
     {
-        public string Name;
         public string GoogleMeetUrl;
         public bool isPractice;
+        public string Name;
 
         public Subject(string name, bool isPractice, string googleMeetUrl = null)
         {

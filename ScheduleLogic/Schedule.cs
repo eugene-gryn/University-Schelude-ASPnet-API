@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using ScheduleLogic.Subject.Couples;
 using ScheduleLogic.User;
 using ScheduleLogic.UserLoad;
 using ScheduleLogic.UserLoad.Exception;
@@ -56,6 +58,10 @@ namespace ScheduleLogic
             {
                 throw new NotFoundProfileException(login, password);
             }
+        }
+
+        public Couple NearCouple()
+        {
         }
 
         public void Logout()
