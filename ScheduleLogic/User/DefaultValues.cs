@@ -6,7 +6,7 @@
 
         public static Settings.Settings settings = new Settings.Settings()
         {
-            NotyfiAboutCouple = true,
+            NotifyAboutCouple = true,
             NotifyBeforeCouple = true,
             NotifyAboutHomework = true, 
             NotifyAboutDeadlineHomework = true,
