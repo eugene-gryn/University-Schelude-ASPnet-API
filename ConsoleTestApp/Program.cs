@@ -1,39 +1,11 @@
-﻿using DAL.Entities;
+﻿
+using ConsoleTestApp;
+using System.Text.Json;
 
-User user = new User()
-{
-    Id = 0,
-    Login = "123123",
-    Name = "Kuk",
-    ImageLocation = "kukokkkk",
-    Password = new byte[] {0x12, 0x14, 0xFF},
-    Salt = new byte[] {0x14, 0x10, 0x00},
-    Settings =
-    {
-        NotifyAboutCouple = true,
-        NotifyBeforeCouple = true,
-        NotifyAboutHomework = true,
-        NotifyAboutDeadlineHomework = true,
-        NotifyAboutLoseDeadlineHomework = true
-    },
+string filename = "jsonFile.json";
+var User = JsonGenerator.UserGenerate();
 
-    Groups = new List<Group>()
-    {
-        new Group() { 
-            Id = 1,
-            Name = "ddd", 
-            Users = new List<User>()
-            {
+string jsonstr = JsonSerializer.Serialize(User);
+File.WriteAllText(filename, jsonstr);
+Console.WriteLine(File.ReadAllText(filename));
 
-            },
-
-
-        }
-    },
-
-    Homeworks = new List<Homework>()
-    {
-    },
-
-    IsAdmin = true
-};
