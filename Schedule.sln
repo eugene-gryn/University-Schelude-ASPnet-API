@@ -5,8 +5,6 @@ VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraryTesting", "LibraryTesting\LibraryTesting.csproj", "{B8B8D59B-876A-4ED5-B9DD-3F3CA6B59FB2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScheduleLogic", "ScheduleLogic\ScheduleLogic.csproj", "{75AEFD04-6CED-4CCC-B07B-0B5F076074E7}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DAL", "DAL\DAL.csproj", "{5D825AD5-6507-4017-A234-1A50DEABDF50}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleTestApp", "ConsoleTestApp\ConsoleTestApp.csproj", "{108D7E80-17C2-4A64-9766-CF74A6119EC2}"
@@ -21,10 +19,6 @@ Global
 		{B8B8D59B-876A-4ED5-B9DD-3F3CA6B59FB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8B8D59B-876A-4ED5-B9DD-3F3CA6B59FB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B8B8D59B-876A-4ED5-B9DD-3F3CA6B59FB2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{75AEFD04-6CED-4CCC-B07B-0B5F076074E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{75AEFD04-6CED-4CCC-B07B-0B5F076074E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{75AEFD04-6CED-4CCC-B07B-0B5F076074E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{75AEFD04-6CED-4CCC-B07B-0B5F076074E7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5D825AD5-6507-4017-A234-1A50DEABDF50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5D825AD5-6507-4017-A234-1A50DEABDF50}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5D825AD5-6507-4017-A234-1A50DEABDF50}.Release|Any CPU.ActiveCfg = Release|Any CPU
