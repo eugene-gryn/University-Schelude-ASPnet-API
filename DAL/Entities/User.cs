@@ -6,15 +6,11 @@ public class User
 {
     [Key] public int Id { get; set; }
 
-    [Required]
-    [MinLength(4)]
-    [MaxLength(20)]
-    public string Login { get; set; } = string.Empty;
+    [Required] [StringLength(20)] public string Login { get; set; } = string.Empty;
 
-    [Required]
-    [MinLength(4)]
-    [MaxLength(20)]
-    public string Name { get; set; } = string.Empty;
+    [Required] [StringLength(20)] public string Name { get; set; } = string.Empty;
+
+    [Required] public bool IsAdmin { get; set; }
 
     public string? ImageLocation { get; set; }
 
@@ -24,6 +20,7 @@ public class User
 
     [Required] public Settings Settings { get; set; } = new();
 
-    public List<Group>? Groups { get; set; }
+    [Required] [MaxLength(5)] public List<Group> Groups { get; set; } = new();
+
     public List<Homework>? Homeworks { get; set; }
 }
