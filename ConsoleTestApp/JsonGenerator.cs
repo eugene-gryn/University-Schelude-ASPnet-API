@@ -9,6 +9,8 @@ namespace ConsoleTestApp
         static Random random = new Random();
         static User user;
         static Group group;
+        static Subject subject;
+        static List<User> users;
         private static string StringGenerate(int length = 10)
         {
             const string chars =
@@ -65,7 +67,7 @@ namespace ConsoleTestApp
         }
         public static List<User> UsersGenerate()
         {
-            List<User> users = new List<User>() 
+            users = new List<User>() 
             {
                 UserGenerate(),
                 UserGenerate(),
@@ -119,7 +121,7 @@ namespace ConsoleTestApp
             group.Name = StringGenerate(10);
             group.Creator = user;
             group.Subjects = SubjectsGenerate();
-            group.Users = null;
+            group.Users = users;
             group.Couples = CouplesGenerate();
             return group;
         }
@@ -130,7 +132,7 @@ namespace ConsoleTestApp
             couple.Id = IdGenerate();
             couple.Begin = DateTime.Now;
             couple.End = DateTime.Now.AddHours(1);
-            couple.Subject = null;
+            couple.Subject = subject;
             return couple;
         }
 
@@ -142,13 +144,13 @@ namespace ConsoleTestApp
             homework.Description = StringGenerate(10);
             homework.Deadline = TimeSpan.FromHours(random.Next(10,100));
             homework.Priority = (byte)random.Next(10);
-            homework.Subject = null;
+            homework.Subject = subject;
             return homework;
         }
         /*Subject*/
         public static Subject SubjectGenerate()
         {
-            Subject subject = new Subject();    
+            subject = new Subject();    
             subject.Id = IdGenerate();
             subject.Name = StringGenerate(10);
             subject.IsPractice = BoolGenerate();
