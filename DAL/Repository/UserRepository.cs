@@ -30,15 +30,28 @@ public class UserRepository : EFRepository<User>
         return Task.FromResult(true);
     }
 
+    // TODO: глянуть удаляется ли таблицы USERS, MODERATOR
     public override async Task<bool> Delete(int id)
     {
-        await Context.DisposeAsync();
-
-        Context.Users
+        var user = await Context.Users
             .Include(user => user.Homeworks)
-            .Include(user => user.Groups);
+            .Include(user => user.Groups
+                .Select(group => group.Creator))
+            .FirstOrDefaultAsync(userQuery => userQuery.Id == id);
+
+        if (user != null)
+        {
+            Context.Users.Remove(user);
+
+            var groups = user.Groups.Where(group => group.Creator.Id == user.Id).ToList();
 
 
-        return true;
+            Context.Groups.RemoveRange(groups);
+            Context.Users.Remove(user);
+
+            return true;
+        }
+
+        return false;
     }
 }
