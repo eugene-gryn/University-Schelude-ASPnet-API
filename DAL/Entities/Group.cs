@@ -14,10 +14,10 @@ public class Group
 
     [Required] public List<Subject> Subjects { get; set; } = new();
 
-    public List<User>? Moderators { get; set; }
+    [Required] public List<User> Moderators { get; set; } = new();
 
-    public List<User>? Users { get; set; }
+    [Required] public List<User> Users { get; set; } = new();
 
-    public List<Couple>? Couples { get; set; }
+    [Required] public List<Couple> Couples { get; set; } = new();
 
 }

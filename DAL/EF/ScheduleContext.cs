@@ -22,7 +22,8 @@ public class ScheduleContext : DbContext
 
         modelBuilder.Entity<User>()
             .HasMany<Group>()
-            .WithOne(group => group.Creator);
+            .WithOne(group => group.Creator)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<User>()
             .HasMany<Group>()
