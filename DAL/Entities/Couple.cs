@@ -9,7 +9,7 @@ public class Couple
 
     [Required, DataType(DataType.DateTime)] public DateTime Begin { get; set; }
 
-    [Required] public DateTime End { get; set; }
+    [Required, DataType(DataType.DateTime)] public DateTime End { get; set; }
 
     [Required] public Subject Subject { get; set; } = new();
 }
