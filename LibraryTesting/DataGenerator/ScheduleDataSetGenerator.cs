@@ -1,6 +1,9 @@
-﻿using DAL.Entities;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using DAL.Entities;
 
-namespace ConsoleTestApp;
+namespace LibraryTesting.DataGenerator;
 
 public class ScheduleDataSetGenerator
 {
@@ -32,13 +35,13 @@ public class ScheduleDataSetGenerator
             var group = GroupGenerate(Groups.Count, user, new List<Subject>(), new List<User>(), new List<User>(),
                 new List<Couple>());
 
-            // Fill Moders
-            var moderators = Users.Where(moder => RBool() && user.Id != moder.Id);
+            // Fill Moderators
+            var moderators = Users.Where(moder => RBool() && user.Id != moder.Id).ToList();
             foreach (var moderator in moderators) moderator.Groups.Add(group);
             group.Moderators.AddRange(moderators);
 
             // Fill Users
-            var dUsers = group.Moderators.Except(Users);
+            var dUsers = group.Moderators.Except(Users).ToList();
             foreach (var dUser in dUsers) dUser.Groups.Add(group);
             group.Users.AddRange(dUsers);
 
