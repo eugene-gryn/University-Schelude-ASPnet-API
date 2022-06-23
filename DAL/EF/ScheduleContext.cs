@@ -5,15 +5,16 @@ namespace DAL.EF;
 
 public class ScheduleContext : DbContext
 {
-    public ScheduleContext(DbContextOptions<ScheduleContext> options) : base(options)
+    public ScheduleContext(ContextFactory<ScheduleContext> factory) : base(factory.CreateOptions())
     {
+
     }
 
     public DbSet<User> Users { get; set; }
     public DbSet<Group> Groups { get; set; }
     public DbSet<Couple> Couples { get; set; }
     public DbSet<Subject> Subjects { get; set; }
-    public DbSet<Homework> Homeworks { get; set; }
+    public DbSet<HomeworkTask> Homework { get; set; }
 
     private void UserModelBuild(ModelBuilder modelBuilder)
     {
@@ -35,7 +36,7 @@ public class ScheduleContext : DbContext
 
 
         modelBuilder.Entity<User>()
-            .HasMany<Homework>()
+            .HasMany<HomeworkTask>()
             .WithOne()
             .OnDelete(DeleteBehavior.Cascade);
     }
@@ -83,9 +84,9 @@ public class ScheduleContext : DbContext
         modelBuilder.Entity<Subject>()
             .HasOne<Group>();
 
-        // Homework
+        // HomeworkTask
 
-        modelBuilder.Entity<Homework>()
+        modelBuilder.Entity<HomeworkTask>()
             .HasOne<Subject>();
     }
 }

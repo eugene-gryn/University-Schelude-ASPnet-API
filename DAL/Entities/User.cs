@@ -22,5 +22,5 @@ public class User
 
     [Required] [MaxLength(5)] public List<Group> Groups { get; set; } = new();
 
-    [Required] public List<Homework> Homeworks { get; set; } = new();
+    [Required] public List<HomeworkTask> Homeworks { get; set; } = new();
 }

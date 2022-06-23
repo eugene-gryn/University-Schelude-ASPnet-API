@@ -2,7 +2,7 @@
 
 namespace DAL.Entities;
 
-public class Homework
+public class HomeworkTask
 {
     [Key] public int Id { get; set; }
 

@@ -12,7 +12,7 @@ public class ScheduleDataSetGenerator
 
     public List<Couple> Couples { get; } = new();
     public List<Group> Groups { get; } = new();
-    public List<Homework> Homework { get; } = new();
+    public List<HomeworkTask> Homework { get; } = new();
     public List<Subject> Subjects { get; } = new();
     public List<User> Users { get; } = new();
 
@@ -24,7 +24,7 @@ public class ScheduleDataSetGenerator
         Subjects.Clear();
         Users.Clear();
 
-        for (var i = 0; i < count; i++) Users.Add(UserGenerate(Users.Count, new List<Group>(), new List<Homework>()));
+        for (var i = 0; i < count; i++) Users.Add(UserGenerate(Users.Count, new List<Group>(), new List<HomeworkTask>()));
 
         // Generate owners
         foreach (var user in Users.Where(user => RBool()))
@@ -71,7 +71,7 @@ public class ScheduleDataSetGenerator
                 Couples.Add(couple);
             }
 
-            //--->Homework
+            //--->HomeworkTask
 
             var uSubj = new List<Subject>();
             user.Groups.ForEach(groupU => uSubj.AddRange(groupU.Subjects));
@@ -121,7 +121,7 @@ public class ScheduleDataSetGenerator
     #region EntityGenerators
 
     /*User*/
-    private User UserGenerate(int id, List<Group> groups, List<Homework> home)
+    private User UserGenerate(int id, List<Group> groups, List<HomeworkTask> home)
     {
         var user = new User
         {
@@ -186,10 +186,10 @@ public class ScheduleDataSetGenerator
         return couple;
     }
 
-    /*Homework*/
-    private Homework HomeworkGenerate(int id, Subject subject)
+    /*HomeworkTask*/
+    private HomeworkTask HomeworkGenerate(int id, Subject subject)
     {
-        var homework = new Homework
+        var homework = new HomeworkTask
         {
             Id = id,
             Description = RString(),
