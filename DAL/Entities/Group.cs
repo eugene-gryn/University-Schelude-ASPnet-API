@@ -10,7 +10,7 @@ public class Group
     [StringLength(50)]
     public string Name { get; set; } = string.Empty;
 
-    [Required] public User Creator { get; set; } = new();
+    [Required] public User? Creator { get; set; } = new();
 
     [Required] public List<Subject> Subjects { get; set; } = new();
 
