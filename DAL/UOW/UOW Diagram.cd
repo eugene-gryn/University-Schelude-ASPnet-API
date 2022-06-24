@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="DAL.UOW.EfUnitOfWork">
+    <Position X="3.5" Y="1.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>CAAAAOgAACAEBAAAAAAABIAAACAAAIAAAAAAAQAAAAA=</HashCode>
+      <FileName>UOW\EFUnitOfWork.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="DAL.UOW.IUnitOfWork">
+    <Position X="0.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAOgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAA=</HashCode>
+      <FileName>UOW\IUnitOfWork.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
