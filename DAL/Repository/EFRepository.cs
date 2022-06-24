@@ -15,9 +15,4 @@ public abstract class EFRepository<TEntity> : IRepository<TEntity>
     public abstract IQueryable<TEntity> Read();
     public abstract Task<bool> Update(TEntity item);
     public abstract Task<bool> Delete(int id);
-
-    public virtual async Task<bool> SaveChanges()
-    {
-        return await Context.SaveChangesAsync() != 0;
-    }
 }
