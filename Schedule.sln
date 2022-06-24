@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleTestApp", "ConsoleTe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraryTesting", "LibraryTesting\LibraryTesting.csproj", "{C59C04D2-3A3D-498C-A1FC-4D7C0729762C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BLL", "BLL\BLL.csproj", "{29EB23F6-2E80-4222-95A8-F2C6AC2B2A73}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{C59C04D2-3A3D-498C-A1FC-4D7C0729762C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C59C04D2-3A3D-498C-A1FC-4D7C0729762C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C59C04D2-3A3D-498C-A1FC-4D7C0729762C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29EB23F6-2E80-4222-95A8-F2C6AC2B2A73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29EB23F6-2E80-4222-95A8-F2C6AC2B2A73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29EB23F6-2E80-4222-95A8-F2C6AC2B2A73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29EB23F6-2E80-4222-95A8-F2C6AC2B2A73}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
