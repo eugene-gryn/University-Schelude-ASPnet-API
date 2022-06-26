@@ -64,10 +64,12 @@ Takes two numbers and returns the sum.
 ### DAL - слой доступа до данных 
 
 ![Screenshoot](https://raw.githubusercontent.com/eugene-gryn/University-Sheldue-TG-bot/changes/Diagrms/DAL.png)
+
 Рис. Диаграмма классов DAL. Тут использованны паттерны Repository, UOW
 и сделанная фабрика на все опции подключения к БД
 
 ![App](https://raw.githubusercontent.com/eugene-gryn/University-Sheldue-TG-bot/changes/Diagrms/Models.png)
+
 Рис. Тут изображена диаграмма моделей классов проекта.
 Пользователь может иметь несколько групп, каждая группа имеет свое расписание и предметы.
 Пользователь имеет свое личное домашнее задание, которое ссылается на предмет из определенной
@@ -79,6 +81,7 @@ Takes two numbers and returns the sum.
 
 
 ![App Screenshot](https://raw.githubusercontent.com/eugene-gryn/University-Sheldue-TG-bot/changes/Diagrms/EF.png)
+
 Рис. Тут основное внимание стоит сфокусировать на т.н "Фабрику опций", которая имеет
 абстрактный класс, который конфигурирует различные способы подключения к БАЗЕ Данных
 в любом из слоев возможно наследование от этого класса, чтобы настроить опции под определенный
