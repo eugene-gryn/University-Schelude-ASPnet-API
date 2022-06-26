@@ -6,9 +6,9 @@ public class Group
 {
     [Key] public int Id { get; set; }
 
-    [Required]
-    [StringLength(50)]
-    public string Name { get; set; } = string.Empty;
+    [Required] [StringLength(50)] public string Name { get; set; } = string.Empty;
+
+    [Required] public bool PrivateType { get; set; }
 
     [Required] public User? Creator { get; set; } = new();
 
@@ -19,5 +19,4 @@ public class Group
     [Required] public List<User> Users { get; set; } = new();
 
     [Required] public List<Couple> Couples { get; set; } = new();
-
 }

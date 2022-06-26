@@ -164,6 +164,7 @@ public class ScheduleDataSetGenerator
         {
             Id = id,
             Name = RString(),
+            PrivateType = RBool(),
             Creator = creator,
             Subjects = subj,
             Users = users,

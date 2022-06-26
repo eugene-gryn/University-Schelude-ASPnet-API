@@ -6,7 +6,7 @@ public class HomeworkTask
 {
     [Key] public int Id { get; set; }
 
-    [MaxLength(50)] public string? Description { get; set; }
+    [MaxLength(1000)] public string? Description { get; set; }
 
     [Required, DataType(DataType.DateTime)] public TimeSpan Deadline { get; set; }
 
