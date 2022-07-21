@@ -2,15 +2,15 @@
 using DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace DAL.Repository;
+namespace DAL.Repository.User;
 
-public class UserRepository : EFRepository<User>
+public class UserRepository : EFRepository<Entities.User>
 {
     public UserRepository(ScheduleContext context) : base(context)
     {
     }
 
-    public override async Task<User> Create(User item)
+    public override async Task<Entities.User> Create(Entities.User item)
     {
         item.Id = 0;
         item.IsAdmin = false;
@@ -19,12 +19,7 @@ public class UserRepository : EFRepository<User>
         return item;
     }
 
-    public override IQueryable<User> Read()
-    {
-        return Context.Users.AsQueryable();
-    }
-
-    public override Task<bool> Update(User item)
+    public override Task<bool> Update(Entities.User item)
     {
         Context.Entry(item).State = EntityState.Modified;
         return Task.FromResult(true);

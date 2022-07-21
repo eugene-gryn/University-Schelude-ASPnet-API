@@ -2,7 +2,7 @@
 using DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace DAL.Repository;
+namespace DAL.Repository.Group;
 
 public class GroupsRepository : EFRepository<Group>
 {

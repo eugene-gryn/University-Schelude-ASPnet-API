@@ -2,7 +2,7 @@
 
 namespace DAL.Repository;
 
-public abstract class EFRepository<TEntity> : IRepository<TEntity>
+public abstract class EFRepository<TEntity> : IRepository<TEntity> where TEntity : class
 {
     protected ScheduleContext Context;
 
@@ -12,7 +12,11 @@ public abstract class EFRepository<TEntity> : IRepository<TEntity>
     }
 
     public abstract Task<TEntity> Create(TEntity item);
-    public abstract IQueryable<TEntity> Read();
+
+    public virtual IQueryable<TEntity> Read()
+    {
+        return Context.Set<TEntity>().AsQueryable();
+    }
     public abstract Task<bool> Update(TEntity item);
     public abstract Task<bool> Delete(int id);
 }

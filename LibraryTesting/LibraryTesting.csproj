@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="CRUD Services Testing\" />
+    <Folder Include="Repository Operation Testing\" />
   </ItemGroup>
 
   <ItemGroup>

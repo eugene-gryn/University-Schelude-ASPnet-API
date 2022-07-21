@@ -7,29 +7,29 @@ using DAL.EF;
 using DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace DAL.Repository
+namespace DAL.Repository.Homework
 {
-    public class SubjectsRepository : EFRepository<Subject>
+    public class HomeworkRepository : EFRepository<HomeworkTask>
     {
-        public SubjectsRepository(ScheduleContext context) : base(context)
+        public HomeworkRepository(ScheduleContext context) : base(context)
         {
         }
 
-        public override async Task<Subject> Create(Subject item)
+        public override async Task<HomeworkTask> Create(HomeworkTask item)
         {
             item.Id = 0;
 
-            await Context.Subjects.AddAsync(item);
+            await Context.Homework.AddAsync(item);
 
             return item;
         }
 
-        public override IQueryable<Subject> Read()
+        public override IQueryable<HomeworkTask> Read()
         {
-            return Context.Subjects.AsQueryable();
+            return Context.Homework.AsQueryable();
         }
 
-        public override Task<bool> Update(Subject item)
+        public override Task<bool> Update(HomeworkTask item)
         {
             Context.Entry(item).State = EntityState.Modified;
 
@@ -38,11 +38,12 @@ namespace DAL.Repository
 
         public override async Task<bool> Delete(int id)
         {
-            var item = await Context.Subjects.Where(subject => subject.Id == id).FirstOrDefaultAsync();
+            var item = await Context.Homework.Where(task => task.Id == id).FirstOrDefaultAsync();
 
             if (item != null)
             {
-                Context.Subjects.Remove(item);
+                Context.Homework.Remove(item);
+
                 return true;
             }
 
