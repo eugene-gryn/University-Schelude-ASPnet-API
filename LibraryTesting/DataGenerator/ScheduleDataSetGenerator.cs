@@ -16,7 +16,7 @@ public class ScheduleDataSetGenerator
     public List<Subject> Subjects { get; } = new();
     public List<User> Users { get; } = new();
 
-    public List<User> RUsersAdd(int count)
+    public List<User> RGenerate(int count)
     {
         Couples.Clear();
         Groups.Clear();
@@ -86,6 +86,15 @@ public class ScheduleDataSetGenerator
         }
 
         return Users;
+    }
+
+    public void Clear()
+    {
+        Couples.Clear();
+        Groups.Clear();
+        Homework.Clear();
+        Subjects.Clear();
+        Users.Clear();
     }
 
     #region DataGenerators

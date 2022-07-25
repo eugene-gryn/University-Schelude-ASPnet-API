@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repository.Homework
 {
-    public class HomeworkRepository : EFRepository<HomeworkTask>
+    public class HomeworkRepository : EFRepository<HomeworkTask>, IHomeworkRepository
     {
         public HomeworkRepository(ScheduleContext context) : base(context)
         {
@@ -48,6 +48,26 @@ namespace DAL.Repository.Homework
             }
 
             return false;
+        }
+
+        public Task<bool> SetDescription(int id, string description)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> SetDeadline(int id, DateTime deadline)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> SetSubject(int id, int subjectId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> SetPriority(int id, byte priority)
+        {
+            throw new NotImplementedException();
         }
     }
 }

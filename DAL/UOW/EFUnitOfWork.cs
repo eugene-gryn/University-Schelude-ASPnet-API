@@ -1,6 +1,11 @@
 ﻿using DAL.EF;
 using DAL.Entities;
 using DAL.Repository;
+using DAL.Repository.Couple;
+using DAL.Repository.Group;
+using DAL.Repository.Homework;
+using DAL.Repository.Subject;
+using DAL.Repository.User;
 
 namespace DAL.UOW;
 
@@ -8,28 +13,27 @@ public class EfUnitOfWork : IUnitOfWork
 {
     private readonly ScheduleContext _context;
 
-    private IRepository<Couple>? _couples;
+    private ICoupleRepository? _couples;
     private bool _disposed;
 
-    private IRepository<Group>? _groups;
+    private IGroupRepository? _groups;
 
-    private IRepository<HomeworkTask>? _homework;
+    private IHomeworkRepository? _homework;
 
-    private IRepository<Subject>? _subjects;
+    private ISubjectRepository? _subjects;
 
-    private IRepository<User>? _users;
+    private IUserRepository? _users;
 
     public EfUnitOfWork(ScheduleContext context)
     {
         _context = context;
     }
 
-    public IRepository<User> Users => _users ??= new UserRepository(_context);
-    public IRepository<Group> Groups => _groups ??= new GroupsRepository(_context);
-    public IRepository<Couple> Couples => _couples ??= new CouplesRepository(_context);
-    public IRepository<Subject> Subjects => _subjects ??= new SubjectsRepository(_context);
-
-    public IRepository<HomeworkTask> Homework => _homework ??= new HomeworkRepository(_context);
+    public IUserRepository Users => _users ??= new UserRepository(_context);
+    public IGroupRepository Groups => _groups ??= new GroupsRepository(_context);
+    public ICoupleRepository Couples => _couples ??= new CouplesRepository(_context);
+    public ISubjectRepository Subjects => _subjects ??= new SubjectsRepository(_context);
+    public IHomeworkRepository Homework => _homework ??= new HomeworkRepository(_context);
 
     public async void Save()
     {

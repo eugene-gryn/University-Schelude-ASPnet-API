@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repository.Group;
 
-public class GroupsRepository : EFRepository<Group>
+public class GroupsRepository : EFRepository<Entities.Group>, IGroupRepository
 {
     public GroupsRepository(ScheduleContext context) : base(context)
     {
     }
 
-    public override async Task<Group> Create(Group item)
+    public override async Task<Entities.Group> Create(Entities.Group item)
     {
         item.Id = 0;
         item.Moderators.Clear();
@@ -20,12 +20,12 @@ public class GroupsRepository : EFRepository<Group>
         return item;
     }
 
-    public override IQueryable<Group> Read()
+    public override IQueryable<Entities.Group> Read()
     {
         return Context.Groups.AsQueryable();
     }
 
-    public override async Task<bool> Update(Group item)
+    public override async Task<bool> Update(Entities.Group item)
     {
         // MAYBE: Update(item)
 
@@ -51,5 +51,65 @@ public class GroupsRepository : EFRepository<Group>
         }
 
         return false;
+    }
+
+    public Task<bool> AddUser(int groupId, int userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> RemoveUser(int groupId, int userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Entities.Couple> GetCouple(int groupId, int coupleId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Entities.Couple> NearCouple(int groupId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<List<Entities.Couple>> TodayCouples(int groupId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Entities.Group> GetFullGroup(int groupId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> SetNewCreator(int groupId, int userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> AddModerator(int groupId, int userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> RemoveModerator(int groupId, int userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> SetName(int groupId, string name)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> SetPrivacy(int groupId, bool privacy)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> AddHomeworkTask(int groupId, HomeworkTask task)
+    {
+        throw new NotImplementedException();
     }
 }

@@ -1,15 +1,18 @@
-﻿using DAL.Entities;
-using DAL.Repository;
+﻿using DAL.Repository.Couple;
+using DAL.Repository.Group;
+using DAL.Repository.Homework;
+using DAL.Repository.Subject;
+using DAL.Repository.User;
 
 namespace DAL.UOW;
 
 public interface IUnitOfWork : IDisposable
 {
-    IRepository<User> Users { get; }
-    IRepository<Group> Groups { get; }
-    IRepository<Couple> Couples { get; }
-    IRepository<Subject> Subjects { get; }
-    IRepository<HomeworkTask> Homework { get; }
+    IUserRepository Users { get; }
+    IGroupRepository Groups { get; }
+    ICoupleRepository Couples { get; }
+    ISubjectRepository Subjects { get; }
+    IHomeworkRepository Homework { get; }
 
     void Save();
 }

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repository.User;
 
-public class UserRepository : EFRepository<Entities.User>
+public class UserRepository : EFRepository<Entities.User>, IUserRepository
 {
     public UserRepository(ScheduleContext context) : base(context)
     {
@@ -43,5 +43,35 @@ public class UserRepository : EFRepository<Entities.User>
         }
 
         return false;
+    }
+
+    public Task<bool> SetName(int id, string name)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> SetPicture(int id, string picUrl)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> SetPassword(int id, byte[] password, byte[] salt)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> MakeAdmin(int id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> RemoveAdmin(int id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> SetSettings(int id, Settings settings)
+    {
+        throw new NotImplementedException();
     }
 }

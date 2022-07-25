@@ -9,13 +9,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repository.Subject
 {
-    public class SubjectsRepository : EFRepository<Subject>
+    public class SubjectsRepository : EFRepository<Entities.Subject>, ISubjectRepository
     {
         public SubjectsRepository(ScheduleContext context) : base(context)
         {
         }
 
-        public override async Task<Subject> Create(Subject item)
+        public override async Task<Entities.Subject> Create(Entities.Subject item)
         {
             item.Id = 0;
 
@@ -24,12 +24,12 @@ namespace DAL.Repository.Subject
             return item;
         }
 
-        public override IQueryable<Subject> Read()
+        public override IQueryable<Entities.Subject> Read()
         {
             return Context.Subjects.AsQueryable();
         }
 
-        public override Task<bool> Update(Subject item)
+        public override Task<bool> Update(Entities.Subject item)
         {
             Context.Entry(item).State = EntityState.Modified;
 
@@ -47,6 +47,11 @@ namespace DAL.Repository.Subject
             }
 
             return false;
+        }
+
+        public Task<bool> RemoveAll(int groupId)
+        {
+            throw new NotImplementedException();
         }
     }
 }
