@@ -88,6 +88,20 @@ public class ScheduleDataSetGenerator
         return Users;
     }
 
+    public User RUser()
+    {
+        return UserGenerate(0, new List<Group>(), new List<HomeworkTask>());
+    }
+
+    public List<User> RUserList(int count)
+    {
+        var users = new List<User>(count);
+
+        for (int i = 0; i < users.Capacity; i++) users.Add(RUser());
+
+        return users;
+    }
+
     public void Clear()
     {
         Couples.Clear();
@@ -128,7 +142,7 @@ public class ScheduleDataSetGenerator
     #endregion
 
     #region EntityGenerators
-
+    
     /*User*/
     private User UserGenerate(int id, List<Group> groups, List<HomeworkTask> home)
     {

@@ -10,7 +10,7 @@ public class GroupsRepository : EFRepository<Entities.Group>, IGroupRepository
     {
     }
 
-    public override async Task<Entities.Group> Create(Entities.Group item)
+    public override async Task<Entities.Group> Add(Entities.Group item)
     {
         item.Id = 0;
         item.Moderators.Clear();
@@ -18,6 +18,11 @@ public class GroupsRepository : EFRepository<Entities.Group>, IGroupRepository
         await Context.AddAsync(item);
 
         return item;
+    }
+
+    public override Task<bool> AddRange(IEnumerable<Entities.Group> entities)
+    {
+        throw new NotImplementedException();
     }
 
     public override IQueryable<Entities.Group> Read()

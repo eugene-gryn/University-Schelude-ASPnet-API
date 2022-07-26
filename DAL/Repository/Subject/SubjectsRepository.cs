@@ -15,13 +15,18 @@ namespace DAL.Repository.Subject
         {
         }
 
-        public override async Task<Entities.Subject> Create(Entities.Subject item)
+        public override async Task<Entities.Subject> Add(Entities.Subject item)
         {
             item.Id = 0;
 
             await Context.Subjects.AddAsync(item);
 
             return item;
+        }
+
+        public override Task<bool> AddRange(IEnumerable<Entities.Subject> entities)
+        {
+            throw new NotImplementedException();
         }
 
         public override IQueryable<Entities.Subject> Read()

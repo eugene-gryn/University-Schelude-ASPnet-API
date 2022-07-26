@@ -20,7 +20,11 @@ public class BaseTest
     [SetUp]
     protected void EveryTimeSetUp()
     {
-        _uow = new EfUnitOfWork(new ScheduleContext(new ScheduleInMemoryDbFactory()));
+        var context = new ScheduleContext(new ScheduleInMemoryDbFactory());
+        _uow = new EfUnitOfWork(context);
+
+        context.Database.EnsureDeleted();
+        context.Database.EnsureCreated();
     }
 
     [TearDown]

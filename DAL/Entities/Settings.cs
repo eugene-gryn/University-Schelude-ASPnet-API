@@ -4,13 +4,13 @@ namespace DAL.Entities;
 
 public class Settings
 {
-    [Required] public bool NotifyBeforeCouple { get; set; }
+    public bool NotifyBeforeCouple { get; set; } = true;
 
-    [Required] public bool NotifyAboutCouple { get; set; }
+    public bool NotifyAboutCouple { get; set; } = true;
 
-    [Required] public bool NotifyAboutHomework { get; set; }
+    public bool NotifyAboutHomework { get; set; } = true;
 
-    [Required] public bool NotifyAboutDeadlineHomework { get; set; }
+    public bool NotifyAboutDeadlineHomework { get; set; } = true;
 
-    [Required] public bool NotifyAboutLoseDeadlineHomework { get; set; }
+    public bool NotifyAboutLoseDeadlineHomework { get; set; } = true;
 }

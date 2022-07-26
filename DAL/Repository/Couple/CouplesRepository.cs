@@ -10,13 +10,18 @@ public class CouplesRepository : EFRepository<Entities.Couple>, ICoupleRepositor
     {
     }
 
-    public override async Task<Entities.Couple> Create(Entities.Couple item)
+    public override async Task<Entities.Couple> Add(Entities.Couple item)
     {
         item.Id = 0;
 
         await Context.Couples.AddAsync(item);
 
         return item;
+    }
+
+    public override Task<bool> AddRange(IEnumerable<Entities.Couple> entities)
+    {
+        throw new NotImplementedException();
     }
 
     public override Task<bool> Update(Entities.Couple item)
