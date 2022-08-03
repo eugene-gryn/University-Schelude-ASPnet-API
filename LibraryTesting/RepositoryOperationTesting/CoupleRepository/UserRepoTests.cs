@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using DAL.Entities;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 
 namespace LibraryTesting.RepositoryOperationTesting.CoupleRepository;
@@ -10,28 +12,58 @@ namespace LibraryTesting.RepositoryOperationTesting.CoupleRepository;
 public class UserRepoTests : BaseRepositoryTest
 {
     [Test]
-    public void UserCreationWithoutDependencies_SuccessfulAdd()
+    public async Task UserCreation_Successful()
     {
-        var user = Generator.RUser();
+        CreateUser();
+        var user = Generator.Users.FirstOrDefault();
 
-
-        Uow.Users.Add(user);
+        var result = await Uow.Users.Add(user);
         Uow.Save();
 
-        Uow.Users.Read().Count().Should().Be(1);
-        Uow.Users.Read().First().Name.Should().Be(user.Name);
+        result.Should().Be(true);
+        Uow.Users.Read().Count().Should().Be(Generator.Users.Count);
     }
 
     [Test]
-    public void RangeUserCreationWithoutDependencies_SuccessfulAdd()
+    public async Task UserNotEmptyCreation_UnSuccessful()
     {
-        int USERS_COUNT = 4;
-        var users = Generator.RUserList(USERS_COUNT);
+        Generator.RGenerate(2);
+        var user = Generator.Users.FirstOrDefault();
 
-
-        Uow.Users.AddRange(users);
+        var result = await Uow.Users.Add(user);
         Uow.Save();
 
-        Uow.Users.Read().Count().Should().Be(USERS_COUNT);
+        result.Should().Be(false);
+        Uow.Users.Read().Count().Should().Be(0);
+    }
+
+    [Test]
+    public async Task RangeUserCreationWithoutDependencies_Successful()
+    {
+        int USERS_COUNT = 4;
+        CreateUsers(4);
+
+        var result = await Uow.Users.AddRange(Generator.Users);
+        Uow.Save();
+
+        result.Should().Be(true);
+        Uow.Users.Read().Count().Should().Be(Generator.Users.Count);
+    }
+
+    [Test]
+    public async Task UpdateUser_Successful()
+    {
+        await UserCreation_Successful();
+        var user = await Uow.Users.Read().FirstOrDefaultAsync();
+        var newName = "Team Kuk";
+
+
+        user.Name = newName;
+        var result = await Uow.Users.Update(user);
+        var newUser = await Uow.Users.Read().FirstOrDefaultAsync(userF => userF.Id == user.Id);
+
+        result.Should().Be(true);
+        newUser.Should().NotBeNull();
+        newUser.Name.Should().Be(user.Name);
     }
 }

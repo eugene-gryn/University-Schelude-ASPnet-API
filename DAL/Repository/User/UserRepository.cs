@@ -1,8 +1,5 @@
 ﻿using DAL.EF;
 using DAL.Entities;
-using DAL.Repository.Couple;
-using DAL.Repository.Group;
-using DAL.Repository.Homework;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repository.User;
@@ -11,24 +8,27 @@ public class UserRepository : EFRepository<Entities.User>, IUserRepository
 {
     public UserRepository(ScheduleContext context) : base(context)
     {
-
     }
 
-    public override async Task<Entities.User> Add(Entities.User item)
+    public override async Task<bool> Add(Entities.User item)
     {
         item.Id = 0;
         item.IsAdmin = false;
 
+        if (item.Groups.Any() && item.Homeworks.Any()) return false;
+
         await Context.Users.AddAsync(item);
-        return item;
+        return true;
     }
 
     public override async Task<bool> AddRange(IEnumerable<Entities.User> entities)
     {
-        foreach (var user in entities)
+        foreach (var item in entities)
         {
-            user.Id = 0;
-            user.IsAdmin = false;
+            item.Id = 0;
+            item.IsAdmin = false;
+
+            if (item.Groups.Any() && item.Homeworks.Any()) return false;
         }
 
         await Context.Users.AddRangeAsync(entities);

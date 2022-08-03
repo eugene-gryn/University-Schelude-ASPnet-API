@@ -10,13 +10,13 @@ public class CouplesRepository : EFRepository<Entities.Couple>, ICoupleRepositor
     {
     }
 
-    public override async Task<Entities.Couple> Add(Entities.Couple item)
+    public override async Task<bool> Add(Entities.Couple item)
     {
         item.Id = 0;
 
         await Context.Couples.AddAsync(item);
 
-        return item;
+        return true;
     }
 
     public override Task<bool> AddRange(IEnumerable<Entities.Couple> entities)

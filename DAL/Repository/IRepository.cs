@@ -2,7 +2,7 @@
 
 public interface IRepository<TEntity>
 {
-    Task<TEntity> Add(TEntity item);
+    Task<bool> Add(TEntity item);
     Task<bool> AddRange (IEnumerable<TEntity> entities);
     IQueryable<TEntity> Read();
     Task<bool> Update(TEntity item);

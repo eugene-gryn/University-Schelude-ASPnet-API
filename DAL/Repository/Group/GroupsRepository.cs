@@ -10,14 +10,14 @@ public class GroupsRepository : EFRepository<Entities.Group>, IGroupRepository
     {
     }
 
-    public override async Task<Entities.Group> Add(Entities.Group item)
+    public override async Task<bool> Add(Entities.Group item)
     {
         item.Id = 0;
         item.Moderators.Clear();
 
         await Context.AddAsync(item);
 
-        return item;
+        return false;
     }
 
     public override Task<bool> AddRange(IEnumerable<Entities.Group> entities)

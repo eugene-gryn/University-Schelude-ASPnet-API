@@ -15,13 +15,13 @@ namespace DAL.Repository.Homework
         {
         }
 
-        public override async Task<HomeworkTask> Add(HomeworkTask item)
+        public override async Task<bool> Add(HomeworkTask item)
         {
             item.Id = 0;
 
             await Context.Homework.AddAsync(item);
 
-            return item;
+            return true;
         }
 
         public override Task<bool> AddRange(IEnumerable<HomeworkTask> entities)

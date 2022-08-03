@@ -18,7 +18,7 @@ public class BaseTest
     public IUnitOfWork Uow => _uow;
 
     [SetUp]
-    protected void EveryTimeSetUp()
+    protected virtual void EveryTimeSetUp()
     {
         var context = new ScheduleContext(new ScheduleInMemoryDbFactory());
         _uow = new EfUnitOfWork(context);
@@ -28,7 +28,7 @@ public class BaseTest
     }
 
     [TearDown]
-    protected void EveryTimeTearDown()
+    protected virtual void EveryTimeTearDown()
     {
         _uow.Dispose();
     }

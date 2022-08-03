@@ -93,7 +93,7 @@ public class ScheduleDataSetGenerator
         return UserGenerate(0, new List<Group>(), new List<HomeworkTask>());
     }
 
-    public List<User> RUserList(int count)
+    public List<User> RUsers(int count)
     {
         var users = new List<User>(count);
 
@@ -144,7 +144,7 @@ public class ScheduleDataSetGenerator
     #region EntityGenerators
     
     /*User*/
-    private User UserGenerate(int id, List<Group> groups, List<HomeworkTask> home)
+    public User UserGenerate(int id, List<Group> groups, List<HomeworkTask> home)
     {
         var user = new User
         {
@@ -165,7 +165,7 @@ public class ScheduleDataSetGenerator
     }
 
     /*Setting*/
-    private Settings RSettings()
+    public Settings RSettings()
     {
         var settings = new Settings
         {
@@ -180,7 +180,7 @@ public class ScheduleDataSetGenerator
     }
 
     /*Group*/
-    private Group GroupGenerate(int id, User creator, List<Subject> subj, List<User> users, List<User> moderator,
+    public Group GroupGenerate(int id, User creator, List<Subject> subj, List<User> users, List<User> moderator,
         List<Couple> couples)
     {
         var group = new Group
@@ -198,7 +198,7 @@ public class ScheduleDataSetGenerator
     }
 
     /*Coupe*/
-    private Couple CoupleGenerate(int id, Subject subject)
+    public Couple CoupleGenerate(int id, Subject subject)
     {
         var couple = new Couple
         {
@@ -211,7 +211,7 @@ public class ScheduleDataSetGenerator
     }
 
     /*HomeworkTask*/
-    private HomeworkTask HomeworkGenerate(int id, Subject subject)
+    public HomeworkTask HomeworkGenerate(int id, Subject subject)
     {
         var homework = new HomeworkTask
         {
@@ -225,7 +225,7 @@ public class ScheduleDataSetGenerator
     }
 
     /*Subject*/
-    private Subject SubjectGenerate(int id, Group group)
+    public Subject SubjectGenerate(int id, Group group)
     {
         var subject = new Subject
         {

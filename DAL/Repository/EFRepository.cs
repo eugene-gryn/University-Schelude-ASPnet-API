@@ -11,7 +11,7 @@ public abstract class EFRepository<TEntity> : IRepository<TEntity> where TEntity
         Context = context;
     }
 
-    public abstract Task<TEntity> Add(TEntity item);
+    public abstract Task<bool> Add(TEntity item);
     public abstract Task<bool> AddRange(IEnumerable<TEntity> entities);
 
     public virtual IQueryable<TEntity> Read()
