@@ -14,12 +14,29 @@ public class CouplesRepository : EFRepository<Entities.Couple>, ICoupleRepositor
     {
         item.Id = 0;
 
+        // TODO VALIDATIONS
+
         await Context.Couples.AddAsync(item);
 
         return true;
     }
 
-    public override Task<bool> AddRange(IEnumerable<Entities.Couple> entities)
+    public override async Task<bool> AddRange(IEnumerable<Entities.Couple> entities)
+    {
+        var list = entities as Entities.Couple[] ?? entities.ToArray();
+        foreach (var item in list)
+        {
+            item.Id = 0;
+
+            // TODO VALIDATIONS
+        }
+
+        await Context.Couples.AddRangeAsync(list);
+
+        return true;
+    }
+
+    public override IQueryable<Entities.Couple> ReadById(int id)
     {
         throw new NotImplementedException();
     }

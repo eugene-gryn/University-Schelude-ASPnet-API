@@ -24,14 +24,29 @@ namespace DAL.Repository.Subject
             return true;
         }
 
-        public override Task<bool> AddRange(IEnumerable<Entities.Subject> entities)
+        public override async Task<bool> AddRange(IEnumerable<Entities.Subject> entities)
         {
-            throw new NotImplementedException();
+            var list = entities as Entities.Subject[] ?? entities.ToArray();
+            foreach (var item in list)
+            {
+                item.Id = 0;
+
+                // TODO VALIDATIONS
+            }
+
+            await Context.Subjects.AddRangeAsync(list);
+
+            return true;
         }
 
         public override IQueryable<Entities.Subject> Read()
         {
             return Context.Subjects.AsQueryable();
+        }
+
+        public override IQueryable<Entities.Subject> ReadById(int id)
+        {
+            throw new NotImplementedException();
         }
 
         public override Task<bool> Update(Entities.Subject item)

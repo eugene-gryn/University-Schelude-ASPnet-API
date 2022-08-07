@@ -19,6 +19,8 @@ public abstract class EFRepository<TEntity> : IRepository<TEntity> where TEntity
         return Context.Set<TEntity>().AsQueryable();
     }
 
+    public abstract IQueryable<TEntity> ReadById(int id);
+
     public abstract Task<bool> Update(TEntity item);
     public abstract Task<bool> Delete(int id);
 }

@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using DAL.Entities;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
@@ -12,7 +10,7 @@ namespace LibraryTesting.RepositoryOperationTesting.CoupleRepository;
 public class UserRepoTests : BaseRepositoryTest
 {
     [Test]
-    public async Task UserCreation_Successful()
+    public async Task Creation_Successful()
     {
         CreateUser();
         var user = Generator.Users.FirstOrDefault();
@@ -25,9 +23,9 @@ public class UserRepoTests : BaseRepositoryTest
     }
 
     [Test]
-    public async Task UserNotEmptyCreation_UnSuccessful()
+    public async Task NotEmptyCreation_UnSuccessful()
     {
-        Generator.RGenerate(2);
+        Generator.RDataSet(5);
         var user = Generator.Users.FirstOrDefault();
 
         var result = await Uow.Users.Add(user);
@@ -38,10 +36,10 @@ public class UserRepoTests : BaseRepositoryTest
     }
 
     [Test]
-    public async Task RangeUserCreationWithoutDependencies_Successful()
+    public async Task RangeCreationWithoutDependencies_Successful()
     {
-        int USERS_COUNT = 4;
-        CreateUsers(4);
+        var USERS_COUNT = 4;
+        CreateUser(USERS_COUNT);
 
         var result = await Uow.Users.AddRange(Generator.Users);
         Uow.Save();
@@ -51,12 +49,11 @@ public class UserRepoTests : BaseRepositoryTest
     }
 
     [Test]
-    public async Task UpdateUser_Successful()
+    public async Task Update_Successful()
     {
-        await UserCreation_Successful();
+        await Creation_Successful();
         var user = await Uow.Users.Read().FirstOrDefaultAsync();
         var newName = "Team Kuk";
-
 
         user.Name = newName;
         var result = await Uow.Users.Update(user);
@@ -64,6 +61,6 @@ public class UserRepoTests : BaseRepositoryTest
 
         result.Should().Be(true);
         newUser.Should().NotBeNull();
-        newUser.Name.Should().Be(user.Name);
+        newUser!.Name.Should().Be(user.Name);
     }
 }

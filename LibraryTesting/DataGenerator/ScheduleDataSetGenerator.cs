@@ -16,7 +16,7 @@ public class ScheduleDataSetGenerator
     public List<Subject> Subjects { get; } = new();
     public List<User> Users { get; } = new();
 
-    public List<User> RGenerate(int count)
+    public List<User> RDataSet(int count)
     {
         Couples.Clear();
         Groups.Clear();

@@ -24,14 +24,29 @@ namespace DAL.Repository.Homework
             return true;
         }
 
-        public override Task<bool> AddRange(IEnumerable<HomeworkTask> entities)
+        public override async Task<bool> AddRange(IEnumerable<HomeworkTask> entities)
         {
-            throw new NotImplementedException();
+            var list = entities as Entities.HomeworkTask[] ?? entities.ToArray();
+            foreach (var item in list)
+            {
+                item.Id = 0;
+
+                // TODO VALIDATIONS
+            }
+
+            await Context.Homework.AddRangeAsync(list);
+
+            return true;
         }
 
         public override IQueryable<HomeworkTask> Read()
         {
             return Context.Homework.AsQueryable();
+        }
+
+        public override IQueryable<HomeworkTask> ReadById(int id)
+        {
+            throw new NotImplementedException();
         }
 
         public override Task<bool> Update(HomeworkTask item)
