@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using DAL.Entities;
 using FluentAssertions;
 using LibraryTesting.DataGenerator;
+using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 
 namespace LibraryTesting.RepositoryOperationTesting;
@@ -77,19 +78,57 @@ public class BaseRepositoryTest : BaseTest
     [Test]
     public async Task FullLoadDataSet_CorrectLoading()
     {
-        var countUser = 10;
+        var countUser = 20;
 
         await LoadRandomDataSet(countUser);
 
         Uow.Users.Read().Count().Should().Be(Generator.Users.Count);
         CollectionAssert.AreEquivalent(
-            Generator.Users.Select(user => user.Id),
-            Uow.Users.Read().Select(user => user.Id));
+            Generator.Users.Select(item => item.Id),
+            Uow.Users.Read().Select(item => item.Id));
 
         Uow.Groups.Read().Count().Should().Be(Generator.Groups.Count);
-        Uow.Homework.Read().Count().Should().Be(Generator.Homework.Count);
-        Uow.Couples.Read().Count().Should().Be(Generator.Couples.Count);
+        CollectionAssert.AreEquivalent(
+            Generator.Groups.Select(item => item.Id),
+            Uow.Groups.Read().Select(item => item.Id));
+
         Uow.Subjects.Read().Count().Should().Be(Generator.Subjects.Count);
+        CollectionAssert.AreEquivalent(
+            Generator.Subjects.Select(item => item.Id),
+            Uow.Subjects.Read().Select(item => item.Id));
+
+        Uow.Couples.Read().Count().Should().Be(Generator.Couples.Count);
+        CollectionAssert.AreEquivalent(
+            Generator.Couples.Select(item => item.Id),
+            Uow.Couples.Read().Select(item => item.Id));
+
+        Uow.Homework.Read().Count().Should().Be(Generator.Homework.Count);
+        CollectionAssert.AreEquivalent(
+            Generator.Homework.Select(item => item.Id),
+            Uow.Homework.Read().Select(item => item.Id));
+
+        Uow.Users.Read()
+            .Include(user => user.Homeworks)
+            .ToList()
+            .Any(item => item.Homeworks.Count > 0).Should().BeTrue();
+
+        Uow.Users.Read()
+            .Include(user => user.Groups)
+            .ToList()
+            .Any(user => user.Groups.Count > 0).Should().BeTrue();
+
+        Uow.Groups.Read()
+            .Include(item => item.Creator)
+            .Include(item => item.Users)
+            .Include(item => item.Moderators)
+            .Include(item => item.Subjects)
+            .Include(item => item.Couples)
+            .ToList()
+            .Any(item => item.Creator != null
+                         && item.Users.Count > 0
+                         && item.Moderators.Count > 0
+                         && item.Subjects.Count > 0
+                         && item.Couples.Count > 0).Should().BeTrue();
     }
 
     protected async Task LoadRandomDataSet(int countUser = 1)
@@ -105,11 +144,26 @@ public class BaseRepositoryTest : BaseTest
 
         if (!await Uow.Users.AddRange(users)) return;
 
-        await Uow.Subjects.AddRange(Generator.Subjects);
-
-        for (var i = 0; i < countUser; i++)
+        var groups = new List<Group>(Generator.Groups);
+        groups.ForEach(group =>
         {
-        }
+            group.Users.Clear();
+            group.Couples.Clear();
+            group.Subjects.Clear();
+            group.Moderators.Clear();
+        });
+
+        if (!await Uow.Groups.AddRange(groups)) return;
+
+        if (!await Uow.Subjects.AddRange(Generator.Subjects)) return;
+
+        if (!await Uow.Couples.AddRange(Generator.Couples)) return;
+
+        if (!await Uow.Homework.AddRange(Generator.Homework)) return;
+
+        Generator.Groups.ForEach(item => Uow.Groups.Update(item));
+        
+        Generator.Users.ForEach(item => Uow.Users.Update(item));
 
         Uow.Save();
     }
