@@ -14,26 +14,29 @@ namespace LibraryTesting.RepositoryOperationTesting.CoupleRepository
         [Test]
         public async Task Creation_Successful()
         {
-            CreateSubject();
-            var item = Generator.Subjects.FirstOrDefault();
+            await LoadRandomDataSet(10);
+
+            var item = Generator.GenEmptySubject(1, Uow.Groups.Read().First()).First();
 
             var result = await Uow.Subjects.Add(item);
             Uow.Save();
 
             result.Should().Be(true);
-            Uow.Subjects.Read().Count().Should().Be(Generator.Subjects.Count);
+            Uow.Subjects.Read().Count().Should().Be(Generator.Subjects.Count + 1);
         }
         [Test]
         public async Task RangeCreation_Successful()
         {
-            int COUNT = 4;
-            CreateSubject(COUNT);
+            await LoadRandomDataSet(10);
 
-            var result = await Uow.Subjects.AddRange(Generator.Subjects);
+            int COUNT = 4;
+            var items = Generator.GenEmptySubject(COUNT, Uow.Groups.Read().First());
+
+            var result = await Uow.Subjects.AddRange(items);
             Uow.Save();
 
             result.Should().Be(true);
-            Uow.Subjects.Read().Count().Should().Be(Generator.Subjects.Count);
+            Uow.Subjects.Read().Count().Should().Be(Generator.Subjects.Count + items.Count);
         }
     }
 }

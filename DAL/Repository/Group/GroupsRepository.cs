@@ -12,46 +12,43 @@ public class GroupsRepository : EFRepository<Entities.Group>, IGroupRepository
 
     public override async Task<bool> Add(Entities.Group item)
     {
-        item.Id = 0;
-        item.Moderators.Clear();
+        var group = new Entities.Group
+        {
+            UsersRoles = new List<UserRole>(),
+            Couples = new List<Entities.Couple>(),
+            Subjects = new List<Entities.Subject>(),
+            Id = 0,
+            Name = item.Name,
+            PrivateType = item.PrivateType
+        };
 
-        if (item.Couples.Any()
-            && item.Subjects.Any()
-            && item.Users.Any()
-            && item.Creator == null) return false;
-
-        await Context.AddAsync(item);
+        await Context.AddAsync(group);
 
         return true;
     }
 
     public override async Task<bool> AddRange(IEnumerable<Entities.Group> entities)
     {
-        var groups = entities as Entities.Group[] ?? entities.ToArray();
-        foreach (var item in groups)
-        {
-            item.Id = 0;
-            item.Moderators.Clear();
-
-            if (item.Couples.Any()
-                && item.Subjects.Any()
-                && item.Users.Any()
-                && item.Creator == null) return false;
-        }
+        var groups = entities.ToList();
+        for (var i = 0; i < groups.Count; i++)
+            groups[i] = new Entities.Group
+            {
+                UsersRoles = new List<UserRole>(),
+                Couples = new List<Entities.Couple>(),
+                Subjects = new List<Entities.Subject>(),
+                Id = 0,
+                Name = groups[i].Name,
+                PrivateType = groups[i].PrivateType
+            };
 
         await Context.Groups.AddRangeAsync(groups);
 
         return true;
     }
 
-    public override IQueryable<Entities.Group> Read()
-    {
-        return Context.Groups.AsQueryable();
-    }
-
     public override IQueryable<Entities.Group> ReadById(int id)
     {
-        return Read().Where(group => group.Id == id).AsQueryable();
+        return Read().Where(el => el.Id == id).AsQueryable();
     }
 
     public override Task<bool> Update(Entities.Group item)
@@ -69,6 +66,8 @@ public class GroupsRepository : EFRepository<Entities.Group>, IGroupRepository
             .Where(g => g.Id == id)
             .Include(group => group.Couples
                 .Select(couple => couple.Subject))
+            .Include(group => group.UsersRoles
+                .Select(role => role.User))
             .Include(group => group.Subjects)
             .FirstOrDefaultAsync();
 
@@ -82,11 +81,11 @@ public class GroupsRepository : EFRepository<Entities.Group>, IGroupRepository
     public async Task<bool> AddUser(int groupId, int userId)
     {
         var group = await ReadById(groupId).FirstOrDefaultAsync();
-        var user = await ReadUserById(groupId).FirstOrDefaultAsync();
+        var user = await Context.Users.FirstOrDefaultAsync(usr => usr.Id == userId);
 
         if (group == null || user == null) return false;
 
-        group.Users.Add(user);
+        group.UsersRoles.Add(new UserRole {User = user});
 
         return await Update(group);
     }
@@ -94,10 +93,10 @@ public class GroupsRepository : EFRepository<Entities.Group>, IGroupRepository
     public async Task<bool> RemoveUser(int groupId, int userId)
     {
         var group = await ReadById(groupId).FirstOrDefaultAsync();
-        var user = await ReadUserById(groupId).FirstOrDefaultAsync();
+        var user = await ReadUserById(groupId, userId);
 
         if (group == null || user == null) return false;
-        var userRemove = group.Users.Remove(user);
+        var userRemove = group.UsersRoles.Remove(user);
         if (!userRemove) return false;
         return await Update(group);
     }
@@ -163,8 +162,11 @@ public class GroupsRepository : EFRepository<Entities.Group>, IGroupRepository
         throw new NotImplementedException();
     }
 
-    private IQueryable<Entities.User> ReadUserById(int id)
+    private async Task<UserRole?> ReadUserById(int groupId, int id)
     {
-        return Context.Users.Where(group => group.Id == id).AsQueryable();
+        return (await ReadById(groupId)
+            .Include(group => group.UsersRoles
+                .Select(role => role.User))
+            .FirstOrDefaultAsync())?.UsersRoles.FirstOrDefault(role => role.User.Id == id);
     }
 }

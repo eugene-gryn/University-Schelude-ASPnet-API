@@ -12,13 +12,9 @@ public class Group
 
     [Required] public bool PrivateType { get; set; }
 
-    [Required] public User? Creator { get; set; } = new();
+    [Required] public ICollection<Subject> Subjects { get; set; } = new List<Subject>();
 
-    [Required] public List<Subject> Subjects { get; set; } = new();
+    [Required] public ICollection<UserRole> UsersRoles { get; set; } = new List<UserRole>();
 
-    [Required] public List<User> Moderators { get; set; } = new();
-
-    [Required] public List<User> Users { get; set; } = new();
-
-    [Required] public List<Couple> Couples { get; set; } = new();
+    [Required] public ICollection<Couple> Couples { get; set; } = new List<Couple>();
 }

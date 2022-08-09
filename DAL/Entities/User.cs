@@ -21,9 +21,10 @@ public class User
 
     public byte[] Salt { get; set; } = null!;
 
-    [NotMapped] public Settings Settings { get; set; }
+    public Settings Settings { get; set; }
 
-    [MaxLength(5)] public List<Group> Groups { get; set; } = new();
+    [Required] public ICollection<UserRole> UsersRoles { get; set; } = new List<UserRole>();
 
-    public List<HomeworkTask> Homeworks { get; set; } = new();
+
+    public ICollection<HomeworkTask> Homework { get; set; } = new List<HomeworkTask>();
 }

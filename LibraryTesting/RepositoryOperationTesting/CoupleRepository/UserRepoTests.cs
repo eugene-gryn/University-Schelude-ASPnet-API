@@ -12,40 +12,44 @@ public class UserRepoTests : BaseRepositoryTest
     [Test]
     public async Task Creation_Successful()
     {
-        CreateUser();
-        var user = Generator.Users.FirstOrDefault();
+        var user = Generator.GenEmptyUsers(1).First();
 
         var result = await Uow.Users.Add(user);
         Uow.Save();
 
         result.Should().Be(true);
-        Uow.Users.Read().Count().Should().Be(Generator.Users.Count);
+        Uow.Users.Read().Count().Should().Be(1);
     }
 
     [Test]
     public async Task NotEmptyCreation_UnSuccessful()
     {
-        Generator.RDataSet(5);
+        int count = 4;
+        Generator.MakeDataSet(count);
         var user = Generator.Users.FirstOrDefault();
 
-        var result = await Uow.Users.Add(user);
+        var result = await Uow.Users.AddRange(Generator.Users);
         Uow.Save();
 
-        result.Should().Be(false);
-        Uow.Users.Read().Count().Should().Be(0);
+        result.Should().Be(true);
+        Uow.Users.Read().Count().Should().Be(count);
+        Uow.Users.Read()
+            .Include(u => u.UsersRoles)
+            .First().UsersRoles.Count.Should().Be(0);
     }
 
     [Test]
     public async Task RangeCreationWithoutDependencies_Successful()
     {
         var USERS_COUNT = 4;
-        CreateUser(USERS_COUNT);
+        var users = Generator.GenEmptyUsers(USERS_COUNT);
 
-        var result = await Uow.Users.AddRange(Generator.Users);
+        var result = await Uow.Users.AddRange(users);
         Uow.Save();
 
+
         result.Should().Be(true);
-        Uow.Users.Read().Count().Should().Be(Generator.Users.Count);
+        Uow.Users.Read().Count().Should().Be(users.Count);
     }
 
     [Test]
@@ -59,7 +63,7 @@ public class UserRepoTests : BaseRepositoryTest
         var result = await Uow.Users.Update(user);
         var newUser = await Uow.Users.Read().FirstOrDefaultAsync(userF => userF.Id == user.Id);
 
-        result.Should().Be(true);
+        result.Should().BeTrue();
         newUser.Should().NotBeNull();
         newUser!.Name.Should().Be(user.Name);
     }

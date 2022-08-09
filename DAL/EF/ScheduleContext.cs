@@ -19,19 +19,21 @@ public class ScheduleContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        //modelBuilder.Entity<User>()
-        //    .HasOne<Settings>()
-        //    .WithOne()
-        //    .HasForeignKey<Settings>(settings => settings.SettingsId)
-        //    .OnDelete(DeleteBehavior.Cascade);
-
         modelBuilder.Entity<User>()
             .OwnsOne(user => user.Settings);
 
-        modelBuilder.Entity<User>()
-            .HasMany(user => user.Groups)
-            .WithOne(group => group.Creator)
-            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<UserRole>()
+            .HasKey(r => new {r.UserId, r.GroupId});
+
+        modelBuilder.Entity<UserRole>()
+            .HasOne(r => r.User)
+            .WithMany(u => u.UsersRoles)
+            .HasForeignKey(r => r.UserId);
+        
+        modelBuilder.Entity<UserRole>()
+            .HasOne(r => r.Group)
+            .WithMany(g => g.UsersRoles)
+            .HasForeignKey(r => r.GroupId);
 
         modelBuilder.Entity<User>()
             .HasMany<HomeworkTask>()

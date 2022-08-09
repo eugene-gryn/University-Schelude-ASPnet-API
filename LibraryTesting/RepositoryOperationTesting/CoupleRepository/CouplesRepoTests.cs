@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using DAL.Entities;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -11,25 +12,31 @@ public class CouplesRepoTests : BaseRepositoryTest
     [Test]
     public async Task Creation_Successful()
     {
-        CreateCouple();
-        var couple = Generator.Couples.FirstOrDefault();
+        await LoadRandomDataSet(10);
+
+        var couple = Generator.GenEmptyCouple(1, Uow.Subjects.Read().First()).First();
 
         var result = await Uow.Couples.Add(couple);
         Uow.Save();
 
         result.Should().Be(true);
-        Uow.Couples.Read().Count().Should().Be(Generator.Couples.Count);
+        Uow.Couples.Read().Count().Should().Be(Generator.Couples.Count + 1);
     }
     [Test]
     public async Task RangeCreation_Successful()
     {
-        int COUNT = 4;
-        CreateCouple(COUNT);
+        await LoadRandomDataSet(10);
 
-        var result = await Uow.Couples.AddRange(Generator.Couples);
+        int COUNT = 4;
+        var couples = Generator.GenEmptyCouple(COUNT, new Subject()
+        {
+            OwnerGroup = Uow.Groups.Read().First()
+        });
+
+        var result = await Uow.Couples.AddRange(couples);
         Uow.Save();
 
         result.Should().Be(true);
-        Uow.Couples.Read().Count().Should().Be(Generator.Couples.Count);
+        Uow.Couples.Read().Count().Should().Be(Generator.Couples.Count + couples.Count);
     }
 }

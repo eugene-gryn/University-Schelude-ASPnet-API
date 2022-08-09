@@ -1,5 +1,4 @@
 ﻿using DAL.EF;
-using DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repository.Couple;
@@ -14,6 +13,9 @@ public class CouplesRepository : EFRepository<Entities.Couple>, ICoupleRepositor
     {
         item.Id = 0;
 
+        item.Subject = await Context.Subjects.FirstOrDefaultAsync(subj => subj.Id == item.Subject.Id)
+                       ?? throw new InvalidOperationException();
+
         // TODO VALIDATIONS
 
         await Context.Couples.AddAsync(item);
@@ -27,6 +29,7 @@ public class CouplesRepository : EFRepository<Entities.Couple>, ICoupleRepositor
         foreach (var item in list)
         {
             item.Id = 0;
+            item.Subject = Context.Subjects.FirstOrDefault(subj => subj.Id == item.Subject.Id)!;
 
             // TODO VALIDATIONS
         }
@@ -38,7 +41,7 @@ public class CouplesRepository : EFRepository<Entities.Couple>, ICoupleRepositor
 
     public override IQueryable<Entities.Couple> ReadById(int id)
     {
-        throw new NotImplementedException();
+        return Read().Where(el => el.Id == id).AsQueryable();
     }
 
     public override Task<bool> Update(Entities.Couple item)

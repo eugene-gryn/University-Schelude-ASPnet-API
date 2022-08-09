@@ -12,14 +12,13 @@ public class GroupRepoTests : BaseRepositoryTest
     [Test]
     public async Task Creation_Successful()
     {
-        CreateGroup();
-        var group = Generator.Groups.FirstOrDefault();
+        var group = Generator.GenEmptyGroups(1).First();
 
         var result = await Uow.Groups.Add(group);
         Uow.Save();
 
         result.Should().Be(true);
-        Uow.Groups.Read().Count().Should().Be(Generator.Groups.Count);
+        Uow.Groups.Read().Count().Should().Be(1);
     }
 
     [Test]
@@ -27,12 +26,12 @@ public class GroupRepoTests : BaseRepositoryTest
     {
         int countOfGroups = 4;
 
-        CreateGroup(countOfGroups);
+        var groups = Generator.GenEmptyGroups(countOfGroups);
 
-        var result = await Uow.Groups.AddRange(Generator.Groups);
+        var result = await Uow.Groups.AddRange(groups);
         Uow.Save();
 
         result.Should().Be(true);
-        Uow.Groups.Read().Count().Should().Be(Generator.Groups.Count);
+        Uow.Groups.Read().Count().Should().Be(groups.Count);
     }
 }

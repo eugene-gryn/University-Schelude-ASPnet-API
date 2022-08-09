@@ -11,25 +11,28 @@ public class HomeworkRepoTests : BaseRepositoryTest
     [Test]
     public async Task Creation_Successful()
     {
-        CreateHomework();
-        var item = Generator.Homework.FirstOrDefault();
+        await LoadRandomDataSet(10);
+
+        var item = Generator.GenEmptyHomework(1, Uow.Subjects.Read().First()).First();
 
         var result = await Uow.Homework.Add(item);
         Uow.Save();
 
         result.Should().Be(true);
-        Uow.Homework.Read().Count().Should().Be(Generator.Homework.Count);
+        Uow.Homework.Read().Count().Should().Be(Generator.Homework.Count + 1);
     }
     [Test]
     public async Task RangeCreation_Successful()
     {
-        int COUNT = 4;
-        CreateHomework(COUNT);
+        await LoadRandomDataSet(10);
 
-        var result = await Uow.Homework.AddRange(Generator.Homework);
+        int COUNT = 4;
+        var items = Generator.GenEmptyHomework(COUNT, Uow.Subjects.Read().First());
+
+        var result = await Uow.Homework.AddRange(items);
         Uow.Save();
 
         result.Should().Be(true);
-        Uow.Homework.Read().Count().Should().Be(Generator.Homework.Count);
+        Uow.Homework.Read().Count().Should().Be(Generator.Homework.Count + items.Count);
     }
 }

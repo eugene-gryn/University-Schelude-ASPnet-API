@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using DAL.EF;
+﻿using DAL.EF;
 using DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,39 +12,57 @@ public class UserRepository : EFRepository<Entities.User>, IUserRepository
 
     public override async Task<bool> Add(Entities.User item)
     {
-        item.Id = 0;
-        item.IsAdmin = false;
+        var user = new Entities.User
+        {
+            Id = 0,
+            IsAdmin = false,
+            UsersRoles = new List<UserRole>(),
+            Homework = new List<HomeworkTask>(),
+            ImageLocation = item.ImageLocation,
+            Login = item.Login,
+            Name = item.Name,
+            Password = item.Password,
+            Salt = item.Salt
+        };
 
-        if (item.Groups.Any() && item.Homeworks.Any()) return false;
+        await Context.Users.AddAsync(user);
 
-        await Context.Users.AddAsync(item);
-        
         return true;
     }
 
     public override async Task<bool> AddRange(IEnumerable<Entities.User> entities)
     {
-        foreach (var item in entities)
-        {
-            item.Id = 0;
-            item.IsAdmin = false;
+        var enumerable = entities.ToList();
+        for (var i = 0; i < enumerable.Count; i++)
+            enumerable[i] = new Entities.User
+            {
+                Id = 0,
+                IsAdmin = false,
+                UsersRoles = new List<UserRole>(),
+                Homework = new List<HomeworkTask>(),
+                ImageLocation = enumerable[i].ImageLocation,
+                Login = enumerable[i].Login,
+                Name = enumerable[i].Name,
+                Password = enumerable[i].Password,
+                Salt = enumerable[i].Salt
+            };
 
-            if (item.Groups.Any() && item.Homeworks.Any()) return false;
-        }
-
-        await Context.Users.AddRangeAsync(entities);
+        await Context.Users.AddRangeAsync(enumerable);
 
         return true;
     }
 
     public override IQueryable<Entities.User> ReadById(int id)
     {
-        return Read().Where(user => user.Id == id).AsQueryable();
+        return Read().Where(el => el.Id == id).AsQueryable();
     }
 
     public override Task<bool> Update(Entities.User item)
     {
         Context.Entry(item).State = EntityState.Modified;
+
+        Context.Users.Update(item);
+
         return Task.FromResult(true);
     }
 
@@ -53,10 +70,8 @@ public class UserRepository : EFRepository<Entities.User>, IUserRepository
     public override async Task<bool> Delete(int id)
     {
         var user = await Context.Users.Where(userQuery => userQuery.Id == id)
-            .Include(user => user.Homeworks
-                .Select(homework => homework.Subject))
-            .Include(user => user.Groups
-                .Select(group => group.Creator))
+            .Include(user => user.Homework)
+            .Include(user => user.UsersRoles)
             .FirstOrDefaultAsync();
 
         if (user != null)
