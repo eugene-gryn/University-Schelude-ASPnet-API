@@ -19,8 +19,12 @@ public class ScheduleContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        // Owned user settings
+
         modelBuilder.Entity<User>()
             .OwnsOne(user => user.Settings);
+
+        // Set Many-To-Many Groups to Users
 
         modelBuilder.Entity<UserRole>()
             .HasKey(r => new {r.UserId, r.GroupId});
@@ -35,15 +39,21 @@ public class ScheduleContext : DbContext
             .WithMany(g => g.UsersRoles)
             .HasForeignKey(r => r.GroupId);
 
+        // Setting user homework list
+
         modelBuilder.Entity<User>()
             .HasMany<HomeworkTask>()
             .WithOne()
             .OnDelete(DeleteBehavior.Cascade);
 
+        // Setting Groups couples list
+
         modelBuilder.Entity<Group>()
             .HasMany(group => group.Couples)
             .WithOne()
             .OnDelete(DeleteBehavior.Cascade);
+
+        // Setting Subjects list
 
         modelBuilder.Entity<Group>()
             .HasMany(group => group.Subjects)
