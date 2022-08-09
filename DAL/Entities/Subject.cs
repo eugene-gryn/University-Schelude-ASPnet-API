@@ -12,7 +12,9 @@ public class Subject
 
     [Required] public bool IsPractice { get; set; }
 
+    [Required] public int GroupId { get; set; } = 0;
     [Required] public Group OwnerGroup { get; set; } = new();
+    
 
     [Column(TypeName = "VARCHAR")]
     [StringLength(200)]

@@ -48,6 +48,7 @@ public class ScheduleContext : DbContext
         modelBuilder.Entity<Group>()
             .HasMany(group => group.Subjects)
             .WithOne(subject => subject.OwnerGroup)
+            .HasForeignKey(s => s.GroupId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }
