@@ -67,4 +67,6 @@ public class UserRepoTests : BaseRepositoryTest
         newUser.Should().NotBeNull();
         newUser!.Name.Should().Be(user.Name);
     }
+
+
 }
