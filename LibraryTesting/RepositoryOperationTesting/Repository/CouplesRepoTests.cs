@@ -4,7 +4,7 @@ using DAL.Entities;
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace LibraryTesting.RepositoryOperationTesting.CoupleRepository;
+namespace LibraryTesting.RepositoryOperationTesting.Repository;
 
 [TestFixture]
 public class CouplesRepoTests : BaseRepositoryTest
@@ -12,7 +12,7 @@ public class CouplesRepoTests : BaseRepositoryTest
     [Test]
     public async Task Creation_Successful()
     {
-        await LoadRandomDataSet(10);
+        await LoadRandomDataSet(3);
 
         var couple = Generator.GenEmptyCouple(1, Uow.Subjects.Read().First()).First();
 
@@ -25,7 +25,7 @@ public class CouplesRepoTests : BaseRepositoryTest
     [Test]
     public async Task RangeCreation_Successful()
     {
-        await LoadRandomDataSet(10);
+        await LoadRandomDataSet(3);
 
         int COUNT = 4;
         var couples = Generator.GenEmptyCouple(COUNT, new Subject()

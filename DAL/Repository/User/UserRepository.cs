@@ -4,16 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repository.User;
 
-public class UserRepository : EFRepository<Entities.User>, IUserRepository
-{
-    public UserRepository(ScheduleContext context) : base(context)
-    {
-    }
+public class UserRepository : EFRepository<Entities.User>, IUserRepository {
+    public UserRepository(ScheduleContext context) : base(context) { }
 
-    public override async Task<bool> Add(Entities.User item)
-    {
-        var user = new Entities.User
-        {
+    public override async Task<bool> Add(Entities.User item) {
+        var user = new Entities.User {
             Id = 0,
             IsAdmin = false,
             UsersRoles = new List<UserRole>(),
@@ -30,12 +25,10 @@ public class UserRepository : EFRepository<Entities.User>, IUserRepository
         return true;
     }
 
-    public override async Task<bool> AddRange(IEnumerable<Entities.User> entities)
-    {
+    public override async Task<bool> AddRange(IEnumerable<Entities.User> entities) {
         var enumerable = entities.ToList();
         for (var i = 0; i < enumerable.Count; i++)
-            enumerable[i] = new Entities.User
-            {
+            enumerable[i] = new Entities.User {
                 Id = 0,
                 IsAdmin = false,
                 UsersRoles = new List<UserRole>(),
@@ -52,13 +45,11 @@ public class UserRepository : EFRepository<Entities.User>, IUserRepository
         return true;
     }
 
-    public override IQueryable<Entities.User> ReadById(int id)
-    {
+    public override IQueryable<Entities.User> ReadById(int id) {
         return Read().Where(el => el.Id == id).AsQueryable();
     }
 
-    public override Task<bool> Update(Entities.User item)
-    {
+    public override Task<bool> Update(Entities.User item) {
         Context.Entry(item).State = EntityState.Modified;
 
         Context.Users.Update(item);
@@ -66,100 +57,22 @@ public class UserRepository : EFRepository<Entities.User>, IUserRepository
         return Task.FromResult(true);
     }
 
-    // TODO: глянуть удаляется ли таблицы USERS, MODERATOR
-    public override async Task<bool> Delete(int id)
-    {
+    public override async Task<bool> Delete(int id) {
         var user = await Context.Users.Where(userQuery => userQuery.Id == id)
             .Include(user => user.Homework)
             .Include(user => user.UsersRoles)
             .FirstOrDefaultAsync();
 
-        if (user != null)
-        {
-            Context.Users.Remove(user);
 
-            return true;
-        }
+        if (user == null) return false;
 
-        return false;
-    }
+        var userOwnedGroups = user.UsersRoles.Where(role => role.IsOwner).Select(role => role.Group);
 
-    public async Task<bool> SetName(int id, string name)
-    {
-        var user = await ReadById(id).FirstOrDefaultAsync();
+        Context.Groups.RemoveRange(userOwnedGroups);
+        Context.Homework.RemoveRange(user.Homework);
+        Context.Users.Remove(user);
 
-        if (user != null)
-        {
-            user.Name = name;
-            return await Update(user);
-        }
+        return true;
 
-        return false;
-    }
-
-    public async Task<bool> SetPicture(int id, string picUrl)
-    {
-        var user = await ReadById(id).FirstOrDefaultAsync();
-
-        if (user != null)
-        {
-            user.ImageLocation = picUrl;
-            return await Update(user);
-        }
-
-        return false;
-    }
-
-    public async Task<bool> SetPassword(int id, byte[] password, byte[] salt)
-    {
-        var user = await ReadById(id).FirstOrDefaultAsync();
-
-        if (user != null)
-        {
-            user.Password = password;
-            user.Salt = salt;
-            return await Update(user);
-        }
-
-        return false;
-    }
-
-    public async Task<bool> MakeAdmin(int id)
-    {
-        var user = await ReadById(id).FirstOrDefaultAsync();
-
-        if (user != null)
-        {
-            user.IsAdmin = true;
-            return await Update(user);
-        }
-
-        return false;
-    }
-
-    public async Task<bool> RemoveAdmin(int id)
-    {
-        var user = await ReadById(id).FirstOrDefaultAsync();
-
-        if (user != null)
-        {
-            user.IsAdmin = false;
-            return await Update(user);
-        }
-
-        return false;
-    }
-
-    public async Task<bool> SetSettings(int id, Settings settings)
-    {
-        var user = await ReadById(id).FirstOrDefaultAsync();
-
-        if (user != null)
-        {
-            user.Settings = settings;
-            return await Update(user);
-        }
-
-        return false;
     }
 }

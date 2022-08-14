@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace LibraryTesting.RepositoryOperationTesting.CoupleRepository;
+namespace LibraryTesting.RepositoryOperationTesting.Repository;
 
 [TestFixture]
 public class HomeworkRepoTests : BaseRepositoryTest

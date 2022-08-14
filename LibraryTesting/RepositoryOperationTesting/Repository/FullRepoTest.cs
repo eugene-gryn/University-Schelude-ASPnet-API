@@ -4,7 +4,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 
-namespace LibraryTesting.RepositoryOperationTesting.CoupleRepository;
+namespace LibraryTesting.RepositoryOperationTesting.Repository;
 
 [TestFixture]
 public class FullRepoTest : BaseRepositoryTest
@@ -12,7 +12,7 @@ public class FullRepoTest : BaseRepositoryTest
     [Test]
     public async Task FullLoadDataSet_CorrectLoading()
     {
-        var countUser = 20;
+        var countUser = 5;
 
         await LoadRandomDataSet(countUser);
 
