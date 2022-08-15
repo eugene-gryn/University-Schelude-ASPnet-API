@@ -51,7 +51,6 @@ public class CouplesRepository : EFRepository<Entities.Couple>, ICoupleRepositor
         return Task.FromResult(true);
     }
 
-    // TODO: TEST TO AUTO REMOVE FROM LIST
     public override async Task<bool> Delete(int id)
     {
         var couple = await Context.Couples.Where(coupleT => coupleT.Id == id).FirstOrDefaultAsync();

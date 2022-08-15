@@ -65,17 +65,18 @@ public class UserRepoTests : BaseRepositoryTest {
 
     [Test]
     public async Task Delete_RemoveAllDependentEntities_Successful() {
-        await LoadRandomDataSet(2);
-        var userUow = Uow.Users.Read()
+        await LoadRandomDataSet(1);
+        var user = Uow.Users.Read()
+            .Include(u => u.UsersRoles)
             .Include(u => u.Homework)
             .First();
 
-        var result = await Uow.Users.Delete(userUow.Id);
+        var result = await Uow.Users.Delete(user.Id);
         Uow.Save();
 
         result.Should().BeTrue();
-        Assert.IsTrue(Generator.Users.Count > Uow.Users.Read().Count());
-        (Generator.Homework.Count - userUow.Homework.Count).Should().Be(Uow.Homework.Read().Count());
+        (Generator.Users.Count - 1).Should().Be(Uow.Users.Read().Count());
+        (Generator.Homework.Count - user.Homework.Count).Should().Be(Uow.Homework.Read().Count());
     }
 
     [Test]

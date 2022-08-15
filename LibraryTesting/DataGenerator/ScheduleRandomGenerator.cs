@@ -26,7 +26,7 @@ public class ScheduleRandomGenerator
         Users.AddRange(GenEmptyUsers(count));
 
         // Generate owners
-        var exc = Users.Where(user => RBool());
+        var exc = Users.Where((u, i) => i == 1 || RBool());
         foreach (var user in exc)
         {
             // Group generation
@@ -290,7 +290,7 @@ public class ScheduleRandomGenerator
         {
             Id = id,
             Description = RString(),
-            Deadline = TimeSpan.FromHours(_random.Next(10, 100)),
+            Deadline = DateTime.Now.AddDays(_random.Next(10, 100)),
             Priority = (byte) _random.Next(10),
             Subject = subject
         };

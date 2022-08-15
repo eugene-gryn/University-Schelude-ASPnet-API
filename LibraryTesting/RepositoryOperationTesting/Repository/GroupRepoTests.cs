@@ -34,7 +34,7 @@ public class GroupRepoTests : BaseRepositoryTest {
 
     [Test]
     public async Task Update_FoundAndUpdateItem_Success() {
-        await LoadRandomDataSet(2);
+        await LoadRandomDataSet(3);
         var newProp = "NameGroup: Valid";
 
         var groupInfo = Generator.Groups.FirstOrDefault();
@@ -67,5 +67,36 @@ public class GroupRepoTests : BaseRepositoryTest {
         (Generator.Couples.Count - group.Couples.Count).Should().Be(Uow.Couples.Read().Count());
     }
 
+    [Test]
+    public async Task AddUser_CreateUserAndAddToList_Successful() {
+        await LoadRandomDataSet(3);
+        var user = await AddUser();
+        var group = Uow.Groups.Read().First();
 
+        var result = await Uow.Groups.AddUser(group.Id, user.Id);
+        Uow.Save();
+
+        result.Should().BeTrue();
+        var groupU = await Uow.Groups.ReadById(group.Id)
+            .Include(g => g.UsersRoles)
+            .SingleOrDefaultAsync();
+        groupU.Should().NotBeNull();
+        groupU.UsersRoles.Any(role => role.UserId == user.Id).Should().BeTrue();
+    }
+
+    [Test]
+    public async Task RemoveUser_DeleteFromExistingGroup_SuccessfulErase() {
+        await LoadRandomDataSet(3);
+        var group = Uow.Groups.Read().Include(g => g.UsersRoles).First();
+        var groupUsersCount = group.UsersRoles.Count;
+        var userIdToDelete = group.UsersRoles.Last().UserId;
+
+        var result = await Uow.Groups.RemoveUser(group.Id, userIdToDelete);
+        Uow.Save();
+        var groupU = await Uow.Groups.ReadById(group.Id).Include(g => g.UsersRoles).SingleOrDefaultAsync();
+
+        result.Should().BeTrue();
+        (groupUsersCount - 1).Should().Be(groupU!.UsersRoles.Count);
+        groupU.UsersRoles.Any(role => role.UserId == userIdToDelete).Should().BeFalse();
+    }
 }

@@ -14,6 +14,7 @@ public class HomeworkRepository : EFRepository<HomeworkTask>, IHomeworkRepositor
     {
         item.Id = 0;
         item.Subject = Context.Subjects.FirstOrDefault(subj => subj.Id == item.Subject.Id)!;
+        if (item.Deadline < DateTime.Now) return false; // TODO: TEST VALIDATION
 
         await Context.Homework.AddAsync(item);
 
@@ -27,8 +28,7 @@ public class HomeworkRepository : EFRepository<HomeworkTask>, IHomeworkRepositor
         {
             item.Id = 0;
             item.Subject = Context.Subjects.FirstOrDefault(subj => subj.Id == item.Subject.Id)!;
-
-            // TODO VALIDATIONS
+            if (item.Deadline < DateTime.Now) return false;
         }
 
         await Context.Homework.AddRangeAsync(list);
@@ -43,6 +43,8 @@ public class HomeworkRepository : EFRepository<HomeworkTask>, IHomeworkRepositor
 
     public override Task<bool> Update(HomeworkTask item)
     {
+        if (item.Deadline < DateTime.Now) return Task.FromResult(false);
+
         Context.Entry(item).State = EntityState.Modified;
 
         return Task.FromResult(true);
@@ -62,22 +64,7 @@ public class HomeworkRepository : EFRepository<HomeworkTask>, IHomeworkRepositor
         return false;
     }
 
-    public Task<bool> SetDescription(int id, string description)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<bool> SetDeadline(int id, DateTime deadline)
-    {
-        throw new NotImplementedException();
-    }
-
     public Task<bool> SetSubject(int id, int subjectId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<bool> SetPriority(int id, byte priority)
     {
         throw new NotImplementedException();
     }

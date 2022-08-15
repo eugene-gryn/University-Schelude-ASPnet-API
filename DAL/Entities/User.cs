@@ -5,7 +5,6 @@ namespace DAL.Entities;
 
 public class User
 {
-    //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Key]
     public int Id { get; set; }
 

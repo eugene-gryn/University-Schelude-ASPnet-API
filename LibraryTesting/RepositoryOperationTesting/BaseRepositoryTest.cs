@@ -101,4 +101,18 @@ public class BaseRepositoryTest : BaseTest
             Uow.Save();
         });
     }
+
+    protected async Task<User> AddUser() {
+        var user = Generator.GenEmptyUsers(1).First();
+
+        var addResult = await Uow.Users.Add(user);
+
+        if (!addResult) return null;
+
+        Uow.Save();
+
+        user = Uow.Users.Read().Last();
+
+        return user;
+    }
 }

@@ -28,7 +28,7 @@ public class SubjectsRepository : EFRepository<Entities.Subject>, ISubjectReposi
             item.Id = 0;
             item.OwnerGroup = Context.Groups.FirstOrDefault(gr => gr.Id == item.OwnerGroup.Id)!;
 
-            // TODO VALIDATIONS
+            // TODO VALIDATIONS and Test validation
         }
 
         await Context.Subjects.AddRangeAsync(list);

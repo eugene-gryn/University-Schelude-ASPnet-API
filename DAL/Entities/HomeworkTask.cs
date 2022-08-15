@@ -10,7 +10,7 @@ public class HomeworkTask
 
     [MaxLength(1000)] public string? Description { get; set; }
 
-    [Required, DataType(DataType.DateTime)] public TimeSpan Deadline { get; set; }
+    [Required, DataType(DataType.DateTime)] public DateTime Deadline { get; set; }
 
     [Required] public byte Priority { get; set; } = 5;
 

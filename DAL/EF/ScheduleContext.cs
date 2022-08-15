@@ -20,7 +20,6 @@ public class ScheduleContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         // Owned user settings
-
         modelBuilder.Entity<User>()
             .OwnsOne(user => user.Settings);
 

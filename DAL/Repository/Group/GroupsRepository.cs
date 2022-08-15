@@ -55,7 +55,7 @@ public class GroupsRepository : EFRepository<Entities.Group>, IGroupRepository {
             .Include(group => group.Couples)
             .Include(group => group.UsersRoles)
             .Include(group => group.Subjects)
-            .FirstOrDefaultAsync();
+            .SingleOrDefaultAsync();
 
         if (group == null) return false;
 
@@ -65,19 +65,24 @@ public class GroupsRepository : EFRepository<Entities.Group>, IGroupRepository {
     }
 
     public async Task<bool> AddUser(int groupId, int userId) {
-        var group = await ReadById(groupId).FirstOrDefaultAsync();
-        var user = await Context.Users.FirstOrDefaultAsync(usr => usr.Id == userId);
+        var group = await ReadById(groupId).SingleOrDefaultAsync();
+        var user = await Context.Users.SingleOrDefaultAsync(usr => usr.Id == userId);
 
         if (group == null || user == null) return false;
 
-        group.UsersRoles.Add(new UserRole { User = user });
+        group.UsersRoles.Add(new UserRole {
+            User = user,
+            UserId = userId,
+            Group = group,
+            GroupId = groupId
+        });
 
         return await Update(group);
     }
 
     public async Task<bool> RemoveUser(int groupId, int userId) {
-        var group = await ReadById(groupId).FirstOrDefaultAsync();
-        var user = await ReadUserById(groupId, userId);
+        var group = await ReadById(groupId).SingleOrDefaultAsync();
+        var user = await ReadUserRoleByUserId(groupId, userId);
 
         if (group == null || user == null) return false;
 
@@ -88,7 +93,7 @@ public class GroupsRepository : EFRepository<Entities.Group>, IGroupRepository {
     }
 
     public async Task<Entities.Couple?> GetCouple(int groupId, int coupleId) {
-        var group = await ReadById(groupId).Include(group => group.Couples).FirstOrDefaultAsync();
+        var group = await ReadById(groupId).Include(group => group.Couples).SingleOrDefaultAsync();
 
         var couple = group?.Couples.FirstOrDefault(couple => couple.Id == coupleId);
 
@@ -96,34 +101,86 @@ public class GroupsRepository : EFRepository<Entities.Group>, IGroupRepository {
     }
 
     public async Task<Entities.Couple?> NearCouple(int groupId) {
-        var group = await ReadById(groupId).Include(group => group.Couples).FirstOrDefaultAsync();
+        var group = await ReadById(groupId).Include(group => group.Couples).SingleOrDefaultAsync();
 
         var nearCouple = group?.Couples.OrderBy(couple => couple.Begin).First();
 
         return nearCouple;
     }
 
-    public Task<List<Entities.Couple>> TodayCouples(int groupId) {
-        throw new NotImplementedException();
+    public async Task<List<Entities.Couple>> TodayCouples(int groupId) {
+        return await Context.Couples
+            .Include(c => c.Subject)
+            .Where(c => c.Subject.GroupId == groupId && c.Begin.Date == DateTime.Now.Date)
+            .ToListAsync();
     }
 
-    public Task<bool> SetNewCreator(int groupId, int userId) {
-        throw new NotImplementedException();
+    public async Task<bool> SetNewCreator(int groupId, int userId) {
+        var g = await ReadById(groupId)
+            .Include(g => g.UsersRoles)
+            .SingleOrDefaultAsync();
+
+        var ownerRole = g?.UsersRoles.SingleOrDefault(role => role.IsOwner);
+
+        if (ownerRole == null || g == null) return false;
+
+        var userRole = g.UsersRoles.SingleOrDefault(role => role.UserId == userId);
+
+        if (userRole == null)
+            g.UsersRoles.Add(new UserRole {
+                GroupId = g.Id,
+                IsModerator = false,
+                IsOwner = true,
+                UserId = userId
+            });
+        else
+            userRole.IsOwner = true;
+
+        ownerRole!.IsOwner = false;
+
+        return await Update(g);
     }
 
-    public Task<bool> AddModerator(int groupId, int userId) {
-        throw new NotImplementedException();
+    public async Task<bool> AddModerator(int groupId, int userId) {
+        var g = await ReadById(groupId)
+            .Include(g => g.UsersRoles)
+            .SingleOrDefaultAsync();
+
+        var userRole = g?.UsersRoles.SingleOrDefault(role => role.UserId == userId);
+
+        if (g == null) return false;
+
+        if (userRole == null)
+            g.UsersRoles.Add(new UserRole {
+                GroupId = g.Id,
+                IsModerator = true,
+                IsOwner = false,
+                UserId = userId
+            });
+        else
+            userRole.IsModerator = true;
+
+        return await Update(g);
     }
 
-    public Task<bool> RemoveModerator(int groupId, int userId) {
-        throw new NotImplementedException();
+    public async Task<bool> RemoveModerator(int groupId, int userId) {
+        var g = await ReadById(groupId)
+            .Include(g => g.UsersRoles)
+            .SingleOrDefaultAsync();
+
+        var userRole = g?.UsersRoles.SingleOrDefault(role => role.UserId == userId);
+
+        if (g == null || userRole == null) return false;
+
+        userRole.IsModerator = false;
+
+        return await Update(g);
     }
 
 
-    private async Task<UserRole?> ReadUserById(int groupId, int id) {
+    private async Task<UserRole?> ReadUserRoleByUserId(int groupId, int id) {
         return (await ReadById(groupId)
-            .Include(group => group.UsersRoles
-                .Select(role => role.User))
-            .FirstOrDefaultAsync())?.UsersRoles.FirstOrDefault(role => role.User.Id == id);
+            .Include(group => group.UsersRoles)
+            .FirstOrDefaultAsync())?.UsersRoles.SingleOrDefault(role => role.UserId == id);
     }
 }
