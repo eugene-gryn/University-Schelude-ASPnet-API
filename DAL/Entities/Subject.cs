@@ -3,18 +3,21 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DAL.Entities;
 
-public class Subject
-{
+public class Subject {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    [Key] public int Id { get; set; }
+    [Key]
+    public int Id { get; set; }
 
     [Required] [StringLength(50)] public string Name { get; set; } = string.Empty;
 
     [Required] public bool IsPractice { get; set; }
 
-    [Required] public int GroupId { get; set; } = 0;
-    [Required] public Group OwnerGroup { get; set; } = new();
-    
+    [Required] public int GroupId { get; set; }
+    public Group OwnerGroup { get; set; } = null!;
+
+    public ICollection<Couple> Couples { get; set; } = new List<Couple>();
+    public ICollection<HomeworkTask> Homework { get; set; } = new List<HomeworkTask>();
+
 
     [Column(TypeName = "VARCHAR")]
     [StringLength(200)]

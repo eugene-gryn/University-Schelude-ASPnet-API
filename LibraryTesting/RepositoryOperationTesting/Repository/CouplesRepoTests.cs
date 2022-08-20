@@ -16,7 +16,9 @@ public class CouplesRepoTests : BaseRepositoryTest
     {
         await LoadRandomDataSet(3);
 
-        var couple = Generator.GenEmptyCouple(1, Uow.Subjects.Read().First()).First();
+        var couple = Generator.GenEmptyCouple(1, 
+            Uow.Subjects.Read().First(),
+            Uow.Subjects.Read().First().OwnerGroup).First();
 
         var result = await Uow.Couples.Add(couple);
         Uow.Save();
@@ -30,10 +32,10 @@ public class CouplesRepoTests : BaseRepositoryTest
         await LoadRandomDataSet(3);
 
         int COUNT = 4;
-        var couples = Generator.GenEmptyCouple(COUNT, new Subject()
-        {
-            OwnerGroup = Uow.Groups.Read().First()
-        });
+
+        var couples = Generator.GenEmptyCouple(COUNT, 
+            Uow.Groups.Read().Include(g => g.Subjects).First().Subjects.First(),
+            Uow.Groups.Read().First());
 
         var result = await Uow.Couples.AddRange(couples);
         Uow.Save();
@@ -68,15 +70,16 @@ public class CouplesRepoTests : BaseRepositoryTest
     {
         await LoadRandomDataSet(3);
 
-        var group = Generator.Groups.First();
-        var couple = group.Couples.First();
+        var couplesCount = Uow.Couples.Read().Count();
+        var firstGroupFirstCouple = await Uow.Groups.ReadById(1)
+            .Include(g => g.Couples)
+            .SingleOrDefaultAsync();
 
-        var res = await Uow.Couples.Delete(couple.Id);
+
+        var res = await Uow.Couples.Delete(firstGroupFirstCouple!.Id);
         Uow.Save();
 
         res.Should().BeTrue();
-        (Generator.Couples.Count - 1).Should().Be(Uow.Couples.Read().Count());
-        (group.Couples.Count - 1).Should().Be(Uow.Groups.ReadById(group.Id)
-            .Include(g => g.Couples).First().Couples.Count);
+        (couplesCount - 1).Should().Be(Uow.Couples.Read().Count());
     }
 }

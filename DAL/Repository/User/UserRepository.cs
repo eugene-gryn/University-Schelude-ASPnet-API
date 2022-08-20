@@ -45,6 +45,14 @@ public class UserRepository : EFRepository<Entities.User>, IUserRepository {
         return true;
     }
 
+    public override Task<bool> Add(out Entities.User item) {
+        throw new NotImplementedException();
+    }
+
+    public override Task<bool> AddRange(out IEnumerable<Entities.User> entities) {
+        throw new NotImplementedException();
+    }
+
     public override IQueryable<Entities.User> ReadById(int id) {
         return Read().Where(el => el.Id == id).AsQueryable();
     }

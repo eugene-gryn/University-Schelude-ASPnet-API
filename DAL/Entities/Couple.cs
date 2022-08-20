@@ -13,5 +13,9 @@ public class Couple
 
     [Required, DataType(DataType.DateTime)] public DateTime End { get; set; }
 
-    [Required] public Subject Subject { get; set; } = new();
+    [Required] public int SubjectId { get; set; }
+    public Subject Subject { get; set; }
+
+    [Required] public int GroupId { get; set; }
+    public Group Group { get; set; }
 }

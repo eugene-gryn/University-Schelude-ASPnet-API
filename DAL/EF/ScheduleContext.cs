@@ -39,17 +39,20 @@ public class ScheduleContext : DbContext
             .HasForeignKey(r => r.GroupId);
 
         // Setting user homework list
+        // User has a homework
 
         modelBuilder.Entity<User>()
-            .HasMany<HomeworkTask>()
-            .WithOne()
+            .HasMany(u => u.Homework)
+            .WithOne(h => h.User)
+            .HasForeignKey(h => h.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
         // Setting Groups couples list
 
         modelBuilder.Entity<Group>()
             .HasMany(group => group.Couples)
-            .WithOne()
+            .WithOne(c => c.Group)
+            .HasForeignKey(c => c.GroupId)
             .OnDelete(DeleteBehavior.Cascade);
 
         // Setting Subjects list
@@ -58,6 +61,22 @@ public class ScheduleContext : DbContext
             .HasMany(group => group.Subjects)
             .WithOne(subject => subject.OwnerGroup)
             .HasForeignKey(s => s.GroupId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Couple has a subject
+
+        modelBuilder.Entity<Subject>()
+            .HasMany(s => s.Couples)
+            .WithOne(c => c.Subject)
+            .HasForeignKey(couple => couple.SubjectId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Homework has a subject
+
+        modelBuilder.Entity<Subject>()
+            .HasMany(s => s.Homework)
+            .WithOne(h => h.Subject)
+            .HasForeignKey(h => h.SubjectId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

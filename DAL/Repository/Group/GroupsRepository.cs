@@ -39,6 +39,14 @@ public class GroupsRepository : EFRepository<Entities.Group>, IGroupRepository {
         return true;
     }
 
+    public override Task<bool> Add(out Entities.Group item) {
+        throw new NotImplementedException();
+    }
+
+    public override Task<bool> AddRange(out IEnumerable<Entities.Group> entities) {
+        throw new NotImplementedException();
+    }
+
     public override IQueryable<Entities.Group> ReadById(int id) {
         return Read().Where(el => el.Id == id).AsQueryable();
     }
@@ -92,27 +100,22 @@ public class GroupsRepository : EFRepository<Entities.Group>, IGroupRepository {
         return await Update(group);
     }
 
-    public async Task<Entities.Couple?> GetCouple(int groupId, int coupleId) {
-        var group = await ReadById(groupId).Include(group => group.Couples).SingleOrDefaultAsync();
-
-        var couple = group?.Couples.FirstOrDefault(couple => couple.Id == coupleId);
-
-        return couple;
-    }
-
     public async Task<Entities.Couple?> NearCouple(int groupId) {
-        var group = await ReadById(groupId).Include(group => group.Couples).SingleOrDefaultAsync();
+        var group = await ReadById(groupId)
+            .Include(group => group.Couples)
+            .SingleOrDefaultAsync();
 
-        var nearCouple = group?.Couples.OrderBy(couple => couple.Begin).First();
+        var nearCouple = group?.Couples.MinBy(couple => couple.Begin);
 
         return nearCouple;
     }
 
-    public async Task<List<Entities.Couple>> TodayCouples(int groupId) {
-        return await Context.Couples
-            .Include(c => c.Subject)
-            .Where(c => c.Subject.GroupId == groupId && c.Begin.Date == DateTime.Now.Date)
-            .ToListAsync();
+    public async Task<List<Entities.Couple>> DayCouples(int groupId, DateTime date) {
+        var group = await ReadById(groupId).Include(g => g.Couples).SingleOrDefaultAsync();
+        
+        if (group == null) return new List<Entities.Couple>();
+    
+        return group.Couples.Where(c => c.Begin.Date == date.Date).ToList();
     }
 
     public async Task<bool> SetNewCreator(int groupId, int userId) {

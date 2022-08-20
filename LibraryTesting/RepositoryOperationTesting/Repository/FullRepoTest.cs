@@ -16,6 +16,20 @@ public class FullRepoTest : BaseRepositoryTest
 
         await LoadRandomDataSet(countUser);
 
+        var users = Uow.Users.Read()
+            .Include(u => u.Homework)
+            .Include(u => u.UsersRoles)
+            .Include(u => u.Settings)
+            .ToList();
+        var groups = Uow.Groups.Read()
+            .Include(g => g.Couples)
+            .Include(g => g.Subjects)
+            .Include(g => g.UsersRoles)
+            .ToList();
+
+        var couples = Uow.Couples.Read()
+            .ToList();
+
         Uow.Users.Read().Count().Should().Be(Generator.Users.Count);
         CollectionAssert.AreEquivalent(
             Generator.Users.Select(item => item.Id),

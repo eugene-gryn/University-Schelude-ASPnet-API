@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -98,5 +99,62 @@ public class GroupRepoTests : BaseRepositoryTest {
         result.Should().BeTrue();
         (groupUsersCount - 1).Should().Be(groupU!.UsersRoles.Count);
         groupU.UsersRoles.Any(role => role.UserId == userIdToDelete).Should().BeFalse();
+    }
+
+    [Test]
+    public async Task NearAndTodayCouples_GetCouplesFromGroup_Found() {
+        await LoadRandomDataSet(3);
+        var group = Generator.Groups.First();
+        var groupsTodayCs = group.Couples.Where(c => c.Begin.Date == DateTime.UtcNow.Date).ToList();
+        var groupsNearC = group.Couples.MinBy(c => c.Begin);
+
+
+        var todayCs = await Uow.Groups.DayCouples(group.Id, DateTime.UtcNow);
+        var nearC = await Uow.Groups.NearCouple(group.Id);
+
+        nearC.Should().NotBeNull();
+        CollectionAssert.AreEquivalent(todayCs.Select(c => c.Id), groupsTodayCs.Select(c => c.Id));
+        groupsNearC!.Id.Should().Be(nearC!.Id);
+    }
+
+    [Test]
+    public async Task NewCreator_UserMakeCreator_Success()
+    {
+        await LoadRandomDataSet(3);
+        var user = await RegisterNewUser();
+        var group = await Uow.Groups.Read().FirstAsync();
+
+        var result = await Uow.Groups.SetNewCreator(group.Id, user.Id);
+
+        result.Should().BeTrue();
+        (await Uow.Groups.ReadById(group.Id)
+            .Include(g => g.UsersRoles)
+            .SingleOrDefaultAsync())!.UsersRoles.Any(role => role.UserId == user.Id && role.IsOwner).Should().BeTrue();
+
+    }
+    [Test]
+    public async Task NewCreator_UserAddToGroupAndMakeCreator_Success()
+    {
+        await LoadRandomDataSet(3);
+        var user = await RegisterNewUser();
+        var group = await Uow.Groups.Read().FirstAsync();
+
+        await Uow.Groups.AddUser(group.Id, user.Id);
+
+        //await Uow.Groups.SetNewCreator()
+
+        throw new NotImplementedException();
+    }
+    [Test] public async Task AddModerator_ThatAlreadyIn_Success() {
+        await LoadRandomDataSet(3);
+        throw new NotImplementedException();
+    }
+    [Test] public async Task AddModerator_UserThatNotIn_Success() {
+        await LoadRandomDataSet(3);
+        throw new NotImplementedException();
+    }
+    [Test] public async Task RemoveModerator_UserChangeModeratorRole_Success() {
+        await LoadRandomDataSet(3);
+        throw new NotImplementedException();
     }
 }

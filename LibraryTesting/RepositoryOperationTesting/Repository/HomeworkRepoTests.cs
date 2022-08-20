@@ -15,7 +15,15 @@ public class HomeworkRepoTests : BaseRepositoryTest
     {
         await LoadRandomDataSet(10);
 
-        var item = Generator.GenEmptyHomework(1, Uow.Subjects.Read().First()).First();
+        var subject = Uow.Subjects.Read()
+            .Include(s => s.OwnerGroup)
+            .ThenInclude(g => g.UsersRoles)
+            .ThenInclude(r => r.User)
+            .First();
+
+        var item = Generator.GenEmptyHomework(1,
+            subject,
+            subject.OwnerGroup.UsersRoles.First().User).First();
 
         var result = await Uow.Homework.Add(item);
         Uow.Save();
@@ -29,7 +37,15 @@ public class HomeworkRepoTests : BaseRepositoryTest
         await LoadRandomDataSet(10);
 
         int COUNT = 4;
-        var items = Generator.GenEmptyHomework(COUNT, Uow.Subjects.Read().First());
+        var subject = Uow.Subjects.Read()
+            .Include(s => s.OwnerGroup)
+            .ThenInclude(g => g.UsersRoles)
+            .ThenInclude(r => r.User)
+            .First();
+
+        var items = Generator.GenEmptyHomework(COUNT,
+            subject,
+            subject.OwnerGroup.UsersRoles.First().User);
 
         var result = await Uow.Homework.AddRange(items);
         Uow.Save();
@@ -72,7 +88,5 @@ public class HomeworkRepoTests : BaseRepositoryTest
 
         res.Should().BeTrue();
         (Generator.Homework.Count - 1).Should().Be(Uow.Homework.Read().Count());
-        (user.Homework.Count - 1).Should().Be(Uow.Users.ReadById(user.Id)
-            .Include(u => u.Homework).First().Homework.Count);
     }
 }

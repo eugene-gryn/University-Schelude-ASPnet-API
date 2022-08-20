@@ -74,8 +74,6 @@ namespace LibraryTesting.RepositoryOperationTesting.Repository
 
             res.Should().BeTrue();
             (Generator.Subjects.Count - 1).Should().Be(Uow.Subjects.Read().Count());
-            (group.Subjects.Count - 1).Should().Be(Uow.Groups.ReadById(group.Id)
-                .Include(g => g.Subjects).First().Subjects.Count);
         }
     }
 }

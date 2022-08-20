@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DAL.Entities;
@@ -10,98 +9,133 @@ using NUnit.Framework;
 namespace LibraryTesting.RepositoryOperationTesting;
 
 [TestFixture]
-public class BaseRepositoryTest : BaseTest
-{
-    protected override void EveryTimeSetUp()
-    {
+public class BaseRepositoryTest : BaseTest {
+    protected override void EveryTimeSetUp() {
         base.EveryTimeSetUp();
 
         Generator.Clear();
     }
 
-    public BaseRepositoryTest()
-    {
+    public BaseRepositoryTest() {
         Generator = new ScheduleRandomGenerator();
     }
 
     protected ScheduleRandomGenerator Generator { get; }
 
 
-    protected async Task LoadRandomDataSet(int countUser = 1)
-    {
+    protected async Task LoadRandomDataSet(int countUser = 1) {
         Generator.MakeDataSet(countUser);
 
         if (!await Uow.Users.AddRange(Generator.Users)) return;
+        Uow.Save();
 
         if (!await Uow.Groups.AddRange(Generator.Groups)) return;
+        Uow.Save();
 
         if (!await Uow.Subjects.AddRange(Generator.Subjects)) return;
+        Uow.Save();
 
         if (!await Uow.Couples.AddRange(Generator.Couples)) return;
+        Uow.Save();
 
         if (!await Uow.Homework.AddRange(Generator.Homework)) return;
-
         Uow.Save();
 
 
-        Generator.Groups.ForEach(async item =>
-        {
+
+        Generator.Groups.ForEach(async item => {
             var group = Uow.Groups.ReadById(item.Id)
-                .Include(g => g.Couples)
-                .Include(g => g.Subjects)
                 .Include(g => g.UsersRoles)
                 .FirstOrDefault();
-
+        
             if (group != null)
             {
-                item.Couples.ToList()
-                    .ForEach(couple => group.Couples.Add(Uow.Couples.ReadById(couple.Id).FirstOrDefault()));
-
-                item.Subjects.ToList()
-                    .ForEach(subj => group.Subjects.Add(Uow.Subjects.ReadById(subj.Id).FirstOrDefault()));
-
-                item.UsersRoles.ToList().ForEach(async role =>
-                {
+                item.UsersRoles.ToList().ForEach(async role => {
                     group.UsersRoles.Add(new UserRole
                     {
-                        Group = group,
                         GroupId = group.Id,
                         IsModerator = role.IsModerator,
                         IsOwner = role.IsOwner,
                         UserId = role.User.Id,
-                        User = Uow.Users.ReadById(role.User.Id).FirstOrDefault()
-                               ?? throw new InvalidOperationException()
                     });
                     await Uow.Groups.Update(group);
                     Uow.Save();
                 });
             }
-
+        
             await Uow.Groups.Update(group);
+            Uow.Save();
+        });
+        
+        UowUpdate();
+        
+        Generator.Users.ForEach(async item => {
+            var user = Uow.Users.ReadById(item.Id)
+                .FirstOrDefault();
+        
+            if (user != null) {
+                user.Settings = item.Settings;
+            }
+        
+            await Uow.Users.Update(user);
             Uow.Save();
         });
 
         UowUpdate();
 
-        Generator.Users.ForEach(async item =>
-        {
-            var user = Uow.Users.ReadById(item.Id)
-                .Include(u => u.UsersRoles)
-                .Include(u => u.Homework)
-                .FirstOrDefault();
-
-            if (user != null)
-            {
-                item.Homework.ToList().ForEach(couple =>
-                    user.Homework.Add(Uow.Homework.ReadById(couple.Id).FirstOrDefault()));
-                user.Settings = item.Settings;
-            }
-
-            await Uow.Users.Update(user);
-            Uow.Save();
-        });
+        // COPY ARRAY
+        
+        Generator.Clear();
+        
+        Generator.Users = Uow.Users.Read()
+            .Include(u => u.Homework)
+            .ThenInclude(h => h.Subject)
+            .ThenInclude(s => s.OwnerGroup)
+            .Include(u => u.Settings)
+            .Include(u => u.UsersRoles)
+            .ThenInclude(u => u.Group)
+            .ThenInclude(g => g.Couples)
+            .ToList();
+        
+        Generator.Groups = Uow.Groups.Read()
+            .Include(g => g.Couples)
+            .Include(g => g.Subjects)
+            .ThenInclude(s => s.Couples)
+            .Include(g => g.Subjects)
+            .ThenInclude(s => s.Homework)
+            .Include(g => g.UsersRoles)
+            .ToList();
+        
+        Generator.Subjects = Uow.Subjects.Read()
+            .Include(s => s.Couples)
+            .Include(s => s.Homework)
+            .ThenInclude(h => h.User)
+            .ThenInclude(u => u.UsersRoles)
+            .ThenInclude(r => r.Group)
+            .ThenInclude(g => g.Subjects)
+            .Include(s => s.OwnerGroup)
+            .ThenInclude(g => g.Couples)
+            .ToList();
+        
+        Generator.Couples = Uow.Couples.Read()
+            .Include(c => c.Subject)
+            .ThenInclude(s => s.OwnerGroup)
+            .ThenInclude(g => g.Subjects)
+            .ToList();
+        
+        Generator.Homework = Uow.Homework.Read()
+            .Include(h => h.User)
+            .ThenInclude(u => u.UsersRoles)
+            .Include(h => h.Subject)
+            .ThenInclude(s => s.Couples)
+            .ToList();
     }
 
+    protected async Task<User> RegisterNewUser() {
+        var user = Generator.GenEmptyUsers(1).First();
+        await Uow.Users.Add(user);
+        return await Uow.Users.Read().Where(u => u.Login == user.Login).FirstOrDefaultAsync();
+    }
     protected async Task<User> AddUser() {
         var user = Generator.GenEmptyUsers(1).First();
 

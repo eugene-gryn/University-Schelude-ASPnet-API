@@ -1,12 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DAL.Entities;
 
-public class User
-{
-    [Key]
-    public int Id { get; set; }
+public class User {
+    [Key] public int Id { get; set; }
 
     [StringLength(20)] public string Login { get; set; } = string.Empty;
 
@@ -16,9 +13,9 @@ public class User
 
     public string? ImageLocation { get; set; }
 
-    public byte[] Password { get; set; } = null!;
+    public byte[] Password { get; set; } = { };
 
-    public byte[] Salt { get; set; } = null!;
+    public byte[] Salt { get; set; } = { };
 
     public Settings Settings { get; set; }
 
