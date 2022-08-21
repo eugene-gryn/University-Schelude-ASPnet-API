@@ -23,7 +23,7 @@ public class BaseRepositoryTest : BaseTest {
     protected ScheduleRandomGenerator Generator { get; }
 
 
-    protected async Task LoadRandomDataSet(int countUser = 1) {
+    protected async Task GenerateRandomDataSet(int countUser = 1) {
         Generator.MakeDataSet(countUser);
 
         if (!await Uow.Users.AddRange(Generator.Users)) return;

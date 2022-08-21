@@ -14,7 +14,7 @@ public class FullRepoTest : BaseRepositoryTest
     {
         var countUser = 5;
 
-        await LoadRandomDataSet(countUser);
+        await GenerateRandomDataSet(countUser);
 
         var users = Uow.Users.Read()
             .Include(u => u.Homework)

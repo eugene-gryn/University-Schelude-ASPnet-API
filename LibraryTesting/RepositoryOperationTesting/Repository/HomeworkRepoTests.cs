@@ -13,7 +13,7 @@ public class HomeworkRepoTests : BaseRepositoryTest
     [Test]
     public async Task Creation_Successful()
     {
-        await LoadRandomDataSet(10);
+        await GenerateRandomDataSet(10);
 
         var subject = Uow.Subjects.Read()
             .Include(s => s.OwnerGroup)
@@ -34,7 +34,7 @@ public class HomeworkRepoTests : BaseRepositoryTest
     [Test]
     public async Task RangeCreation_Successful()
     {
-        await LoadRandomDataSet(10);
+        await GenerateRandomDataSet(10);
 
         int COUNT = 4;
         var subject = Uow.Subjects.Read()
@@ -50,14 +50,14 @@ public class HomeworkRepoTests : BaseRepositoryTest
         var result = await Uow.Homework.AddRange(items);
         Uow.Save();
 
-        result.Should().Be(true);
+        result.Should().BeTrue();
         Uow.Homework.Read().Count().Should().Be(Generator.Homework.Count + items.Count);
     }
 
     [Test]
     public async Task Update_FoundAndUpdateItem_Success()
     {
-        await LoadRandomDataSet(3);
+        await GenerateRandomDataSet(3);
         var newProp = "this is!";
 
         var homeworkInfo = Generator.Homework.First();
@@ -78,7 +78,7 @@ public class HomeworkRepoTests : BaseRepositoryTest
     [Test]
     public async Task Remove_AllDependedListCheck_Removed()
     {
-        await LoadRandomDataSet(3);
+        await GenerateRandomDataSet(3);
 
         var user = Generator.Users.First();
         var homework = await Uow.Homework.ReadById(user.Homework.First().Id).FirstOrDefaultAsync();
@@ -92,7 +92,7 @@ public class HomeworkRepoTests : BaseRepositoryTest
 
     [Test]
     public async Task SetSubject_ChangeSubjectOnHomework_Successful() {
-        await LoadRandomDataSet(2);
+        await GenerateRandomDataSet(2);
         var group = await Uow.Groups.ReadById(1)
             .Include(g => g.Subjects)
             .ThenInclude(s => s.Homework)

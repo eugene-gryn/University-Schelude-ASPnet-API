@@ -10,7 +10,7 @@ public class UserRepository : EFRepository<Entities.User>, IUserRepository {
     public override async Task<bool> Add(Entities.User item) {
         var user = MapAdd(item);
 
-        // TODO: Make Unique Login at Add
+        if (Context.Users.Any(u => u.Login == user.Login)) return false;
 
         await Context.Users.AddAsync(user);
 
@@ -19,8 +19,12 @@ public class UserRepository : EFRepository<Entities.User>, IUserRepository {
 
     public override async Task<bool> AddRange(IEnumerable<Entities.User> entities) {
         var enumerable = entities.ToList();
-        for (var i = 0; i < enumerable.Count; i++)
+
+        for (var i = 0; i < enumerable.Count; i++) {
+            if (Context.Users.Any(u => u.Login == enumerable[i].Login)) return false;
             enumerable[i] = MapAdd(enumerable[i]);
+
+        }
 
         await Context.Users.AddRangeAsync(enumerable);
 
@@ -32,6 +36,8 @@ public class UserRepository : EFRepository<Entities.User>, IUserRepository {
     }
 
     public override Task<bool> Update(Entities.User item) {
+        if (Context.Users.Any(u => (u.Id == item.Id) ? u.Login != item.Login : u.Login == item.Login)) return Task.FromResult(false);
+
         Context.Entry(item).State = EntityState.Modified;
 
         Context.Users.Update(item);
@@ -59,6 +65,8 @@ public class UserRepository : EFRepository<Entities.User>, IUserRepository {
 
     public override bool Add(ref Entities.User item) {
         var user = MapAdd(item);
+
+        if (Context.Users.Any(u => u.Login == user.Login)) return false;
 
         item = Context.Users.Add(user).Entity;
 

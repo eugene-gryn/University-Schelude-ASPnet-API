@@ -41,9 +41,11 @@ public class SubjectsRepository : EFRepository<Entities.Subject>, ISubjectReposi
         return Task.FromResult(true);
     }
 
-    // TODO check removed tasks and couples
     public override async Task<bool> Delete(int id) {
-        var item = await Context.Subjects.Where(subject => subject.Id == id).FirstOrDefaultAsync();
+        var item = await ReadById(id)
+            .Include(s => s.Homework)
+            .Include(s => s.Couples)
+            .SingleOrDefaultAsync();
 
         if (item == null) return false;
 

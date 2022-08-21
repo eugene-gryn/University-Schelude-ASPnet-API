@@ -48,6 +48,8 @@ public class UserRepoTests : BaseRepositoryTest {
         Uow.Users.Read().Count().Should().Be(users.Count);
     }
 
+
+
     [Test]
     public async Task Update_Successful() {
         await Creation_Successful();
@@ -64,8 +66,22 @@ public class UserRepoTests : BaseRepositoryTest {
     }
 
     [Test]
+    public async Task Update_WithNotUniqueLogin_FalseReturn()
+    {
+        await GenerateRandomDataSet(3);
+        var user1 = await Uow.Users.ReadById(1).SingleOrDefaultAsync();
+        var user2 = await Uow.Users.ReadById(2).SingleOrDefaultAsync();
+
+        user1!.Login = user2!.Login;
+
+        var result = await Uow.Users.Update(user1);
+
+        result.Should().BeFalse();
+    }
+
+    [Test]
     public async Task Delete_RemoveAllDependentEntities_Successful() {
-        await LoadRandomDataSet(1);
+        await GenerateRandomDataSet(1);
         var user = Uow.Users.Read()
             .Include(u => u.UsersRoles)
             .Include(u => u.Homework)
@@ -81,7 +97,7 @@ public class UserRepoTests : BaseRepositoryTest {
 
     [Test]
     public async Task Delete_RemoveAllDependentEntities_SuccessfulRemoveGroupDepend() {
-        await LoadRandomDataSet(2);
+        await GenerateRandomDataSet(2);
         var userUow = Uow.Users.Read()
             .First();
 
@@ -110,7 +126,7 @@ public class UserRepoTests : BaseRepositoryTest {
 
     [Test]
     public async Task ReadById_ReadEntity_SuccessfulRead() {
-        await LoadRandomDataSet(2);
+        await GenerateRandomDataSet(2);
 
 
         var searchUser = Generator.Users.First();
@@ -124,7 +140,7 @@ public class UserRepoTests : BaseRepositoryTest {
 
     [Test]
     public async Task ReadById_ReadEntity_EmptyUser() {
-        await LoadRandomDataSet(2);
+        await GenerateRandomDataSet(2);
 
 
         var searchUser = Generator.Users.First();

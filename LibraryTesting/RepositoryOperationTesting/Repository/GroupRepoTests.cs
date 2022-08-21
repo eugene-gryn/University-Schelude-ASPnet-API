@@ -36,7 +36,7 @@ public class GroupRepoTests : BaseRepositoryTest {
 
     [Test]
     public async Task Update_FoundAndUpdateItem_Success() {
-        await LoadRandomDataSet(3);
+        await GenerateRandomDataSet(3);
         var newProp = "NameGroup: Valid";
 
         var groupInfo = Generator.Groups.FirstOrDefault();
@@ -56,7 +56,7 @@ public class GroupRepoTests : BaseRepositoryTest {
 
     [Test]
     public async Task Remove_CheckAllDependedEntityRemoved_ValidRemove() {
-        await LoadRandomDataSet(3);
+        await GenerateRandomDataSet(3);
 
         var group = Generator.Groups.First();
 
@@ -71,7 +71,7 @@ public class GroupRepoTests : BaseRepositoryTest {
 
     [Test]
     public async Task AddUser_CreateUserAndAddToList_Successful() {
-        await LoadRandomDataSet(3);
+        await GenerateRandomDataSet(3);
         var user = await AddUser();
         var group = Uow.Groups.Read().First();
 
@@ -88,7 +88,7 @@ public class GroupRepoTests : BaseRepositoryTest {
 
     [Test]
     public async Task RemoveUser_DeleteFromExistingGroup_SuccessfulErase() {
-        await LoadRandomDataSet(3);
+        await GenerateRandomDataSet(3);
         var group = Uow.Groups.Read().Include(g => g.UsersRoles).First();
         var groupUsersCount = group.UsersRoles.Count;
         var userIdToDelete = group.UsersRoles.Last().UserId;
@@ -104,7 +104,7 @@ public class GroupRepoTests : BaseRepositoryTest {
 
     [Test]
     public async Task NearAndTodayCouples_GetCouplesFromGroup_Found() {
-        await LoadRandomDataSet(3);
+        await GenerateRandomDataSet(3);
         var group = Generator.Groups.First();
         var groupsTodayCs = group.Couples.Where(c => c.Begin.Date == DateTime.UtcNow.Date).ToList();
         var groupsNearC = group.Couples.MinBy(c => c.Begin);
@@ -121,7 +121,7 @@ public class GroupRepoTests : BaseRepositoryTest {
     [Test]
     public async Task NewCreator_UserMakeCreator_Success()
     {
-        await LoadRandomDataSet(3);
+        await GenerateRandomDataSet(3);
         var user = RegisterNewUser();
         var group = await Uow.Groups.Read().FirstAsync();
 
@@ -136,7 +136,7 @@ public class GroupRepoTests : BaseRepositoryTest {
     [Test]
     public async Task NewCreator_UserAddToGroupAndMakeCreator_Success()
     {
-        await LoadRandomDataSet(3);
+        await GenerateRandomDataSet(3);
         var user = RegisterNewUser();
         var group = await Uow.Groups.Read().FirstAsync();
 
@@ -150,7 +150,7 @@ public class GroupRepoTests : BaseRepositoryTest {
             .SingleOrDefaultAsync())!.UsersRoles.Any(role => role.UserId == user.Id && role.IsOwner).Should().BeTrue();
     }
     [Test] public async Task AddModerator_ThatAlreadyIn_Success() {
-        await LoadRandomDataSet(3);
+        await GenerateRandomDataSet(3);
         var user = RegisterNewUser();
         var group = await Uow.Groups.Read().FirstAsync();
 
@@ -164,7 +164,7 @@ public class GroupRepoTests : BaseRepositoryTest {
             .SingleOrDefaultAsync())!.UsersRoles.Any(role => role.UserId == user.Id && role.IsModerator).Should().BeTrue();
     }
     [Test] public async Task AddModerator_UserThatNotIn_Success() {
-        await LoadRandomDataSet(3);
+        await GenerateRandomDataSet(3);
         var user = RegisterNewUser();
         var group = await Uow.Groups.Read().FirstAsync();
 
@@ -176,7 +176,7 @@ public class GroupRepoTests : BaseRepositoryTest {
             .SingleOrDefaultAsync())!.UsersRoles.Any(role => role.UserId == user.Id && role.IsModerator).Should().BeTrue();
     }
     [Test] public async Task RemoveModerator_UserChangeModeratorRole_Success() {
-        await LoadRandomDataSet(3);
+        await GenerateRandomDataSet(3);
         var group = await Uow.Groups.Read()
             .Include(g => g.UsersRoles)
             .FirstAsync();

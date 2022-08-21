@@ -14,7 +14,7 @@ public class CouplesRepoTests : BaseRepositoryTest
     [Test]
     public async Task Creation_Successful()
     {
-        await LoadRandomDataSet(3);
+        await GenerateRandomDataSet(3);
 
         var couple = Generator.GenEmptyCouple(1, 
             Uow.Subjects.Read().First(),
@@ -29,7 +29,7 @@ public class CouplesRepoTests : BaseRepositoryTest
     [Test]
     public async Task RangeCreation_Successful()
     {
-        await LoadRandomDataSet(3);
+        await GenerateRandomDataSet(3);
 
         int COUNT = 4;
 
@@ -47,7 +47,7 @@ public class CouplesRepoTests : BaseRepositoryTest
     [Test]
     public async Task Update_FoundAndUpdateItem_Success()
     {
-        await LoadRandomDataSet(3);
+        await GenerateRandomDataSet(3);
         var newProp = DateTime.MinValue;
 
         var coupleInfo = Generator.Groups.First();
@@ -68,7 +68,7 @@ public class CouplesRepoTests : BaseRepositoryTest
     [Test]
     public async Task Remove_AllDependedListCheck_Removed()
     {
-        await LoadRandomDataSet(3);
+        await GenerateRandomDataSet(3);
 
         var couplesCount = Uow.Couples.Read().Count();
         var firstGroupFirstCouple = await Uow.Groups.ReadById(1)
@@ -85,7 +85,7 @@ public class CouplesRepoTests : BaseRepositoryTest
 
     [Test]
     public async Task RemoveAll_CouplesRemovedFromGroup_Successful() {
-        await LoadRandomDataSet();
+        await GenerateRandomDataSet();
 
         var group = await Uow.Groups.ReadById(1)
             .Include(c => c.Couples)

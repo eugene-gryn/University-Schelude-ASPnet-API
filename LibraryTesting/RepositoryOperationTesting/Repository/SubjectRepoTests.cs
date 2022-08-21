@@ -10,7 +10,7 @@ namespace LibraryTesting.RepositoryOperationTesting.Repository;
 public class SubjectRepoTests : BaseRepositoryTest {
     [Test]
     public async Task Creation_Successful() {
-        await LoadRandomDataSet(10);
+        await GenerateRandomDataSet(10);
 
         var item = Generator.GenEmptySubject(1, Uow.Groups.Read().First()).First();
 
@@ -23,7 +23,7 @@ public class SubjectRepoTests : BaseRepositoryTest {
 
     [Test]
     public async Task RangeCreation_Successful() {
-        await LoadRandomDataSet(10);
+        await GenerateRandomDataSet(10);
 
         var COUNT = 4;
         var items = Generator.GenEmptySubject(COUNT, Uow.Groups.Read().First());
@@ -37,7 +37,7 @@ public class SubjectRepoTests : BaseRepositoryTest {
 
     [Test]
     public async Task Update_FoundAndUpdateItem_Success() {
-        await LoadRandomDataSet(3);
+        await GenerateRandomDataSet(3);
         var newProp = "Subject Name: Juvava";
 
         var subjectInfo = Generator.Groups.First();
@@ -57,21 +57,22 @@ public class SubjectRepoTests : BaseRepositoryTest {
 
     [Test]
     public async Task Remove_AllDependedListCheck_Removed() {
-        await LoadRandomDataSet(3);
+        await GenerateRandomDataSet(3);
 
-        var group = Generator.Groups.First();
-        var subject = group.Subjects.First();
+        var subject = Generator.Subjects.First(s => s.Couples.Any() && s.Homework.Any());
 
         var res = await Uow.Subjects.Delete(subject.Id);
         Uow.Save();
 
         res.Should().BeTrue();
         (Generator.Subjects.Count - 1).Should().Be(Uow.Subjects.Read().Count());
+        Generator.Couples.Count.Should().BeGreaterThan(Uow.Couples.Read().Count());
+        Generator.Homework.Count.Should().BeGreaterThan(Uow.Homework.Read().Count());
     }
 
     [Test]
     public async Task RemoveAll_EraseAllSubjects_Successful() {
-        await LoadRandomDataSet(3);
+        await GenerateRandomDataSet(3);
         var group = await Uow.Groups.ReadById(1)
             .Include(g => g.Subjects)
             .ThenInclude(s => s.Homework)
