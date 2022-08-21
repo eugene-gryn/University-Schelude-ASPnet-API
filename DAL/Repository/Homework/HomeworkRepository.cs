@@ -8,14 +8,7 @@ public class HomeworkRepository : EFRepository<HomeworkTask>, IHomeworkRepositor
     public HomeworkRepository(ScheduleContext context) : base(context) { }
 
     public override async Task<bool> Add(HomeworkTask item) {
-        var addItem = new HomeworkTask {
-            Id = 0,
-            SubjectId = item.SubjectId,
-            Deadline = item.Deadline,
-            Description = item.Description,
-            Priority = item.Priority,
-            UserId = item.UserId
-        };
+        var addItem = MapAdd(item);
 
         if (addItem.Deadline < DateTime.Now) return false; // TODO: TEST VALIDATION
 
@@ -25,26 +18,19 @@ public class HomeworkRepository : EFRepository<HomeworkTask>, IHomeworkRepositor
     }
 
     public override async Task<bool> AddRange(IEnumerable<HomeworkTask> entities) {
-        var list = entities.Select(item => new HomeworkTask {
-            Id = 0,
-            SubjectId = item.SubjectId,
-            Deadline = item.Deadline,
-            Description = item.Description,
-            Priority = item.Priority,
-            UserId = item.UserId
-        }).ToList();
+        var list = entities.Select(MapAdd).ToList();
 
         await Context.Homework.AddRangeAsync(list);
 
         return true;
     }
 
-    public override Task<bool> Add(out HomeworkTask item) {
-        throw new NotImplementedException();
-    }
+    public override bool Add(ref HomeworkTask item) {
+        var addItem = MapAdd(item);
 
-    public override Task<bool> AddRange(out IEnumerable<HomeworkTask> entities) {
-        throw new NotImplementedException();
+        item = Context.Homework.Add(addItem).Entity;
+
+        return true;
     }
 
     public override IQueryable<HomeworkTask> ReadById(int id) {
@@ -62,16 +48,33 @@ public class HomeworkRepository : EFRepository<HomeworkTask>, IHomeworkRepositor
     public override async Task<bool> Delete(int id) {
         var item = await Context.Homework.Where(task => task.Id == id).FirstOrDefaultAsync();
 
-        if (item != null) {
-            Context.Homework.Remove(item);
+        if (item == null) return false;
 
-            return true;
-        }
+        Context.Homework.Remove(item);
 
-        return false;
+        return true;
+
     }
 
-    public Task<bool> SetSubject(int id, int subjectId) {
-        throw new NotImplementedException();
+    public async Task<bool> SetSubject(int id, int subjectId) {
+        var task = await ReadById(id).Include(h => h.Subject).SingleOrDefaultAsync();
+
+        if (task == null) return false;
+        if (!Context.Subjects.Any(s => s.Id == subjectId)) return false;
+
+        task.SubjectId = subjectId;
+
+        return await Update(task);
+    }
+
+    protected override HomeworkTask MapAdd(HomeworkTask item) {
+        return new HomeworkTask {
+            Id = 0,
+            SubjectId = item.SubjectId,
+            Deadline = item.Deadline,
+            Description = item.Description,
+            Priority = item.Priority,
+            UserId = item.UserId
+        };
     }
 }

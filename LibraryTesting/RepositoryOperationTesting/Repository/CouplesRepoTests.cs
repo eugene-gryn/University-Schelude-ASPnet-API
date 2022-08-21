@@ -82,4 +82,22 @@ public class CouplesRepoTests : BaseRepositoryTest
         res.Should().BeTrue();
         (couplesCount - 1).Should().Be(Uow.Couples.Read().Count());
     }
+
+    [Test]
+    public async Task RemoveAll_CouplesRemovedFromGroup_Successful() {
+        await LoadRandomDataSet();
+
+        var group = await Uow.Groups.ReadById(1)
+            .Include(c => c.Couples)
+            .SingleOrDefaultAsync();
+        var couplesRemoveCount = group!.Couples.Count;
+        var couplesCount = Uow.Couples.Read().Count();
+
+        await Uow.Couples.RemoveAll(group!.Id);
+        Uow.Save();
+
+        group.Should().NotBeNull();
+        Uow.Groups.ReadById(group.Id).Include(g => g.Couples).SingleOrDefault()!.Couples.Count.Should().Be(0);
+        Uow.Couples.Read().Count().Should().Be(couplesCount - couplesRemoveCount);
+    }
 }

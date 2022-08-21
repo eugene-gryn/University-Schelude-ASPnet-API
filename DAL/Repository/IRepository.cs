@@ -4,8 +4,7 @@ public interface IRepository<TEntity>
 {
     Task<bool> Add(TEntity item);
     Task<bool> AddRange (IEnumerable<TEntity> entities);
-    Task<bool> Add(out TEntity item);
-    Task<bool> AddRange (out IEnumerable<TEntity> entities);
+    bool Add(ref TEntity item);
     IQueryable<TEntity> Read();
     IQueryable<TEntity> ReadById(int id);
     Task<bool> Update(TEntity item);

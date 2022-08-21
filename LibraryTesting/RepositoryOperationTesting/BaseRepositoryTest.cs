@@ -131,10 +131,10 @@ public class BaseRepositoryTest : BaseTest {
             .ToList();
     }
 
-    protected async Task<User> RegisterNewUser() {
+    protected User RegisterNewUser() {
         var user = Generator.GenEmptyUsers(1).First();
-        await Uow.Users.Add(user);
-        return await Uow.Users.Read().Where(u => u.Login == user.Login).FirstOrDefaultAsync();
+        Uow.Users.Add(ref user);
+        return user;
     }
     protected async Task<User> AddUser() {
         var user = Generator.GenEmptyUsers(1).First();

@@ -89,4 +89,27 @@ public class HomeworkRepoTests : BaseRepositoryTest
         res.Should().BeTrue();
         (Generator.Homework.Count - 1).Should().Be(Uow.Homework.Read().Count());
     }
+
+    [Test]
+    public async Task SetSubject_ChangeSubjectOnHomework_Successful() {
+        await LoadRandomDataSet(2);
+        var group = await Uow.Groups.ReadById(1)
+            .Include(g => g.Subjects)
+            .ThenInclude(s => s.Homework)
+            .ThenInclude(h => h.User)
+            .Include(g => g.UsersRoles)
+            .ThenInclude(r => r.User)
+            .ThenInclude(u => u.Homework)
+            .SingleOrDefaultAsync();
+        var user = group!.UsersRoles.First().User;
+        var homeworkTask = user.Homework.First();
+        var subject = group.Subjects.First(s => s.Homework.All(h => h.Id != homeworkTask.Id));
+
+        var result = await Uow.Homework.SetSubject(homeworkTask.Id, subject.Id);
+        Uow.Save();
+
+        result.Should().BeTrue();
+        group.Should().NotBeNull();
+        Uow.Homework.ReadById(homeworkTask.Id).Single().SubjectId.Should().Be(subject.Id);
+    }
 }

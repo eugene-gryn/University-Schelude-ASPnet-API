@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using DAL.Entities;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
@@ -121,7 +122,7 @@ public class GroupRepoTests : BaseRepositoryTest {
     public async Task NewCreator_UserMakeCreator_Success()
     {
         await LoadRandomDataSet(3);
-        var user = await RegisterNewUser();
+        var user = RegisterNewUser();
         var group = await Uow.Groups.Read().FirstAsync();
 
         var result = await Uow.Groups.SetNewCreator(group.Id, user.Id);
@@ -136,25 +137,58 @@ public class GroupRepoTests : BaseRepositoryTest {
     public async Task NewCreator_UserAddToGroupAndMakeCreator_Success()
     {
         await LoadRandomDataSet(3);
-        var user = await RegisterNewUser();
+        var user = RegisterNewUser();
         var group = await Uow.Groups.Read().FirstAsync();
 
         await Uow.Groups.AddUser(group.Id, user.Id);
 
-        //await Uow.Groups.SetNewCreator()
+        var result = await Uow.Groups.SetNewCreator(group.Id, user.Id);
 
-        throw new NotImplementedException();
+        result.Should().BeTrue();
+        (await Uow.Groups.ReadById(group.Id)
+            .Include(g => g.UsersRoles)
+            .SingleOrDefaultAsync())!.UsersRoles.Any(role => role.UserId == user.Id && role.IsOwner).Should().BeTrue();
     }
     [Test] public async Task AddModerator_ThatAlreadyIn_Success() {
         await LoadRandomDataSet(3);
-        throw new NotImplementedException();
+        var user = RegisterNewUser();
+        var group = await Uow.Groups.Read().FirstAsync();
+
+        await Uow.Groups.AddUser(group.Id, user.Id);
+
+        var result = await Uow.Groups.AddModerator(group.Id, user.Id);
+
+        result.Should().BeTrue();
+        (await Uow.Groups.ReadById(group.Id)
+            .Include(g => g.UsersRoles)
+            .SingleOrDefaultAsync())!.UsersRoles.Any(role => role.UserId == user.Id && role.IsModerator).Should().BeTrue();
     }
     [Test] public async Task AddModerator_UserThatNotIn_Success() {
         await LoadRandomDataSet(3);
-        throw new NotImplementedException();
+        var user = RegisterNewUser();
+        var group = await Uow.Groups.Read().FirstAsync();
+
+        var result = await Uow.Groups.AddModerator(group.Id, user.Id);
+
+        result.Should().BeTrue();
+        (await Uow.Groups.ReadById(group.Id)
+            .Include(g => g.UsersRoles)
+            .SingleOrDefaultAsync())!.UsersRoles.Any(role => role.UserId == user.Id && role.IsModerator).Should().BeTrue();
     }
     [Test] public async Task RemoveModerator_UserChangeModeratorRole_Success() {
         await LoadRandomDataSet(3);
-        throw new NotImplementedException();
+        var group = await Uow.Groups.Read()
+            .Include(g => g.UsersRoles)
+            .FirstAsync();
+        var user = group.UsersRoles.FirstOrDefault(role => role.IsModerator)?.User;
+
+
+        var result = await Uow.Groups.RemoveModerator(group.Id, user!.Id);
+
+        result.Should().BeTrue();
+        user.Should().NotBeNull();
+        (await Uow.Groups.ReadById(group.Id)
+            .Include(g => g.UsersRoles)
+            .SingleOrDefaultAsync())!.UsersRoles.Any(role => role.UserId == user!.Id && !role.IsModerator).Should().BeTrue();
     }
 }

@@ -7,13 +7,7 @@ public class CouplesRepository : EFRepository<Entities.Couple>, ICoupleRepositor
     public CouplesRepository(ScheduleContext context) : base(context) { }
 
     public override async Task<bool> Add(Entities.Couple item) {
-        var addItem = new Entities.Couple {
-            Id = 0,
-            Begin = item.Begin,
-            End = item.End,
-            SubjectId = item.SubjectId,
-            GroupId = item.GroupId
-        };
+        var addItem = MapAdd(item);
 
         await Context.Couples.AddAsync(addItem);
 
@@ -21,25 +15,19 @@ public class CouplesRepository : EFRepository<Entities.Couple>, ICoupleRepositor
     }
 
     public override async Task<bool> AddRange(IEnumerable<Entities.Couple> entities) {
-        var list = entities.Select(item => new Entities.Couple {
-            Id = 0,
-            Begin = item.Begin,
-            End = item.End,
-            SubjectId = item.SubjectId,
-            GroupId = item.GroupId
-        }).ToList();
+        var list = entities.Select(MapAdd).ToList();
 
         await Context.Couples.AddRangeAsync(list);
 
         return true;
     }
 
-    public override Task<bool> Add(out Entities.Couple item) {
-        throw new NotImplementedException();
-    }
+    public override bool Add(ref Entities.Couple item) {
+        var addItem = MapAdd(item);
 
-    public override Task<bool> AddRange(out IEnumerable<Entities.Couple> entities) {
-        throw new NotImplementedException();
+        item = Context.Couples.Add(addItem).Entity;
+
+        return true;
     }
 
     public override IQueryable<Entities.Couple> ReadById(int id) {
@@ -55,15 +43,34 @@ public class CouplesRepository : EFRepository<Entities.Couple>, ICoupleRepositor
     public override async Task<bool> Delete(int id) {
         var couple = await Context.Couples.Where(coupleT => coupleT.Id == id).FirstOrDefaultAsync();
 
-        if (couple != null) {
-            Context.Remove(couple);
-            return true;
-        }
+        if (couple == null) return false;
 
-        return false;
+        Context.Remove(couple);
+        
+        return true;
     }
 
-    public Task<bool> RemoveAll(int groupId) {
-        throw new NotImplementedException();
+    public async Task<bool> RemoveAll(int groupId) {
+        var group = await Context.Groups
+            .Where(g => g.Id == groupId)
+            .Include(g => g.Couples)
+            .SingleOrDefaultAsync();
+
+        if (group == null) return false;
+
+        group.Couples.Clear();
+        Context.Groups.Update(group);
+
+        return true;
+    }
+
+    protected override Entities.Couple MapAdd(Entities.Couple item) {
+        return new Entities.Couple {
+            Id = 0,
+            Begin = item.Begin,
+            End = item.End,
+            SubjectId = item.SubjectId,
+            GroupId = item.GroupId
+        };
     }
 }

@@ -8,14 +8,7 @@ public class GroupsRepository : EFRepository<Entities.Group>, IGroupRepository {
     public GroupsRepository(ScheduleContext context) : base(context) { }
 
     public override async Task<bool> Add(Entities.Group item) {
-        var group = new Entities.Group {
-            UsersRoles = new List<UserRole>(),
-            Couples = new List<Entities.Couple>(),
-            Subjects = new List<Entities.Subject>(),
-            Id = 0,
-            Name = item.Name,
-            PrivateType = item.PrivateType
-        };
+        var group = MapAdd(item);
 
         await Context.AddAsync(group);
 
@@ -25,27 +18,21 @@ public class GroupsRepository : EFRepository<Entities.Group>, IGroupRepository {
     public override async Task<bool> AddRange(IEnumerable<Entities.Group> entities) {
         var groups = entities.ToList();
         for (var i = 0; i < groups.Count; i++)
-            groups[i] = new Entities.Group {
-                UsersRoles = new List<UserRole>(),
-                Couples = new List<Entities.Couple>(),
-                Subjects = new List<Entities.Subject>(),
-                Id = 0,
-                Name = groups[i].Name,
-                PrivateType = groups[i].PrivateType
-            };
+            groups[i] = MapAdd(groups[i]);
 
         await Context.Groups.AddRangeAsync(groups);
 
         return true;
     }
 
-    public override Task<bool> Add(out Entities.Group item) {
-        throw new NotImplementedException();
+    public override bool Add(ref Entities.Group item) {
+        var group = MapAdd(item);
+
+        item = Context.Add(group).Entity;
+
+        return true;
     }
 
-    public override Task<bool> AddRange(out IEnumerable<Entities.Group> entities) {
-        throw new NotImplementedException();
-    }
 
     public override IQueryable<Entities.Group> ReadById(int id) {
         return Read().Where(el => el.Id == id).AsQueryable();
@@ -112,9 +99,9 @@ public class GroupsRepository : EFRepository<Entities.Group>, IGroupRepository {
 
     public async Task<List<Entities.Couple>> DayCouples(int groupId, DateTime date) {
         var group = await ReadById(groupId).Include(g => g.Couples).SingleOrDefaultAsync();
-        
+
         if (group == null) return new List<Entities.Couple>();
-    
+
         return group.Couples.Where(c => c.Begin.Date == date.Date).ToList();
     }
 
@@ -178,6 +165,17 @@ public class GroupsRepository : EFRepository<Entities.Group>, IGroupRepository {
         userRole.IsModerator = false;
 
         return await Update(g);
+    }
+
+    protected override Entities.Group MapAdd(Entities.Group item) {
+        return new Entities.Group {
+            UsersRoles = new List<UserRole>(),
+            Couples = new List<Entities.Couple>(),
+            Subjects = new List<Entities.Subject>(),
+            Id = 0,
+            Name = item.Name,
+            PrivateType = item.PrivateType
+        };
     }
 
 

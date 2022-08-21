@@ -8,17 +8,9 @@ public class UserRepository : EFRepository<Entities.User>, IUserRepository {
     public UserRepository(ScheduleContext context) : base(context) { }
 
     public override async Task<bool> Add(Entities.User item) {
-        var user = new Entities.User {
-            Id = 0,
-            IsAdmin = false,
-            UsersRoles = new List<UserRole>(),
-            Homework = new List<HomeworkTask>(),
-            ImageLocation = item.ImageLocation,
-            Login = item.Login,
-            Name = item.Name,
-            Password = item.Password,
-            Salt = item.Salt
-        };
+        var user = MapAdd(item);
+
+        // TODO: Make Unique Login at Add
 
         await Context.Users.AddAsync(user);
 
@@ -28,29 +20,11 @@ public class UserRepository : EFRepository<Entities.User>, IUserRepository {
     public override async Task<bool> AddRange(IEnumerable<Entities.User> entities) {
         var enumerable = entities.ToList();
         for (var i = 0; i < enumerable.Count; i++)
-            enumerable[i] = new Entities.User {
-                Id = 0,
-                IsAdmin = false,
-                UsersRoles = new List<UserRole>(),
-                Homework = new List<HomeworkTask>(),
-                ImageLocation = enumerable[i].ImageLocation,
-                Login = enumerable[i].Login,
-                Name = enumerable[i].Name,
-                Password = enumerable[i].Password,
-                Salt = enumerable[i].Salt
-            };
+            enumerable[i] = MapAdd(enumerable[i]);
 
         await Context.Users.AddRangeAsync(enumerable);
 
         return true;
-    }
-
-    public override Task<bool> Add(out Entities.User item) {
-        throw new NotImplementedException();
-    }
-
-    public override Task<bool> AddRange(out IEnumerable<Entities.User> entities) {
-        throw new NotImplementedException();
     }
 
     public override IQueryable<Entities.User> ReadById(int id) {
@@ -81,6 +55,27 @@ public class UserRepository : EFRepository<Entities.User>, IUserRepository {
         Context.Users.Remove(user);
 
         return true;
+    }
 
+    public override bool Add(ref Entities.User item) {
+        var user = MapAdd(item);
+
+        item = Context.Users.Add(user).Entity;
+
+        return true;
+    }
+
+    protected override Entities.User MapAdd(Entities.User item) {
+        return new Entities.User {
+            Id = 0,
+            IsAdmin = false,
+            UsersRoles = new List<UserRole>(),
+            Homework = new List<HomeworkTask>(),
+            ImageLocation = item.ImageLocation,
+            Login = item.Login,
+            Name = item.Name,
+            Password = item.Password,
+            Salt = item.Salt
+        };
     }
 }
