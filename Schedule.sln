@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraryTesting", "LibraryTe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BLL", "BLL\BLL.csproj", "{29EB23F6-2E80-4222-95A8-F2C6AC2B2A73}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API", "API\API.csproj", "{996170A2-0D08-408E-997D-3A65628368BE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API", "API\API.csproj", "{996170A2-0D08-408E-997D-3A65628368BE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RandomDataGenerator", "RandomDataGenerator\RandomDataGenerator.csproj", "{0190BDF7-09C8-438D-92D1-961A83243F0F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{996170A2-0D08-408E-997D-3A65628368BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{996170A2-0D08-408E-997D-3A65628368BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{996170A2-0D08-408E-997D-3A65628368BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0190BDF7-09C8-438D-92D1-961A83243F0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0190BDF7-09C8-438D-92D1-961A83243F0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0190BDF7-09C8-438D-92D1-961A83243F0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0190BDF7-09C8-438D-92D1-961A83243F0F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

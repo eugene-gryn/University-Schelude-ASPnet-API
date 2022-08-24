@@ -1,8 +1,7 @@
-﻿using System;
-using DAL.EF;
+﻿using DAL.EF;
 using Microsoft.EntityFrameworkCore;
 
-namespace LibraryTesting.DataGenerator.OptionsFactory;
+namespace RandomDataGenerator.DataGenerator.OptionsFactory;
 
 public class ScheduleInMemoryDbFactory : ContextFactory<ScheduleContext>
 {

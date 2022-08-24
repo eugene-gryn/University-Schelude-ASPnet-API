@@ -8,6 +8,9 @@ public class ScheduleContext : DbContext
     public ScheduleContext(ContextFactory<ScheduleContext> factory) : base(factory.CreateOptions())
     {
     }
+    public ScheduleContext(DbContextOptions options) : base(options)
+    {
+    }
 
     public DbSet<User> Users { get; set; }
     public DbSet<Group> Groups { get; set; }
@@ -22,6 +25,9 @@ public class ScheduleContext : DbContext
         // Owned user settings
         modelBuilder.Entity<User>()
             .OwnsOne(user => user.Settings);
+
+        modelBuilder.Entity<User>()
+            .OwnsOne(u => u.Token);
 
         // Set Many-To-Many Groups to Users
 

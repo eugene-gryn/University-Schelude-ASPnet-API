@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Castle.Components.DictionaryAdapter;
-using DAL.Entities;
+﻿using DAL.Entities;
 
-namespace LibraryTesting.DataGenerator;
+namespace RandomDataGenerator.DataGenerator;
 
 public class ScheduleRandomGenerator {
     private readonly Random _random = new();
@@ -110,7 +106,7 @@ public class ScheduleRandomGenerator {
 
         for (var i = 0; i < count; i++) {
             var group = GroupGenerate(Groups.Count + i + 1,
-                new List<Subject>(), new EditableList<UserRole>(), new List<Couple>());
+                new List<Subject>(), new List<UserRole>(), new List<Couple>());
             groups.Add(group);
             if (creator != null)
                 groups.LastOrDefault()?.UsersRoles.Add(new UserRole {

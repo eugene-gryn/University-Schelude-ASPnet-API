@@ -17,9 +17,10 @@ public class User {
 
     public byte[] Salt { get; set; } = { };
 
-    public Settings Settings { get; set; }
+    public Settings Settings { get; set; } = new();
+    public Tokens Token { get; set; } = new();
 
-    [Required] public ICollection<UserRole> UsersRoles { get; set; } = new List<UserRole>();
+    public ICollection<UserRole> UsersRoles { get; set; } = new List<UserRole>();
 
 
     public ICollection<HomeworkTask> Homework { get; set; } = new List<HomeworkTask>();
