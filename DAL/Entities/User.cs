@@ -5,11 +5,21 @@ namespace DAL.Entities;
 public class User {
     [Key] public int Id { get; set; }
 
-    [StringLength(20)] public string Login { get; set; } = string.Empty;
+    [Required]
+    [MinLength(2)]
+    [StringLength(20)]
+    public string Login { get; set; } = null!;
 
-    [StringLength(20)] public string Name { get; set; } = string.Empty;
+    [Required]
+    [MinLength(2)]
+    [StringLength(20)]
+    public string Name { get; set; } = null!;
 
-    public bool IsAdmin { get; set; }
+    [MinLength(2)]
+    [StringLength(15)]
+    public string? TelegramToken { get; set; }
+
+    public bool IsAdmin { get; set; } = false;
 
     public string? ImageLocation { get; set; }
 

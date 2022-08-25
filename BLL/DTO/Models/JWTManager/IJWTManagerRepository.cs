@@ -4,9 +4,9 @@ using BLL.DTO.Models.UserModels;
 namespace BLL.DTO.Models.JWTManager;
 
 public interface IJwtManagerRepository {
-    Task<TokensDTO?> CreateToken(UserLoginDto user);
+    Task<TokensDto?> CreateToken(UserLoginDto user);
 
-    Task<TokensDTO?> RefreshToken(int id, string refreshToken);
+    Task<TokensDto?> RefreshToken(int id, string refreshToken);
 
     int? GetUserId(ClaimsPrincipal user);
     string? GetUserLogin(ClaimsPrincipal user);

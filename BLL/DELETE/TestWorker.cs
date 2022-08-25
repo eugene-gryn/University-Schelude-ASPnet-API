@@ -6,8 +6,8 @@ using DAL.UOW;
 
 namespace BLL.DELETE;
 
-public static class TestWorker {
-    static TestWorker() {
+public class TestWorker {
+    public TestWorker() {
         var context = new ScheduleContext(new ScheduleSqlLiteFactory("TestDB"));
         IUnitOfWork uow = new EfUnitOfWork(context);
         context.Database.EnsureDeleted();

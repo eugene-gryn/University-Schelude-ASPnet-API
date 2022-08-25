@@ -190,26 +190,39 @@ public class ScheduleRandomGenerator {
     #region EntityGenerators
 
     /*User*/
-    public User UserGenerate(int id, List<UserRole> groups, List<HomeworkTask> home) {
+    private User UserGenerate(int id, List<UserRole> groups, List<HomeworkTask> home) {
         var user = new User {
             Id = id,
             Login = RString(),
             Name = RString(),
+            TelegramToken = RNum().ToString(),
             IsAdmin = RBool(),
             ImageLocation = RString(),
             Password = RByteArr(),
             Salt = RByteArr(),
             Settings = SettingsGenerate(),
             UsersRoles = groups,
-            Homework = home
+            Homework = home,
+            Token = TokensGenerate()
         };
 
 
         return user;
     }
 
+    private Tokens TokensGenerate() {
+        var token = new Tokens {
+            RefreshToken = RString(),
+            Token = RString(20),
+            TokenCreated = DateTime.UtcNow,
+            TokenExpires = DateTime.UtcNow.AddDays(2)
+        };
+
+        return token;
+    }
+
     /*Setting*/
-    public Settings SettingsGenerate() {
+    private Settings SettingsGenerate() {
         var settings = new Settings {
             NotifyBeforeCouple = RBool(),
             NotifyAboutCouple = RBool(),
@@ -222,7 +235,7 @@ public class ScheduleRandomGenerator {
     }
 
     /*Group*/
-    public Group GroupGenerate(int id, List<Subject> subj, List<UserRole> users,
+    private Group GroupGenerate(int id, List<Subject> subj, List<UserRole> users,
         List<Couple> couples) {
         var group = new Group {
             Id = id,
@@ -236,7 +249,7 @@ public class ScheduleRandomGenerator {
     }
 
     /*Coupe*/
-    public Couple CoupleGenerate(int id, Subject subject, Group group) {
+    private Couple CoupleGenerate(int id, Subject subject, Group group) {
         var couple = new Couple {
             Id = id,
             Begin = DateTime.Now,
@@ -250,7 +263,7 @@ public class ScheduleRandomGenerator {
     }
 
     /*HomeworkTask*/
-    public HomeworkTask HomeworkGenerate(int id, Subject subject, User user) {
+    private HomeworkTask HomeworkGenerate(int id, Subject subject, User user) {
         var homework = new HomeworkTask {
             Id = id,
             Description = RString(),
@@ -265,7 +278,7 @@ public class ScheduleRandomGenerator {
     }
 
     /*Subject*/
-    public Subject SubjectGenerate(int id, Group group) {
+    private Subject SubjectGenerate(int id, Group group) {
         var subject = new Subject {
             Id = id,
             Name = RString(),

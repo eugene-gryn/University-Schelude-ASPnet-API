@@ -1,6 +1,6 @@
 ﻿namespace BLL.DTO.Models.UserModels;
 
-public class TokensDTO {
+public class TokensDto {
     public string Token { get; set; } = String.Empty;
     public string RefreshToken { get; set; } = String.Empty;
 

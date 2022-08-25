@@ -14,24 +14,22 @@ namespace BLL.DTO.Models.JWTManager;
 
 public class JwtManagerRepository : IJwtManagerRepository {
     private readonly IConfiguration _configuration;
-    private readonly IPasswordHandler _password;
     private readonly IUnitOfWork _uow;
 
-    public JwtManagerRepository(IConfiguration configuration, IUnitOfWork uow, IPasswordHandler password) {
+    public JwtManagerRepository(IConfiguration configuration, IUnitOfWork uow) {
         _configuration = configuration;
         _uow = uow;
-        _password = password;
     }
 
-    public async Task<TokensDTO?> CreateToken(UserLoginDto user) {
+    public async Task<TokensDto?> CreateToken(UserLoginDto user) {
         var userLog = await _uow.Users.Read().Where(u => u.Login == user.Login).SingleOrDefaultAsync();
 
-        if (userLog == null || !_password.VerifyPassword(user.Password, userLog!.Password, userLog!.Salt)) return null;
+        if (userLog == null || !PasswordSingleton.Password.VerifyPassword(user.Password, userLog!.Password, userLog!.Salt)) return null;
 
         var created = DateTime.Now;
         var expires = DateTime.Now.AddDays(7);
 
-        return new TokensDTO {
+        return new TokensDto {
             Token = GenerateToken(userLog),
             RefreshToken = GenerateRefreshToken(),
             TokenCreated = created,
@@ -39,7 +37,7 @@ public class JwtManagerRepository : IJwtManagerRepository {
         };
     }
 
-    public async Task<TokensDTO?> RefreshToken(int id, string refreshToken) {
+    public async Task<TokensDto?> RefreshToken(int id, string refreshToken) {
         var user = await _uow.Users.ReadById(id).SingleOrDefaultAsync();
 
         if (user == null) return null;
@@ -47,7 +45,7 @@ public class JwtManagerRepository : IJwtManagerRepository {
         var created = DateTime.Now;
         var expires = DateTime.Now.AddDays(7);
 
-        return new TokensDTO {
+        return new TokensDto {
             Token = GenerateToken(user),
             RefreshToken = GenerateRefreshToken(),
             TokenCreated = created,

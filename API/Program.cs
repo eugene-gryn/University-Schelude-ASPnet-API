@@ -40,8 +40,10 @@ builder.Services.AddDbContext<ScheduleContext>(optionsBuilder => {
     optionsBuilder.UseSqlite(new ScheduleSqlLiteFactory("TestDB").ConnectionString);
 });
 
+// FOR: Test only!!
+new TestWorker();
+
 builder.Services.AddScoped<IUnitOfWork, EfUnitOfWork>();
-builder.Services.AddScoped<IPasswordHandler, PasswordHandler>();
 builder.Services.AddScoped<IJwtManagerRepository, JwtManagerRepository>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
