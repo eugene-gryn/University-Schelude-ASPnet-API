@@ -12,5 +12,8 @@ public class AutoMapperProfiles : Profile {
                 m => m.MapFrom(dto => dto.GetPasswordHash().Key))
             .ForMember(u => u.Password,
                 m => m.MapFrom(dto => dto.GetPasswordHash().Value));
+
+        CreateMap<Tokens, TokensDto>();
+        CreateMap<TokensDto, Tokens>();
     }
 }

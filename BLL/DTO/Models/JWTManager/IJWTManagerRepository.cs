@@ -8,7 +8,7 @@ public interface IJwtManagerRepository {
 
     Task<TokensDto?> RefreshToken(int id, string refreshToken);
 
-    int? GetUserId(ClaimsPrincipal user);
-    string? GetUserLogin(ClaimsPrincipal user);
+    int GetUserId(ClaimsPrincipal user);
+    string GetUserLogin(ClaimsPrincipal user);
 
 }

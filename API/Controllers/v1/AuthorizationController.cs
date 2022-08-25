@@ -1,6 +1,5 @@
 ﻿using BLL.DTO.Models.ExceptionBase;
 using BLL.DTO.Models.UserModels;
-using BLL.DTO.Models.UserModels.Exceptions;
 using BLL.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,15 +19,15 @@ public class AuthorizationController : ControllerBase {
     [AllowAnonymous]
     [HttpGet("authorize")]
     public async Task<ActionResult<TokensDto>> Login(string login, string password) {
-
+    
         try {
             var token = await _userS.Login(login, password);
-
+    
             return Ok(token);
         }
         catch (ExceptionModelBase e)
         {
-            return BadRequest($"{e.Message} - Model: {e.ModelName} | Action: {e.ActionName}");
+            return StatusCode(e.StatusCode, $"{e.Message} - Model: {e.ModelName} | Action: {e.ActionName}");
         }
         catch (Exception)
         {
@@ -42,12 +41,12 @@ public class AuthorizationController : ControllerBase {
         try
         {
             var res = await _userS.Register(user);
-
+    
             return Ok(res);
         }
         catch (ExceptionModelBase e)
         {
-            return BadRequest($"{e.Message} - Model: {e.ModelName} | Action: {e.ActionName}");
+            return StatusCode(e.StatusCode, $"{e.Message} - Model: {e.ModelName} | Action: {e.ActionName}");
         }
         catch (Exception)
         {
@@ -56,14 +55,15 @@ public class AuthorizationController : ControllerBase {
     }
     
     [HttpPost("refresh-token")]
-    public async Task<ActionResult<UserRegisterDto>> RefreshToken(UserRegisterDto user) {
-        try
-        {
-            // TODO: Code here....
+    public async Task<ActionResult<TokensDto>> RefreshToken(string refreshToken) {
+        try {
+            var tokens = await _userS.TokenUpdate(User, refreshToken);
+
+            return Ok(tokens);
         }
         catch (ExceptionModelBase e)
         {
-            return BadRequest($"{e.Message} - Model: {e.ModelName} | Action: {e.ActionName}");
+            return StatusCode(e.StatusCode, $"{e.Message} - Model: {e.ModelName} | Action: {e.ActionName}");
         }
         catch (Exception)
         {

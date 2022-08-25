@@ -1,9 +1,11 @@
-﻿using AutoMapper;
+﻿using System.Security.Claims;
+using AutoMapper;
+using BLL.DTO.Models.ExceptionBase;
 using BLL.DTO.Models.JWTManager;
 using BLL.DTO.Models.UserModels;
-using BLL.DTO.Models.UserModels.Exceptions;
 using DAL.Entities;
 using DAL.UOW;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 
 namespace BLL.Services;
@@ -17,7 +19,15 @@ public class UserService : BaseService {
             Password = password
         });
 
-        if (tokens == null) throw new WrongLoginCredentialsException("Wrong login or password", "User", "Login user token");
+        if (tokens == null) throw new ExceptionModelBase(401, "Wrong login or password", "User", "Login tokenUser token");
+
+        var user = await Uow.Users.Read().Where(u => u.Login == username)
+            .Include(u => u.Token)
+            .SingleOrDefaultAsync();
+
+        user!.Token = Mapper.Map<Tokens>(tokens);
+        await Uow.Users.Update(user);
+        Uow.Save();
 
         return tokens;
     }
@@ -27,8 +37,24 @@ public class UserService : BaseService {
         
         Uow.Save();
 
-        if (!res) throw new NotUniqueLoginUsedException("Login already used", "User", "Register new user");
+        if (!res) throw new ExceptionModelBase(409, "Login already used", "User", "Register new tokenUser");
         
         return user;
     }
+
+    public async Task<TokensDto?> TokenUpdate(ClaimsPrincipal tokenUser, string refreshToken) {
+        var userId = JwtManager.GetUserId(tokenUser);
+
+        var newTokens = await JwtManager.RefreshToken(userId, refreshToken);
+
+        var user = await Uow.Users.ReadById(userId)
+            .Include(u => u.Token)
+            .SingleOrDefaultAsync();
+
+        user!.Token = Mapper.Map<Tokens>(newTokens);
+        await Uow.Users.Update(user);
+        Uow.Save();
+
+        return newTokens;
+    } 
 }
