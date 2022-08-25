@@ -1,49 +1,18 @@
 ﻿using BLL.DTO.Models.ExceptionBase;
 using BLL.DTO.Models.UserModels;
-using BLL.DTO.Models.UserModels.Exceptions;
-using BLL.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers.v1;
 
-[Route("api/v1/")]
+[Route("api/[controller]")]
 [ApiController]
-[Authorize]
-public class AuthorizationController : ControllerBase {
-    private readonly UserService _userS;
-
-    public AuthorizationController(UserService userS) {
-        _userS = userS;
-    }
-
-    [AllowAnonymous]
-    [HttpGet("authorize")]
-    public async Task<ActionResult<TokensDto>> Login(string login, string password) {
-
-        try {
-            var token = await _userS.Login(login, password);
-
-            return Ok(token);
-        }
-        catch (ExceptionModelBase e)
-        {
-            return BadRequest($"{e.Message} - Model: {e.ModelName} | Action: {e.ActionName}");
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "System get something wrong happens!");
-        }
-    }
-
-    [AllowAnonymous]
-    [HttpPost("authorize")]
-    public async Task<ActionResult<UserRegisterDto>> Register(UserRegisterDto user) {
+public class UserController : ControllerBase {
+    [HttpGet("users")]
+    public async Task<ActionResult<UserRegisterDto>> UserList(int offset, int limit)
+    {
         try
         {
-            var res = await _userS.Register(user);
-
-            return Ok(res);
+            // TODO: Code here....
         }
         catch (ExceptionModelBase e)
         {
@@ -54,9 +23,27 @@ public class AuthorizationController : ControllerBase {
             return StatusCode(500, "System get something wrong happens!");
         }
     }
-    
-    [HttpPost("refresh-token")]
-    public async Task<ActionResult<UserRegisterDto>> RefreshToken(UserRegisterDto user) {
+
+    [HttpGet("users")]
+    public async Task<ActionResult<UserRegisterDto>> UserById(int id)
+    {
+        try
+        {
+            // TODO: Code here....
+        }
+        catch (ExceptionModelBase e)
+        {
+            return BadRequest($"{e.Message} - Model: {e.ModelName} | Action: {e.ActionName}");
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "System get something wrong happens!");
+        }
+    }
+
+    [HttpPut("users")]
+    public async Task<ActionResult<UserRegisterDto>> UpdateUserById(int id)
+    {
         try
         {
             // TODO: Code here....

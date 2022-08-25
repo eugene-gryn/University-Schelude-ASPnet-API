@@ -4,9 +4,9 @@ using BLL.DTO.Models.UserModels.Password;
 namespace BLL.DTO.Models.UserModels;
 
 public class UserRegisterDto {
-    private byte[] _hash = { };
-
     private string _passwordText = string.Empty;
+    
+    private byte[] _hash = { };
     private byte[] _salt = { };
 
     [Required]
@@ -36,6 +36,6 @@ public class UserRegisterDto {
     /// </summary>
     /// <returns>KeyValuePair, where Key is salt ,Value is password</returns>
     public KeyValuePair<byte[], byte[]> GetPasswordHash() {
-        return new(_salt, _hash);
+        return new KeyValuePair<byte[], byte[]>(_salt, _hash);
     }
 }

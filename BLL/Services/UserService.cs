@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BLL.DTO.Models.JWTManager;
 using BLL.DTO.Models.UserModels;
+using BLL.DTO.Models.UserModels.Exceptions;
 using DAL.Entities;
 using DAL.UOW;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -16,14 +17,17 @@ public class UserService : BaseService {
             Password = password
         });
 
+        if (tokens == null) throw new WrongLoginCredentialsException("Wrong login or password", "User", "Login user token");
+
         return tokens;
     }
 
     public async Task<UserRegisterDto?> Register(UserRegisterDto user) {
         var res = await Uow.Users.Add(Mapper.Map<User>(user));
+        
         Uow.Save();
 
-        if (!res) return null;
+        if (!res) throw new NotUniqueLoginUsedException("Login already used", "User", "Register new user");
         
         return user;
     }
