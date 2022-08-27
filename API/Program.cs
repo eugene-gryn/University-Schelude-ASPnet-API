@@ -13,10 +13,9 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 
-
-// FOR: Test only!!
-new TestWorker();
-
+// TEST
+var th1 = new Thread((async () => await (new TestWorker()).Run()));
+th1.Start();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -84,3 +83,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
+th1.Join();

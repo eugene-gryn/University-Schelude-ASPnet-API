@@ -35,9 +35,9 @@ public class EfUnitOfWork : IUnitOfWork
     public ISubjectRepository Subjects => _subjects ??= new SubjectsRepository(_context);
     public IHomeworkRepository Homework => _homework ??= new HomeworkRepository(_context);
 
-    public async void Save()
+    public void Save()
     {
-        await _context.SaveChangesAsync();
+        _context.SaveChanges();
     }
 
     public void Dispose()

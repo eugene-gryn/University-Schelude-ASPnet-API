@@ -39,6 +39,7 @@ public class UserController : ControllerBase {
     //    try
     //    {
     //        // TODO: Code here....
+    //        // TODO: DTO FULL INFO USER
     //    }
     //    catch (ExceptionModelBase e)
     //    {
