@@ -20,6 +20,7 @@ public class Subject {
 
 
     [Column(TypeName = "VARCHAR")]
+    [DataType(DataType.Url)]
     [StringLength(200)]
     public string? Url { get; set; }
 

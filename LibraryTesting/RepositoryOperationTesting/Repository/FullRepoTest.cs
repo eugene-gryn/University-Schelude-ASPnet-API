@@ -7,28 +7,12 @@ using NUnit.Framework;
 namespace LibraryTesting.RepositoryOperationTesting.Repository;
 
 [TestFixture]
-public class FullRepoTest : BaseRepositoryTest
-{
+public class FullRepoTest : BaseRepositoryTest {
     [Test]
-    public async Task FullLoadDataSet_CorrectLoading()
-    {
+    public async Task FullLoadDataSet_CorrectLoading() {
         var countUser = 5;
 
         await GenerateRandomDataSet(countUser);
-
-        var users = Uow.Users.Read()
-            .Include(u => u.Homework)
-            .Include(u => u.UsersRoles)
-            .Include(u => u.Settings)
-            .ToList();
-        var groups = Uow.Groups.Read()
-            .Include(g => g.Couples)
-            .Include(g => g.Subjects)
-            .Include(g => g.UsersRoles)
-            .ToList();
-
-        var couples = Uow.Couples.Read()
-            .ToList();
 
         Uow.Users.Read().Count().Should().Be(Generator.Users.Count);
         CollectionAssert.AreEquivalent(

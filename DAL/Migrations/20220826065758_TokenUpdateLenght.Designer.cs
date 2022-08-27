@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(ScheduleContext))]
-    [Migration("20220825085938_install")]
-    partial class install
+    [Migration("20220826065758_TokenUpdateLenght")]
+    partial class TokenUpdateLenght
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -162,8 +162,7 @@ namespace DAL.Migrations
                         .IsRequired()
                         .HasColumnType("BLOB");
 
-                    b.Property<string>("TelegramId")
-                        .IsRequired()
+                    b.Property<string>("TelegramToken")
                         .HasMaxLength(15)
                         .HasColumnType("TEXT");
 
@@ -279,10 +278,12 @@ namespace DAL.Migrations
 
                             b1.Property<string>("RefreshToken")
                                 .IsRequired()
+                                .HasMaxLength(64)
                                 .HasColumnType("TEXT");
 
                             b1.Property<string>("Token")
                                 .IsRequired()
+                                .HasMaxLength(128)
                                 .HasColumnType("TEXT");
 
                             b1.Property<DateTime>("TokenCreated")

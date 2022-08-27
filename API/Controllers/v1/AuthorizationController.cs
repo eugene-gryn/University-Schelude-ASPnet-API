@@ -16,58 +16,65 @@ public class AuthorizationController : ControllerBase {
         _userS = userS;
     }
 
+    [HttpGet("token")]
     [AllowAnonymous]
-    [HttpGet("authorize")]
-    public async Task<ActionResult<TokensDto>> Login(string login, string password) {
-    
+    public async Task<ActionResult<KeyValuePair<string, TokensDto>>> Login(string login, string password) {
         try {
             var token = await _userS.Login(login, password);
-    
+
             return Ok(token);
         }
-        catch (ExceptionModelBase e)
-        {
+        catch (ExceptionModelBase e) {
             return StatusCode(e.StatusCode, $"{e.Message} - Model: {e.ModelName} | Action: {e.ActionName}");
         }
-        catch (Exception)
-        {
-            return StatusCode(500, "System get something wrong happens!");
+        catch (Exception e) {
+            return StatusCode(500, $"System get something wrong happens! {e.Message}");
         }
     }
 
     [AllowAnonymous]
-    [HttpPost("authorize")]
+    [HttpPost("token")]
     public async Task<ActionResult<UserRegisterDto>> Register(UserRegisterDto user) {
-        try
-        {
+        try {
             var res = await _userS.Register(user);
-    
+
             return Ok(res);
         }
-        catch (ExceptionModelBase e)
-        {
+        catch (ExceptionModelBase e) {
             return StatusCode(e.StatusCode, $"{e.Message} - Model: {e.ModelName} | Action: {e.ActionName}");
         }
-        catch (Exception)
-        {
-            return StatusCode(500, "System get something wrong happens!");
+        catch (Exception e) {
+            return StatusCode(500, $"System get something wrong happens! {e.Message}");
         }
     }
-    
-    [HttpPost("refresh-token")]
-    public async Task<ActionResult<TokensDto>> RefreshToken(string refreshToken) {
-        try {
-            var tokens = await _userS.TokenUpdate(User, refreshToken);
 
-            return Ok(tokens);
+    [HttpPost("refresh-token")]
+    public async Task<ActionResult<string>> RefreshToken(string refreshToken) {
+        try {
+            var token = await _userS.TokenUpdate(User, refreshToken);
+
+            return Ok(token);
         }
-        catch (ExceptionModelBase e)
-        {
+        catch (ExceptionModelBase e) {
             return StatusCode(e.StatusCode, $"{e.Message} - Model: {e.ModelName} | Action: {e.ActionName}");
         }
-        catch (Exception)
-        {
-            return StatusCode(500, "System get something wrong happens!");
+        catch (Exception e) {
+            return StatusCode(500, $"System get something wrong happens! {e.Message}");
+        }
+    }
+
+    [HttpPost("reset-token")]
+    public async Task<ActionResult<string>> ResetToken(string refreshToken) {
+        try {
+            var token = await _userS.TokenReset(User, refreshToken);
+
+            return Ok(token);
+        }
+        catch (ExceptionModelBase e) {
+            return StatusCode(e.StatusCode, $"{e.Message} - Model: {e.ModelName} | Action: {e.ActionName}");
+        }
+        catch (Exception e) {
+            return StatusCode(500, $"System get something wrong happens! {e.Message}");
         }
     }
 }

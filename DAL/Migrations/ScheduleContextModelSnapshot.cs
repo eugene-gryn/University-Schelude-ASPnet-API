@@ -276,10 +276,12 @@ namespace DAL.Migrations
 
                             b1.Property<string>("RefreshToken")
                                 .IsRequired()
+                                .HasMaxLength(64)
                                 .HasColumnType("TEXT");
 
                             b1.Property<string>("Token")
                                 .IsRequired()
+                                .HasMaxLength(128)
                                 .HasColumnType("TEXT");
 
                             b1.Property<DateTime>("TokenCreated")

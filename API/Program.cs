@@ -1,7 +1,7 @@
-using System.Text;using BLL.DELETE;
+using System.Text;
+using BLL.DELETE;
 using BLL.DTO.Mapper;
 using BLL.DTO.Models.JWTManager;
-using BLL.DTO.Models.UserModels.Password;
 using BLL.Services;
 using DAL.EF;
 using DAL.UOW;
@@ -11,17 +11,19 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 
+
+// FOR: Test only!!
+new TestWorker();
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
-
 builder.Services.AddControllers();
 
-builder.Services.AddSwaggerGen(options =>
-{
-    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme()
-    {
+
+builder.Services.AddSwaggerGen(options => {
+    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme {
         Description = "Standard Authorization header using Bearer scheme (\"bearer {token}\")",
         Name = "Authorization",
         In = ParameterLocation.Header,
@@ -31,7 +33,19 @@ builder.Services.AddSwaggerGen(options =>
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 
-builder.Services.AddSwaggerGen();
+builder.Services.AddAuthentication(options => {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options => {
+        options.TokenValidationParameters = new TokenValidationParameters {
+            ValidateIssuerSigningKey = true,
+            ValidateLifetime = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"])),
+            ValidateIssuer = false,
+            ValidateAudience = false
+        };
+    });
 
 builder.Services.AddAntiforgery();
 
@@ -40,32 +54,10 @@ builder.Services.AddDbContext<ScheduleContext>(optionsBuilder => {
     optionsBuilder.UseSqlite(new ScheduleSqlLiteFactory("TestDB").ConnectionString);
 });
 
-// FOR: Test only!!
-new TestWorker();
-
 builder.Services.AddScoped<IUnitOfWork, EfUnitOfWork>();
 builder.Services.AddScoped<IJwtManagerRepository, JwtManagerRepository>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
-
-
-builder.Services.AddAuthentication(options => {
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-    .AddJwtBearer(options => {
-        var key = Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]);
-        options.SaveToken = true;
-        options.TokenValidationParameters = new TokenValidationParameters() {
-            ValidateIssuerSigningKey = true,
-            ValidateLifetime = true,
-            ValidateIssuer = false,
-            ValidateAudience = false,
-            IssuerSigningKey = new SymmetricSecurityKey(key)
-        };
-    });
-
-
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -80,8 +72,8 @@ if (app.Environment.IsDevelopment()) {
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
 app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 

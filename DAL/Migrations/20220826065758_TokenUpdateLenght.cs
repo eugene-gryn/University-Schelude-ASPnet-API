@@ -4,7 +4,7 @@
 
 namespace DAL.Migrations
 {
-    public partial class TgIdAdded : Migration
+    public partial class TokenUpdateLenght : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

@@ -1,28 +1,39 @@
-﻿using BLL.DTO.Models.UserModels;
+﻿using BLL.DTO.Models.ExceptionBase;
+using BLL.DTO.Models.UserModels;
+using BLL.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers.v1;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class UserController : ControllerBase {
-    //[HttpGet("users")]
-    //public async Task<ActionResult<UserRegisterDto>> UserList(int offset, int limit)
-    //{
-    //    try
-    //    {
-    //        // TODO: Code here....
-    //    }
-    //    catch (ExceptionModelBase e)
-    //    {
-    //        return BadRequest($"{e.Message} - Model: {e.ModelName} | Action: {e.ActionName}");
-    //    }
-    //    catch (Exception)
-    //    {
-    //        return StatusCode(500, "System get something wrong happens!");
-    //    }
-    //}
-    //
+
+    private readonly UserService _userS;
+
+    public UserController(UserService userS)
+    {
+        _userS = userS;
+    }
+
+    [AllowAnonymous]
+    [HttpGet("users")]
+    public async Task<ActionResult<List<UserRegisterDto>>> UserList(int offset = 0, int limit = 0)
+    {
+        try {
+            return Ok(await _userS.GetUsers(User));
+        }
+        catch (ExceptionModelBase e)
+        {
+            return BadRequest($"{e.Message} - Model: {e.ModelName} | Action: {e.ActionName}");
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, "System get something wrong happens!" + e.Message);
+        }
+    }
     //[HttpGet("users")]
     //public async Task<ActionResult<UserRegisterDto>> UserById(int id)
     //{

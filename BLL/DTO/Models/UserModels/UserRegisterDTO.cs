@@ -1,28 +1,34 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using BLL.DTO.Models.UserModels.Attributes;
 using BLL.DTO.Models.UserModels.Password;
 
 namespace BLL.DTO.Models.UserModels;
 
 public class UserRegisterDto {
-    private string _passwordText = string.Empty;
-    
     private byte[] _hash = { };
+    private string _passwordText = string.Empty;
     private byte[] _salt = { };
 
-    [Required]
-    [MinLength(2)]
-    [StringLength(20)]
+    [Required(ErrorMessage = "User must have Login")]
+    [Column(TypeName = "VARCHAR")]
+    [StringLength(20, MinimumLength = 4)]
+    [Login]
     public string Login { get; set; } = null!;
 
-    [Required]
-    [MinLength(2)]
-    [StringLength(20)]
+    [Required(ErrorMessage = "User must have name")]
+    [StringLength(20, MinimumLength = 4)]
+    [Login]
     public string Name { get; set; } = null!;
 
-    [MinLength(2)] [StringLength(15)] public string? TelegramToken { get; set; }
+    [StringLength(15, MinimumLength = 1)]
+    [TelegramToken]
+    public string? TelegramToken { get; set; }
 
 
     [Required]
+    [StringLength(24, MinimumLength = 6)]
+    [Password]
     public string Password {
         get => _passwordText;
         set {

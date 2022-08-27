@@ -6,26 +6,32 @@ using BLL.DTO.Models.UserModels;
 using DAL.Entities;
 using DAL.UOW;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Configuration;
 
 namespace BLL.Services;
 
 public class UserService : BaseService {
-    public UserService(IUnitOfWork uow, IMapper mapper, IJwtManagerRepository jwt) : base(uow, mapper, jwt) { }
+    private IConfiguration _conf;
 
-    public async Task<TokensDto?> Login(string username, string password) {
-        var tokens = await JwtManager.CreateToken(new UserLoginDto {
+    public UserService(IUnitOfWork uow, IMapper mapper, IJwtManagerRepository jwt, IConfiguration conf) : base(uow,
+        mapper, jwt) {
+        _conf = conf;
+    }
+
+    public async Task<KeyValuePair<string, TokensDto>> Login(string username, string password) {
+        var tokens = await JwtManager.RegisterToken(new UserLoginDto {
             Login = username,
             Password = password
         });
 
-        if (tokens == null) throw new ExceptionModelBase(401, "Wrong login or password", "User", "Login tokenUser token");
+        if (tokens.Value == null)
+            throw new ExceptionModelBase(401, "Wrong login or password", "User", "Login tokenUser token");
 
         var user = await Uow.Users.Read().Where(u => u.Login == username)
             .Include(u => u.Token)
             .SingleOrDefaultAsync();
 
-        user!.Token = Mapper.Map<Tokens>(tokens);
+        user!.Token = Mapper.Map<Tokens>(tokens.Value);
         await Uow.Users.Update(user);
         Uow.Save();
 
@@ -34,27 +40,31 @@ public class UserService : BaseService {
 
     public async Task<UserRegisterDto?> Register(UserRegisterDto user) {
         var res = await Uow.Users.Add(Mapper.Map<User>(user));
-        
+
         Uow.Save();
 
         if (!res) throw new ExceptionModelBase(409, "Login already used", "User", "Register new tokenUser");
-        
+
         return user;
     }
 
-    public async Task<TokensDto?> TokenUpdate(ClaimsPrincipal tokenUser, string refreshToken) {
-        var userId = JwtManager.GetUserId(tokenUser);
+    public async Task<string> TokenUpdate(ClaimsPrincipal tokenUser, string refreshToken) {
+        var id = await JwtManager.GetUserId(tokenUser);
 
-        var newTokens = await JwtManager.RefreshToken(userId, refreshToken);
+        return await JwtManager.RefreshToken(id, refreshToken);
+    }
 
-        var user = await Uow.Users.ReadById(userId)
-            .Include(u => u.Token)
-            .SingleOrDefaultAsync();
+    public async Task<KeyValuePair<string, TokensDto>> TokenReset(ClaimsPrincipal tokenUser, string refreshToken) {
+        var id = await JwtManager.GetUserId(tokenUser);
 
-        user!.Token = Mapper.Map<Tokens>(newTokens);
-        await Uow.Users.Update(user);
-        Uow.Save();
+        return await JwtManager.ResetToken(id, refreshToken);
+    }
 
-        return newTokens;
-    } 
+    public async Task<List<UserRegisterDto>> GetUsers(ClaimsPrincipal user) {
+        var userLogin = JwtManager.GetUserLogin(user);
+
+        var userEntity = await Uow.Users.Read().Where(u => u.Login == userLogin).FirstOrDefaultAsync();
+
+        return new List<UserRegisterDto>();
+    }
 }

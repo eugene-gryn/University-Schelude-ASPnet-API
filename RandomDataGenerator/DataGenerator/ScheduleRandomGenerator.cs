@@ -213,7 +213,6 @@ public class ScheduleRandomGenerator {
     private Tokens TokensGenerate() {
         var token = new Tokens {
             RefreshToken = RString(),
-            Token = RString(20),
             TokenCreated = DateTime.UtcNow,
             TokenExpires = DateTime.UtcNow.AddDays(2)
         };
