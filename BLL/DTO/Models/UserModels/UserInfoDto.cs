@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BLL.DTO.Models.UserModels;
 
-public class UserWithoutCollectionsDto {
+public class UserInfoDto {
     [Key] public int Id { get; set; }
 
     [Required(ErrorMessage = "User must have Login")]

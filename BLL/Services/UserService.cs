@@ -62,15 +62,15 @@ public class UserService : BaseService {
         return await JwtManager.ResetToken(id, refreshToken);
     }
 
-    public async Task<List<UserWithoutCollectionsDto>> GetUsers(ClaimsPrincipal user, int offset = 0, int limit = 10) {
+    public async Task<List<UserInfoDto>> GetUsers(ClaimsPrincipal user, int offset = 0, int limit = 10) {
         var role = await Roles.GetUserRole(user);
 
 
         if (role == UserRoles.Administrator)
             return Uow.Users.Read().Where((user1) => user1.Id > offset).Take(limit).AsEnumerable()
-                .Select(u => Mapper.Map<UserWithoutCollectionsDto>(u)).ToList();
+                .Select(u => Mapper.Map<UserInfoDto>(u)).ToList();
         
         return Uow.Users.ReadById(await JwtManager.GetUserId(user)).AsEnumerable()
-            .Select(u => Mapper.Map<UserWithoutCollectionsDto>(u)).ToList();
+            .Select(u => Mapper.Map<UserInfoDto>(u)).ToList();
     }
 }

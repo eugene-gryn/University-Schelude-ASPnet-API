@@ -19,7 +19,7 @@ public class UserController : ControllerBase {
     }
 
     [HttpGet("users")]
-    public async Task<ActionResult<List<UserWithoutCollectionsDto>>> UserList(int offset = 0, int limit = 10)
+    public async Task<ActionResult<List<UserInfoDto>>> UserList(int offset = 0, int limit = 10)
     {
         try {
             return Ok(await _userS.GetUsers(User, offset, limit));
