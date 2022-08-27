@@ -34,7 +34,7 @@ public class AuthorizationController : ControllerBase {
 
     [AllowAnonymous]
     [HttpPost("token")]
-    public async Task<ActionResult<UserRegisterDto>> Register(UserRegisterDto user) {
+    public async Task<ActionResult<UserRegisterDto>> Register([FromBody]UserRegisterDto user) {
         try {
             var res = await _userS.Register(user);
 
@@ -49,7 +49,7 @@ public class AuthorizationController : ControllerBase {
     }
 
     [HttpPost("refresh-token")]
-    public async Task<ActionResult<string>> RefreshToken(string refreshToken) {
+    public async Task<ActionResult<string>> RefreshToken([FromBody] string refreshToken) {
         try {
             var token = await _userS.TokenUpdate(User, refreshToken);
 
@@ -64,7 +64,7 @@ public class AuthorizationController : ControllerBase {
     }
 
     [HttpPost("reset-token")]
-    public async Task<ActionResult<string>> ResetToken(string refreshToken) {
+    public async Task<ActionResult<string>> ResetToken([FromBody] string refreshToken) {
         try {
             var token = await _userS.TokenReset(User, refreshToken);
 

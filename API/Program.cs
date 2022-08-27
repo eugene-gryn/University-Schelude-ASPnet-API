@@ -1,8 +1,10 @@
 using System.Text;
+using API.JwtCustomValidate;
 using BLL.DELETE;
 using BLL.DTO.Mapper;
 using BLL.DTO.Models.JWTManager;
 using BLL.Services;
+using BLL.Services.RolesHandler;
 using DAL.EF;
 using DAL.UOW;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -38,6 +40,9 @@ builder.Services.AddAuthentication(options => {
         options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     })
     .AddJwtBearer(options => {
+        options.Events = new JwtBearerEvents {
+            OnTokenValidated = ValidateModel.ValidateUserModel
+        };
         options.TokenValidationParameters = new TokenValidationParameters {
             ValidateIssuerSigningKey = true,
             ValidateLifetime = true,
@@ -56,6 +61,7 @@ builder.Services.AddDbContext<ScheduleContext>(optionsBuilder => {
 
 builder.Services.AddScoped<IUnitOfWork, EfUnitOfWork>();
 builder.Services.AddScoped<IJwtManagerRepository, JwtManagerRepository>();
+builder.Services.AddScoped<IRoleHandler, UserRoleHandler>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
 

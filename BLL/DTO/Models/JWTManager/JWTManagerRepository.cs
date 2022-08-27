@@ -1,4 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -30,7 +31,7 @@ public class JwtManagerRepository : IJwtManagerRepository {
 
         if (user == null) throw new ExceptionModelBase(400, "User with this id is not found", "User", "Refresh token");
         if (user.Token.RefreshToken != refreshToken)
-            throw new ExceptionModelBase(401, "Bad refresh token", "User", "Refresh token");
+            throw new ExceptionModelBase((int)HttpStatusCode.Unauthorized, "Bad refresh token", "User", "Refresh token");
 
         user.Token.TokenExpires = DateTime.UtcNow.AddDays(7);
         await _uow.Users.Update(user);
@@ -44,7 +45,7 @@ public class JwtManagerRepository : IJwtManagerRepository {
 
         if (user == null) throw new ExceptionModelBase(400, "User with this id is not found", "User", "Refresh token");
         if (user.Token.RefreshToken != refreshToken)
-            throw new ExceptionModelBase(401, "Bad refresh token", "User", "Refresh token");
+            throw new ExceptionModelBase((int)HttpStatusCode.Unauthorized, "Bad refresh token", "User", "Refresh token");
 
         user.Token.TokenCreated = DateTime.UtcNow;
         user.Token.TokenExpires = DateTime.UtcNow.AddDays(7);
@@ -62,31 +63,52 @@ public class JwtManagerRepository : IJwtManagerRepository {
 
     public string GetUserLogin(ClaimsPrincipal user) {
         var claim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
-        var expiredClaim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Expired);
 
-        var exceptionNotFound = new ExceptionModelBase(400, "Wrong token, try to relogin or refresh token!",
+        var exceptionNotFound = new ExceptionModelBase((int)HttpStatusCode.BadRequest, "Wrong token, try to relogin or refresh token!",
             "User token", "Get user login from logged token");
 
-        if (claim == null || expiredClaim == null)
+        if (claim == null)
             throw exceptionNotFound;
 
         var login = claim.Value;
-        var createdDate = expiredClaim.Value ?? string.Empty;
 
-        if (string.IsNullOrEmpty(login) || string.IsNullOrEmpty(createdDate))
-            throw exceptionNotFound;
-
-        if (_uow.Users.Read()
-            .Where(u => u.Login == login)
-            .Include(u => u.Token)
-            .Select(u => u.Token)
-            .Select(t => t.TokenCreated)
-            .ToList()
-            .All(created =>
-                created.ToString("MM/dd/yyyy HH:mm:ss") != createdDate))
+        if (string.IsNullOrEmpty(login))
             throw exceptionNotFound;
 
         return login;
+    }
+
+    public bool IsValidCreationDate(ClaimsPrincipal user) {
+        try {
+            var login = GetUserLogin(user);
+            var expiredClaim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Expired);
+            var createdDate = expiredClaim?.Value ?? string.Empty;
+
+
+            return _uow.Users.Read()
+                .Where(u => u.Login == login)
+                .Include(u => u.Token)
+                .Select(u => u.Token)
+                .Select(t => t.TokenCreated)
+                .ToList()
+                .Any(created => created.ToString("MM/dd/yyyy HH:mm:ss") == createdDate);
+        }
+        catch (Exception) {
+            return false;
+        }
+    }
+
+    public bool IsUserExist(ClaimsPrincipal user) {
+        try
+        {
+            var login = GetUserLogin(user);
+
+            return _uow.Users.Read().Any(u => u.Login == login);
+        }
+        catch (Exception)
+        {
+            return false;
+        }
     }
 
     public async Task<KeyValuePair<string, TokensDto>> RegisterToken(UserLoginDto user) {
@@ -96,7 +118,7 @@ public class JwtManagerRepository : IJwtManagerRepository {
 
         if (userLog == null ||
             !PasswordSingleton.Password.VerifyPassword(user.Password, userLog!.Password, userLog!.Salt))
-            throw new ExceptionModelBase(401, "Wrong login or password", "User", "Login user token");
+            throw new ExceptionModelBase((int)HttpStatusCode.BadRequest, "Wrong login or password", "User", "Login user token");
 
         if (string.IsNullOrEmpty(userLog.Token.RefreshToken)) {
             userLog.Token.TokenCreated = DateTime.UtcNow;

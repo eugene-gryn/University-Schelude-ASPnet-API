@@ -15,5 +15,7 @@ public class AutoMapperProfiles : Profile {
 
         CreateMap<Tokens, TokensDto>();
         CreateMap<TokensDto, Tokens>();
+
+        CreateMap<User, UserWithoutCollectionsDto>();
     }
 }

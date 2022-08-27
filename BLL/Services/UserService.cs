@@ -1,8 +1,10 @@
-﻿using System.Security.Claims;
+﻿using System.Net;
+using System.Security.Claims;
 using AutoMapper;
 using BLL.DTO.Models.ExceptionBase;
 using BLL.DTO.Models.JWTManager;
 using BLL.DTO.Models.UserModels;
+using BLL.Services.RolesHandler;
 using DAL.Entities;
 using DAL.UOW;
 using Microsoft.EntityFrameworkCore;
@@ -13,8 +15,8 @@ namespace BLL.Services;
 public class UserService : BaseService {
     private IConfiguration _conf;
 
-    public UserService(IUnitOfWork uow, IMapper mapper, IJwtManagerRepository jwt, IConfiguration conf) : base(uow,
-        mapper, jwt) {
+    public UserService(IRoleHandler roles, IUnitOfWork uow, IMapper mapper, IJwtManagerRepository jwt, IConfiguration conf) : base(uow,
+        mapper, jwt, roles) {
         _conf = conf;
     }
 
@@ -25,7 +27,7 @@ public class UserService : BaseService {
         });
 
         if (tokens.Value == null)
-            throw new ExceptionModelBase(401, "Wrong login or password", "User", "Login tokenUser token");
+            throw new ExceptionModelBase((int)HttpStatusCode.BadRequest, "Wrong login or password", "User", "Login tokenUser token");
 
         var user = await Uow.Users.Read().Where(u => u.Login == username)
             .Include(u => u.Token)
@@ -43,7 +45,7 @@ public class UserService : BaseService {
 
         Uow.Save();
 
-        if (!res) throw new ExceptionModelBase(409, "Login already used", "User", "Register new tokenUser");
+        if (!res) throw new ExceptionModelBase((int)HttpStatusCode.BadRequest, "Login already used", "User", "Register new tokenUser");
 
         return user;
     }
@@ -60,11 +62,15 @@ public class UserService : BaseService {
         return await JwtManager.ResetToken(id, refreshToken);
     }
 
-    public async Task<List<UserRegisterDto>> GetUsers(ClaimsPrincipal user) {
-        var userLogin = JwtManager.GetUserLogin(user);
+    public async Task<List<UserWithoutCollectionsDto>> GetUsers(ClaimsPrincipal user, int offset = 0, int limit = 10) {
+        var role = await Roles.GetUserRole(user);
 
-        var userEntity = await Uow.Users.Read().Where(u => u.Login == userLogin).FirstOrDefaultAsync();
 
-        return new List<UserRegisterDto>();
+        if (role == UserRoles.Administrator)
+            return Uow.Users.Read().Where((user1) => user1.Id > offset).Take(limit).AsEnumerable()
+                .Select(u => Mapper.Map<UserWithoutCollectionsDto>(u)).ToList();
+        
+        return Uow.Users.ReadById(await JwtManager.GetUserId(user)).AsEnumerable()
+            .Select(u => Mapper.Map<UserWithoutCollectionsDto>(u)).ToList();
     }
 }

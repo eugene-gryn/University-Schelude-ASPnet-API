@@ -18,16 +18,15 @@ public class UserController : ControllerBase {
         _userS = userS;
     }
 
-    [AllowAnonymous]
     [HttpGet("users")]
-    public async Task<ActionResult<List<UserRegisterDto>>> UserList(int offset = 0, int limit = 0)
+    public async Task<ActionResult<List<UserWithoutCollectionsDto>>> UserList(int offset = 0, int limit = 10)
     {
         try {
-            return Ok(await _userS.GetUsers(User));
+            return Ok(await _userS.GetUsers(User, offset, limit));
         }
         catch (ExceptionModelBase e)
         {
-            return BadRequest($"{e.Message} - Model: {e.ModelName} | Action: {e.ActionName}");
+            return StatusCode(e.StatusCode, $"{e.Message} - Model: {e.ModelName} | Action: {e.ActionName}");
         }
         catch (Exception e)
         {

@@ -29,5 +29,10 @@ public class TestWorker {
         uow.Users.AddRange(users);
 
         uow.Save();
+
+        var userAdmin = uow.Users.Read().First();
+        userAdmin.IsAdmin = true;
+        uow.Users.Update(userAdmin);
+        uow.Save();
     }
 }
