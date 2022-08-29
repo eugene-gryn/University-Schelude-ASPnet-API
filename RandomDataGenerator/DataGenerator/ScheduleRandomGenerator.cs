@@ -79,7 +79,7 @@ public class ScheduleRandomGenerator {
 
         Users.ForEach(usr => {
             usr.UsersRoles.Select(role => role.Group).ToList().ForEach(group => {
-                group.Subjects.ToList().ForEach(subj => {
+                group!.Subjects.ToList().ForEach(subj => {
                     var task = HomeworkGenerate(Homework.Count + 1, subj, usr);
                     usr.Homework.Add(task);
                     Homework.Add(task);
@@ -101,7 +101,7 @@ public class ScheduleRandomGenerator {
         return users;
     }
 
-    public List<Group> GenEmptyGroups(int count = 1, User creator = null) {
+    public List<Group> GenEmptyGroups(int count = 1, User? creator = null) {
         var groups = new List<Group>(count);
 
         for (var i = 0; i < count; i++) {
@@ -124,7 +124,7 @@ public class ScheduleRandomGenerator {
     }
 
 
-    public List<Couple> GenEmptyCouple(int count = 1, Subject subject = null, Group group = null) {
+    public List<Couple> GenEmptyCouple(Subject subject, Group group, int count = 1) {
         var couples = new List<Couple>(count);
 
         for (var i = 0; i < count; i++)
@@ -133,7 +133,7 @@ public class ScheduleRandomGenerator {
         return couples;
     }
 
-    public List<Subject> GenEmptySubject(int count = 1, Group group = null) {
+    public List<Subject> GenEmptySubject(Group group, int count = 1) {
         var subjects = new List<Subject>(count);
 
         for (var i = 0; i < count; i++)
@@ -142,11 +142,12 @@ public class ScheduleRandomGenerator {
         return subjects;
     }
 
-    public List<HomeworkTask> GenEmptyHomework(int count = 1, Subject subject = null, User user = null) {
+    public List<HomeworkTask> GenEmptyHomework(int count = 1, Subject? subject = null, User? user = null) {
         var homeworkTasks = new List<HomeworkTask>(count);
 
         for (var i = 0; i < count; i++)
-            homeworkTasks.Add(HomeworkGenerate(Homework.Count + 1, subject, user));
+            if (subject != null && user != null)
+                    homeworkTasks.Add(HomeworkGenerate(Homework.Count + 1, subject, user));
 
         return homeworkTasks;
     }
@@ -197,7 +198,7 @@ public class ScheduleRandomGenerator {
             Name = RString(),
             TelegramToken = RNum().ToString(),
             IsAdmin = RBool(),
-            ImageLocation = RString(),
+            ProfileImage = RByteArr(),
             Password = RByteArr(),
             Salt = RByteArr(),
             Settings = SettingsGenerate(),

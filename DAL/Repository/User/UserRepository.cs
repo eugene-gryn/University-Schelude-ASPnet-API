@@ -56,7 +56,7 @@ public class UserRepository : EFRepository<Entities.User>, IUserRepository {
 
         var userOwnedGroups = user.UsersRoles.Where(role => role.IsOwner).Select(role => role.Group);
 
-        Context.Groups.RemoveRange(userOwnedGroups);
+        Context.Groups.RemoveRange(userOwnedGroups!);
         Context.Homework.RemoveRange(user.Homework);
         Context.Users.Remove(user);
 
@@ -79,7 +79,7 @@ public class UserRepository : EFRepository<Entities.User>, IUserRepository {
             IsAdmin = false,
             UsersRoles = new List<UserRole>(),
             Homework = new List<HomeworkTask>(),
-            ImageLocation = item.ImageLocation,
+            ProfileImage = item.ProfileImage,
             Login = item.Login,
             Name = item.Name,
             Password = item.Password,

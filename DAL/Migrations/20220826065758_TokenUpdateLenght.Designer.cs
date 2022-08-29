@@ -138,7 +138,7 @@ namespace DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("ImageLocation")
+                    b.Property<string>("ProfileImage")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsAdmin")

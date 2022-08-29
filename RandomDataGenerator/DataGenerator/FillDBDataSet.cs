@@ -1,4 +1,5 @@
-﻿using System.Reflection.Emit;
+﻿using System.Diagnostics;
+using System.Reflection.Emit;
 using DAL.Entities;
 using DAL.UOW;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +8,7 @@ namespace RandomDataGenerator.DataGenerator;
 
 public static class FillDbDataSet {
     public static async Task FillUowData(IUnitOfWork Uow, ScheduleRandomGenerator Generator) {
-        if (!await Uow.Users.AddRange(Generator.Users)) return;
+        if (!await Uow.Users.AddRange(Generator.Users!)) return;
         Uow.Save();
 
         if (!await Uow.Groups.AddRange(Generator.Groups)) return;
@@ -37,14 +38,14 @@ public static class FillDbDataSet {
                         GroupId = group.Id,
                         IsModerator = role.IsModerator,
                         IsOwner = role.IsOwner,
-                        UserId = role.User.Id,
+                        UserId = role.UserId,
                     });
                     await Uow.Groups.Update(group);
                     Uow.Save();
                 });
             }
 
-            await Uow.Groups.Update(group);
+            if (group != null) await Uow.Groups.Update(group);
             Uow.Save();
         });
 
@@ -57,7 +58,7 @@ public static class FillDbDataSet {
                 user.Settings = item.Settings;
             }
 
-            await Uow.Users.Update(user);
+            if (user != null) await Uow.Users.Update(user);
             Uow.Save();
         });
 
@@ -73,7 +74,7 @@ public static class FillDbDataSet {
             .Include(u => u.Settings)
             .Include(u => u.UsersRoles)
             .ThenInclude(u => u.Group)
-            .ThenInclude(g => g.Couples)
+            .ThenInclude(g => g!.Couples)
         .ToList();
 
         Generator.Groups = Uow.Groups.Read()
@@ -89,9 +90,9 @@ public static class FillDbDataSet {
             .Include(s => s.Couples)
             .Include(s => s.Homework)
             .ThenInclude(h => h.User)
-            .ThenInclude(u => u.UsersRoles)
+            .ThenInclude(u => u!.UsersRoles)
             .ThenInclude(r => r.Group)
-            .ThenInclude(g => g.Subjects)
+            .ThenInclude(g => g!.Subjects)
             .Include(s => s.OwnerGroup)
             .ThenInclude(g => g.Couples)
         .ToList();
@@ -104,7 +105,7 @@ public static class FillDbDataSet {
 
         Generator.Homework = Uow.Homework.Read()
             .Include(h => h.User)
-            .ThenInclude(u => u.UsersRoles)
+            .ThenInclude(u => u!.UsersRoles)
             .Include(h => h.Subject)
             .ThenInclude(s => s.Couples)
             .ToList();

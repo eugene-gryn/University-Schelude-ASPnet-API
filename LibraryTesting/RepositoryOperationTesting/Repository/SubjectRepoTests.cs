@@ -12,7 +12,7 @@ public class SubjectRepoTests : BaseRepositoryTest {
     public async Task Creation_Successful() {
         await GenerateRandomDataSet(10);
 
-        var item = Generator.GenEmptySubject(1, Uow.Groups.Read().First()).First();
+        var item = Generator.GenEmptySubject(Uow.Groups.Read().First(), 1).First();
 
         var result = await Uow.Subjects.Add(item);
         Uow.Save();
@@ -26,7 +26,7 @@ public class SubjectRepoTests : BaseRepositoryTest {
         await GenerateRandomDataSet(10);
 
         var COUNT = 4;
-        var items = Generator.GenEmptySubject(COUNT, Uow.Groups.Read().First());
+        var items = Generator.GenEmptySubject(Uow.Groups.Read().First(), COUNT);
 
         var result = await Uow.Subjects.AddRange(items);
         Uow.Save();

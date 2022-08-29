@@ -16,9 +16,8 @@ public class CouplesRepoTests : BaseRepositoryTest
     {
         await GenerateRandomDataSet(3);
 
-        var couple = Generator.GenEmptyCouple(1, 
-            Uow.Subjects.Read().First(),
-            Uow.Subjects.Read().First().OwnerGroup).First();
+        var couple = Generator.GenEmptyCouple(Uow.Subjects.Read().First(),
+            Uow.Subjects.Read().First().OwnerGroup, 1).First();
 
         var result = await Uow.Couples.Add(couple);
         Uow.Save();
@@ -33,9 +32,8 @@ public class CouplesRepoTests : BaseRepositoryTest
 
         int COUNT = 4;
 
-        var couples = Generator.GenEmptyCouple(COUNT, 
-            Uow.Groups.Read().Include(g => g.Subjects).First().Subjects.First(),
-            Uow.Groups.Read().First());
+        var couples = Generator.GenEmptyCouple(Uow.Groups.Read().Include(g => g.Subjects).First().Subjects.First(),
+            Uow.Groups.Read().First(), COUNT);
 
         var result = await Uow.Couples.AddRange(couples);
         Uow.Save();

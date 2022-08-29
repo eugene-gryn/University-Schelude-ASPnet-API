@@ -12,11 +12,11 @@ public class ScheduleContext : DbContext
     {
     }
 
-    public DbSet<User> Users { get; set; }
-    public DbSet<Group> Groups { get; set; }
-    public DbSet<Couple> Couples { get; set; }
-    public DbSet<Subject> Subjects { get; set; }
-    public DbSet<HomeworkTask> Homework { get; set; }
+    public DbSet<User> Users { get; set; } = null!;
+    public DbSet<Group> Groups { get; set; } = null!;
+    public DbSet<Couple> Couples { get; set; } = null!;
+    public DbSet<Subject> Subjects { get; set; } = null!;
+    public DbSet<HomeworkTask> Homework { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
