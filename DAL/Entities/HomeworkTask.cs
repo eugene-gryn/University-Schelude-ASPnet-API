@@ -17,9 +17,8 @@ public class HomeworkTask {
     [Required] public byte Priority { get; set; } = 5;
 
     [Required] public int UserId { get; set; }
-    public User? User { get; set; } = null!;
-
+    public User? User { get; set; }
 
     [Required] public int SubjectId { get; set; }
-    public Subject Subject { get; set; } = null!;
+    public Subject? Subject { get; set; }
 }

@@ -10,15 +10,6 @@ public class Subject {
 
     [Required] [StringLength(50)] public string Name { get; set; } = string.Empty;
 
-    [Required] public bool IsPractice { get; set; }
-
-    [Required] public int GroupId { get; set; }
-    public Group OwnerGroup { get; set; } = null!;
-
-    public ICollection<Couple> Couples { get; set; } = new List<Couple>();
-    public ICollection<HomeworkTask> Homework { get; set; } = new List<HomeworkTask>();
-
-
     [Column(TypeName = "VARCHAR")]
     [DataType(DataType.Url)]
     [StringLength(200)]
@@ -27,4 +18,13 @@ public class Subject {
     [StringLength(50)] public string? Location { get; set; }
 
     [StringLength(50)] public string? Teacher { get; set; }
+
+    [Required] public bool IsPractice { get; set; }
+
+    [Required] public int GroupId { get; set; }
+    public Group? OwnerGroup { get; set; };
+
+
+    public ICollection<Couple> Couples { get; set; } = new List<Couple>();
+    public ICollection<HomeworkTask> Homework { get; set; } = new List<HomeworkTask>();
 }

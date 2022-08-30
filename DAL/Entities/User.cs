@@ -30,6 +30,7 @@ public class User {
     public Settings Settings { get; set; } = new();
     public Tokens Token { get; set; } = new();
 
+    [MaxLength(5)]
     public ICollection<UserRole> UsersRoles { get; set; } = new List<UserRole>();
 
 
