@@ -4,6 +4,8 @@ using DAL.Entities;
 namespace BLL.Services.RolesHandler;
 
 public interface IRoleHandler {
+    public int? UserId { get; }
+
     public Task<UserRoles> GetUserRole(ClaimsPrincipal user);
     public Task<UserGroupRoles> GetGroupUserRole(ClaimsPrincipal user, int groupId);
 }

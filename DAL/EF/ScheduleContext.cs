@@ -29,6 +29,9 @@ public class ScheduleContext : DbContext
         modelBuilder.Entity<User>()
             .OwnsOne(u => u.Token);
 
+        modelBuilder.Entity<User>()
+            .OwnsOne(u => u.ProfileImage);
+
         // Set Many-To-Many Groups to Users
 
         modelBuilder.Entity<UserRole>()

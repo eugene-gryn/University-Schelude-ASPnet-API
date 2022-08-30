@@ -14,8 +14,13 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 
 // TEST
+bool updateDb = false;
+
 var th1 = new Thread((async () => await (new TestWorker()).Run()));
-th1.Start();
+if (updateDb) {
+    th1.Start();
+}
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -84,5 +89,4 @@ app.MapControllers();
 
 app.Run();
 
-
-th1.Join();
+if (updateDb) th1.Join();

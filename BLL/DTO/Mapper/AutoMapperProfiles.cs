@@ -17,5 +17,13 @@ public class AutoMapperProfiles : Profile {
         CreateMap<TokensDto, Tokens>();
 
         CreateMap<User, UserInfoDto>();
+
+
+        CreateMap<UserImageDto, UserImage>()
+            .ForMember(u => u.ProfileImage, 
+                m => m.MapFrom(dto => dto.ProfileImage.ToArray()));
+        CreateMap<UserImage, UserImageDto>()
+            .ForMember(u => u.ProfileImage,
+                i => i.MapFrom(entity => new MemoryStream(entity.ProfileImage)));
     }
 }
