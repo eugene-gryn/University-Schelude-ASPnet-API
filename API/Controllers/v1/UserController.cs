@@ -89,7 +89,22 @@ public class UserController : ControllerBase {
             return StatusCode(500, "System get something wrong happens!" + e.Message);
         }
     }
-
+    [HttpGet("user")]
+    public async Task<ActionResult<UserDto>> GetUserByID(int id)
+    {
+        try
+        {
+            return Ok(await _userS.GetUserByID(User, id));
+        }
+        catch (ExceptionModelBase e)
+        {
+            return StatusCode(e.StatusCode, $"{e.Message} - Model: {e.ModelName} | Action: {e.ActionName}");
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, "System get something wrong happens!" + e.Message);
+        }
+    }
     //[HttpGet("users")]
     //public async Task<ActionResult<UserRegisterDto>> UserById(int id)
     //{

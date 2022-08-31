@@ -28,7 +28,7 @@ public class UserDto {
 
     public bool IsAdmin { get; set; } = false;
 
-    public Settings Settings { get; set; } = new();
+    public SettingsDto Settings { get; set; } = new();
 
     [MaxLength(5)]
     public ICollection<UserRoleDto> UsersRoles { get; set; } = new List<UserRoleDto>();

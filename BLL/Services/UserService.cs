@@ -132,5 +132,22 @@ public class UserService : BaseService {
 
         return userImage;
     }
-
+    public async Task<UserDto> GetUserByID(ClaimsPrincipal user,int? id)
+    {
+        var userNotFound = new ExceptionModelBase((int)HttpStatusCode.BadRequest, "User with this Id not found", "User", "Get user info");
+        var role = await Roles.GetUserRole(user);
+        UserDto received = null;
+        if (role == UserRoles.Administrator && id != null)
+        {
+            received = Mapper.Map<UserDto>(await Uow.Users.ReadById(id.Value)
+                .SingleOrDefaultAsync()) ?? throw userNotFound;
+            return received;
+        }
+        if(role == UserRoles.User || id == null)
+        {
+            received = Mapper.Map<UserDto> (await Uow.Users.ReadById(Roles.UserId!.Value)
+                .SingleOrDefaultAsync());
+        }
+        return received;
+    }
 }

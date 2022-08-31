@@ -22,7 +22,7 @@ public class Subject {
     [Required] public bool IsPractice { get; set; }
 
     [Required] public int GroupId { get; set; }
-    public Group? OwnerGroup { get; set; };
+    public Group? OwnerGroup { get; set; }
 
 
     public ICollection<Couple> Couples { get; set; } = new List<Couple>();
