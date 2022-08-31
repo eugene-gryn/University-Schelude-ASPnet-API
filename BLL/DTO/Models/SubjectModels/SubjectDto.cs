@@ -23,7 +23,6 @@ public class SubjectDto {
     [Required] public bool IsPractice { get; set; }
 
     [Required] public int GroupId { get; set; }
-    public GroupDto? OwnerGroup { get; set; }
 
 
     public ICollection<CoupleDto> Couples { get; set; } = new List<CoupleDto>();

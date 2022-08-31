@@ -38,10 +38,16 @@ public class GroupsRepository : EFRepository<Entities.Group>, IGroupRepository {
         return Read().Where(el => el.Id == id).AsQueryable();
     }
 
-    public override Task<bool> Update(Entities.Group item) {
+    public override Task<bool> UpdateAsync(Entities.Group item) {
         Context.Entry(item).State = EntityState.Modified;
-
+        
         return Task.FromResult(true);
+    }
+
+    public override bool Update(Entities.Group item) {
+        Context.Entry(item).State = EntityState.Modified;
+        
+        return true;
     }
 
     public override async Task<bool> Delete(int id) {
@@ -72,7 +78,7 @@ public class GroupsRepository : EFRepository<Entities.Group>, IGroupRepository {
             GroupId = groupId
         });
 
-        return await Update(group);
+        return await UpdateAsync(group);
     }
 
     public async Task<bool> RemoveUser(int groupId, int userId) {
@@ -84,7 +90,7 @@ public class GroupsRepository : EFRepository<Entities.Group>, IGroupRepository {
         var userRemove = group.UsersRoles.Remove(user);
         if (!userRemove) return false;
 
-        return await Update(group);
+        return await UpdateAsync(group);
     }
 
     public async Task<Entities.Couple?> NearCouple(int groupId) {
@@ -128,7 +134,7 @@ public class GroupsRepository : EFRepository<Entities.Group>, IGroupRepository {
 
         ownerRole!.IsOwner = false;
 
-        return await Update(g);
+        return await UpdateAsync(g);
     }
 
     public async Task<bool> AddModerator(int groupId, int userId) {
@@ -150,7 +156,7 @@ public class GroupsRepository : EFRepository<Entities.Group>, IGroupRepository {
         else
             userRole.IsModerator = true;
 
-        return await Update(g);
+        return await UpdateAsync(g);
     }
 
     public async Task<bool> RemoveModerator(int groupId, int userId) {
@@ -164,7 +170,7 @@ public class GroupsRepository : EFRepository<Entities.Group>, IGroupRepository {
 
         userRole.IsModerator = false;
 
-        return await Update(g);
+        return await UpdateAsync(g);
     }
 
     protected override Entities.Group MapAdd(Entities.Group item) {

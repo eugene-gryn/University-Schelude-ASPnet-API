@@ -58,7 +58,7 @@ public class UserRepoTests : BaseRepositoryTest {
         var newName = "Team Kuk";
 
         user.Name = newName;
-        var result = await Uow.Users.Update(user);
+        var result = await Uow.Users.UpdateAsync(user);
         var newUser = await Uow.Users.Read().FirstOrDefaultAsync(userF => userF.Id == user.Id);
 
         result.Should().BeTrue();
@@ -75,7 +75,7 @@ public class UserRepoTests : BaseRepositoryTest {
 
         user1!.Login = user2!.Login;
 
-        var result = await Uow.Users.Update(user1);
+        var result = await Uow.Users.UpdateAsync(user1);
 
         result.Should().BeFalse();
     }

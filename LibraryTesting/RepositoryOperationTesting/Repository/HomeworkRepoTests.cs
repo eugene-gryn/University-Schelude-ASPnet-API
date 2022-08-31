@@ -66,7 +66,7 @@ public class HomeworkRepoTests : BaseRepositoryTest
 
         homework.Description = newProp;
 
-        var res = await Uow.Homework.Update(homework);
+        var res = await Uow.Homework.UpdateAsync(homework);
         Uow.Save();
 
         homework = await Uow.Homework.ReadById(homeworkInfo.Id).FirstOrDefaultAsync();

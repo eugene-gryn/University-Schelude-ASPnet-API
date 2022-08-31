@@ -9,7 +9,6 @@ namespace BLL.DTO.Models.GroupsModels;
 public class UserRoleDto {
     [Required]
     public int UserId { get; set; }
-    public UserDto? User { get; set; }
 
     [Required]
     public int GroupId { get; set; }

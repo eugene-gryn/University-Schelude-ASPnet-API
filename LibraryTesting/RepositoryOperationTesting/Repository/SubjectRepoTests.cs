@@ -45,7 +45,7 @@ public class SubjectRepoTests : BaseRepositoryTest {
 
         subject.Name = newProp;
 
-        var res = await Uow.Subjects.Update(subject);
+        var res = await Uow.Subjects.UpdateAsync(subject);
         Uow.Save();
 
         subject = await Uow.Subjects.ReadById(subjectInfo.Id).FirstOrDefaultAsync();

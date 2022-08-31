@@ -136,16 +136,13 @@ namespace DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("ProfileImage")
-                        .HasColumnType("TEXT");
-
                     b.Property<bool>("IsAdmin")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Login")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("VARCHAR");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -162,7 +159,7 @@ namespace DAL.Migrations
 
                     b.Property<string>("TelegramToken")
                         .HasMaxLength(15)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("VARCHAR");
 
                     b.HasKey("Id");
 
@@ -277,12 +274,7 @@ namespace DAL.Migrations
                             b1.Property<string>("RefreshToken")
                                 .IsRequired()
                                 .HasMaxLength(64)
-                                .HasColumnType("TEXT");
-
-                            b1.Property<string>("Token")
-                                .IsRequired()
-                                .HasMaxLength(128)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("VARCHAR");
 
                             b1.Property<DateTime>("TokenCreated")
                                 .HasColumnType("TEXT");
@@ -297,6 +289,31 @@ namespace DAL.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("UserId");
                         });
+
+                    b.OwnsOne("DAL.Entities.UserImage", "ProfileImage", b1 =>
+                        {
+                            b1.Property<int>("UserId")
+                                .HasColumnType("INTEGER");
+
+                            b1.Property<string>("ContentType")
+                                .IsRequired()
+                                .HasMaxLength(20)
+                                .HasColumnType("VARCHAR");
+
+                            b1.Property<byte[]>("Image")
+                                .IsRequired()
+                                .HasMaxLength(500000)
+                                .HasColumnType("BLOB");
+
+                            b1.HasKey("UserId");
+
+                            b1.ToTable("Users");
+
+                            b1.WithOwner()
+                                .HasForeignKey("UserId");
+                        });
+
+                    b.Navigation("ProfileImage");
 
                     b.Navigation("Settings")
                         .IsRequired();

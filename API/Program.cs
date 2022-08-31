@@ -16,7 +16,11 @@ using Swashbuckle.AspNetCore.Filters;
 // TEST
 bool updateDb = false;
 
-var th1 = new Thread((async () => await (new TestWorker()).Run()));
+var th1 = new Thread((() => {
+    var run = (new TestWorker()).Run();
+
+    run.Wait();
+}));
 if (updateDb) {
     th1.Start();
 }
@@ -60,7 +64,7 @@ builder.Services.AddAntiforgery();
 
 // TODO: CHANGE DB CONNECTION
 builder.Services.AddDbContext<ScheduleContext>(optionsBuilder => {
-    optionsBuilder.UseSqlite(new ScheduleSqlLiteFactory("TestDB").ConnectionString);
+    optionsBuilder.UseSqlite(new ScheduleSqlLiteFactory("TestDB.sqlite").ConnectionString);
 });
 
 builder.Services.AddScoped<IUnitOfWork, EfUnitOfWork>();

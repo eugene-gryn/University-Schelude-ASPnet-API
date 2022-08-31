@@ -15,7 +15,8 @@ namespace BLL.Services;
 public class UserService : BaseService {
     private IConfiguration _conf;
 
-    public UserService(IRoleHandler roles, IUnitOfWork uow, IMapper mapper, IJwtManagerRepository jwt, IConfiguration conf) : base(uow,
+    public UserService(IRoleHandler roles, IUnitOfWork uow, IMapper mapper, IJwtManagerRepository jwt,
+        IConfiguration conf) : base(uow,
         mapper, jwt, roles) {
         _conf = conf;
     }
@@ -27,14 +28,15 @@ public class UserService : BaseService {
         });
 
         if (tokens.Value == null)
-            throw new ExceptionModelBase((int)HttpStatusCode.BadRequest, "Wrong login or password", "User", "Login tokenUser token");
+            throw new ExceptionModelBase((int)HttpStatusCode.BadRequest, "Wrong login or password", "User",
+                "Login tokenUser token");
 
         var user = await Uow.Users.Read().Where(u => u.Login == username)
             .Include(u => u.Token)
             .SingleOrDefaultAsync();
 
         user!.Token = Mapper.Map<Tokens>(tokens.Value);
-        var res = await Uow.Users.Update(user);
+        var res = await Uow.Users.UpdateAsync(user);
         if (res) Uow.Save();
 
         return tokens;
@@ -45,7 +47,9 @@ public class UserService : BaseService {
 
         if (res) Uow.Save();
 
-        if (!res) throw new ExceptionModelBase((int)HttpStatusCode.BadRequest, "Login already used", "User", "Register new tokenUser");
+        if (!res)
+            throw new ExceptionModelBase((int)HttpStatusCode.BadRequest, "Login already used", "User",
+                "Register new tokenUser");
 
         return user;
     }
@@ -67,87 +71,75 @@ public class UserService : BaseService {
         List<UserInfoDto> list;
 
         if (role == UserRoles.Administrator)
-            list = Uow.Users.Read().Where((user1) => user1.Id > offset).Take(limit).AsEnumerable()
+            list = Uow.Users.Read().Where(user1 => user1.Id > offset).Take(limit).AsEnumerable()
                 .Select(u => Mapper.Map<UserInfoDto>(u)).ToList();
-        else list = Uow.Users.ReadById(await JwtManager.GetUserId(user)).AsEnumerable()
-            .Select(u => Mapper.Map<UserInfoDto>(u)).ToList();
+        else
+            list = Uow.Users.ReadById(await JwtManager.GetUserId(user)).AsEnumerable()
+                .Select(u => Mapper.Map<UserInfoDto>(u)).ToList();
 
         return list;
     }
 
     public async Task<bool> UploadImage(ClaimsPrincipal user, UserImageDto image, int? id) {
         var role = await Roles.GetUserRole(user);
-        var userNotFound = new ExceptionModelBase((int)HttpStatusCode.BadRequest, "User with this Id not found", "User Image", "Upload Image");
-        User userEntity = new();
+        var userNotFound = new ExceptionModelBase((int)HttpStatusCode.BadRequest, "User with this Id not found",
+            "User Image", "Upload Image");
+        var idToGetUser = role == UserRoles.Administrator && id != null ? id.Value : Roles.UserId!.Value;
+
 
         if (role == UserRoles.User && id != null && Roles.UserId != id)
             throw new ExceptionModelBase((int)HttpStatusCode.Forbidden,
-                "You try to edit other user image", "User image", "Update image");
+                "You try to edit other user image", "User image", "UpdateAsync image");
 
-        if (role == UserRoles.Administrator) {
-            if (id != null)
-                userEntity = await Uow.Users.ReadById(id.Value)
-                    .Include(u => u.ProfileImage)
-                    .SingleOrDefaultAsync() ?? throw userNotFound;
-        }
-
-
-
-        if(role == UserRoles.User || id == null) {
-            if (Roles.UserId != null)
-                userEntity = await Uow.Users.ReadById(Roles.UserId.Value)
-                    .Include(u => u.ProfileImage)
-                    .SingleOrDefaultAsync() ?? throw userNotFound;
-        }
+        var userEntity = await Uow.Users.ReadById(idToGetUser)
+            .Include(u => u.ProfileImage)
+            .SingleOrDefaultAsync() ?? throw userNotFound;
 
         userEntity.ProfileImage = Mapper.Map<UserImage>(image);
-        var res = await Uow.Users.Update(userEntity);
+        var res = await Uow.Users.UpdateAsync(userEntity);
         if (res) Uow.Save();
 
         return res;
     }
+
     public async Task<UserImageDto?> GetImage(ClaimsPrincipal user, int? id) {
         var role = await Roles.GetUserRole(user);
-        var userNotFound = 
-            new ExceptionModelBase((int)HttpStatusCode.BadRequest, "User don't have profile image. Please provide image!", "User Image", "Get Image");
+        var userNotFound =
+            new ExceptionModelBase((int)HttpStatusCode.BadRequest,
+                "User don't have profile image. Please provide image!", "User Image", "Get Image");
         UserImageDto? userImage = null;
+        var idToGetUser = role == UserRoles.Administrator && id != null ? id.Value : Roles.UserId!.Value;
 
         if (role == UserRoles.User && id != null && Roles.UserId != id)
             throw new ExceptionModelBase((int)HttpStatusCode.Forbidden,
-                "You try to edit other user image", "User image", "Update image");
+                "You try to edit other user image", "User image", "UpdateAsync image");
 
-        if (role == UserRoles.Administrator)
-        {
-            if (id != null)
-                userImage = Mapper.Map<UserImageDto>((await Uow.Users.ReadById(id.Value)
-                    .Include(u => u.ProfileImage)
-                    .SingleOrDefaultAsync())?.ProfileImage ?? throw userNotFound);
-        }
-        if (role == UserRoles.User || id == null)
-        {
-            userImage = Mapper.Map<UserImageDto>((await Uow.Users.ReadById(Roles.UserId!.Value)
-                .Include(u => u.ProfileImage)
-                .SingleOrDefaultAsync())?.ProfileImage ?? throw userNotFound);
-        }
+        userImage = Mapper.Map<UserImageDto>((await Uow.Users.ReadById(idToGetUser)
+            .Include(u => u.ProfileImage)
+            .SingleOrDefaultAsync())?.ProfileImage ?? throw userNotFound);
 
         return userImage;
     }
-    public async Task<UserDto> GetUserByID(ClaimsPrincipal user,int? id)
-    {
-        var userNotFound = new ExceptionModelBase((int)HttpStatusCode.BadRequest, "User with this Id not found", "User", "Get user info");
+
+    public async Task<UserDto?> GetUserById(ClaimsPrincipal user, int? id, string[] dependencies) {
+        var userNotFound = new ExceptionModelBase((int)HttpStatusCode.BadRequest, "User with this Id not found", "User",
+            "Get user info");
         var role = await Roles.GetUserRole(user);
-        UserDto received = null;
-        if (role == UserRoles.Administrator && id != null)
-        {
-            received = Mapper.Map<UserDto>(await Uow.Users.ReadById(id.Value)
-                .SingleOrDefaultAsync()) ?? throw userNotFound;
-            return received;
-        }
-        if(role == UserRoles.User || id == null)
-        {
-            received = Mapper.Map<UserDto> (await Uow.Users.ReadById(Roles.UserId!.Value)
-                .SingleOrDefaultAsync());
-        }
+        
+        UserDto? received = null;
+        var idToGetUser = role == UserRoles.Administrator && id != null ? id.Value : Roles.UserId!.Value;
+        
+        if (role == UserRoles.User && id != null && Roles.UserId != id)
+            throw new ExceptionModelBase((int)HttpStatusCode.Forbidden,
+                "You trying to get info about other user!", "User info", "Get user info");
+
+        var q = Uow.Users.ReadById(idToGetUser);
+        
+        if (dependencies.Contains("usersRoles")) q = q.Include(u => u.UsersRoles);
+        if (dependencies.Contains("homework")) q = q.Include(u => u.Homework);
+        
+        received = Mapper.Map<UserDto>(await q.SingleOrDefaultAsync() ?? throw userNotFound);
+        
         return received;
     }
 }

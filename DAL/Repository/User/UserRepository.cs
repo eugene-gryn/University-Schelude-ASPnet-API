@@ -35,14 +35,24 @@ public class UserRepository : EFRepository<Entities.User>, IUserRepository {
         return Read().Where(el => el.Id == id).AsQueryable();
     }
 
-    public override Task<bool> Update(Entities.User item) {
-        if (Context.Users.Any(u => (u.Id == item.Id) ? u.Login != item.Login : u.Login == item.Login)) return Task.FromResult(false);
+    public override async Task<bool> UpdateAsync(Entities.User item) {
+        if (await Context.Users.AnyAsync(u => (u.Id == item.Id) ? u.Login != item.Login : u.Login == item.Login)) return false;
 
         Context.Entry(item).State = EntityState.Modified;
 
         Context.Users.Update(item);
 
-        return Task.FromResult(true);
+        return true;
+    }
+
+    public override bool Update(Entities.User item) {
+        if (Context.Users.Any(u => (u.Id == item.Id) ? u.Login != item.Login : u.Login == item.Login)) return false;
+
+        Context.Entry(item).State = EntityState.Modified;
+
+        Context.Users.Update(item);
+
+        return true;
     }
 
     public override async Task<bool> Delete(int id) {

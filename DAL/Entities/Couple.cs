@@ -6,7 +6,6 @@ namespace DAL.Entities;
 
 public class Couple
 {
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Key] public int Id { get; set; }
 
     [Required, DataType(DataType.DateTime)] public DateTime Begin { get; set; }

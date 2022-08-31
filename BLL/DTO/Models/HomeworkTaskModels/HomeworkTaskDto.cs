@@ -16,9 +16,6 @@ public class HomeworkTaskDto {
     [Required] public byte Priority { get; set; } = 5;
 
     [Required] public int UserId { get; set; }
-    public UserDto? User { get; set; }
-
 
     [Required] public int SubjectId { get; set; }
-    public SubjectDto? Subject { get; set; }
 }

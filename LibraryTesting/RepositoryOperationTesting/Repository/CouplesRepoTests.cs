@@ -53,7 +53,7 @@ public class CouplesRepoTests : BaseRepositoryTest
 
         couple.Begin = newProp;
 
-        var res = await Uow.Couples.Update(couple);
+        var res = await Uow.Couples.UpdateAsync(couple);
         Uow.Save();
 
         couple = await Uow.Couples.ReadById(coupleInfo.Id).FirstOrDefaultAsync();

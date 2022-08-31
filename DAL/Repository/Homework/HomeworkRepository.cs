@@ -37,12 +37,20 @@ public class HomeworkRepository : EFRepository<HomeworkTask>, IHomeworkRepositor
         return Read().Where(el => el.Id == id).AsQueryable();
     }
 
-    public override Task<bool> Update(HomeworkTask item) {
+    public override Task<bool> UpdateAsync(HomeworkTask item) {
         if (item.Deadline < DateTime.Now) return Task.FromResult(false);
 
         Context.Entry(item).State = EntityState.Modified;
 
         return Task.FromResult(true);
+    }
+
+    public override bool Update(HomeworkTask item) {
+        if (item.Deadline < DateTime.Now) return false;
+
+        Context.Entry(item).State = EntityState.Modified;
+
+        return true;
     }
 
     public override async Task<bool> Delete(int id) {
@@ -64,7 +72,7 @@ public class HomeworkRepository : EFRepository<HomeworkTask>, IHomeworkRepositor
 
         task.SubjectId = subjectId;
 
-        return await Update(task);
+        return await UpdateAsync(task);
     }
 
     protected override HomeworkTask MapAdd(HomeworkTask item) {

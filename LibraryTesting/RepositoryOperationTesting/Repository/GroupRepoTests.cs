@@ -44,7 +44,7 @@ public class GroupRepoTests : BaseRepositoryTest {
 
         group.Name = newProp;
 
-        var res = await Uow.Groups.Update(group);
+        var res = await Uow.Groups.UpdateAsync(group);
         Uow.Save();
 
         group = await Uow.Groups.ReadById(groupInfo.Id).FirstOrDefaultAsync();

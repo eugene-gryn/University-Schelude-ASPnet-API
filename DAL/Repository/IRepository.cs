@@ -7,6 +7,7 @@ public interface IRepository<TEntity>
     bool Add(ref TEntity item);
     IQueryable<TEntity> Read();
     IQueryable<TEntity> ReadById(int id);
-    Task<bool> Update(TEntity item);
+    Task<bool> UpdateAsync(TEntity item);
+    bool Update(TEntity item);
     Task<bool> Delete(int id);
 }

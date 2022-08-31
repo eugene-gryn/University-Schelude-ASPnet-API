@@ -12,6 +12,13 @@ public class AutoMapperProfiles : Profile {
     public AutoMapperProfiles() {
         #region User
 
+        CreateMap<User, UserDto>();
+        CreateMap<UserDto, User>();
+
+
+        CreateMap<Settings, SettingsDto>();
+        CreateMap<SettingsDto, Settings>();
+
         // Register 
         CreateMap<UserRegisterDto, User>()
             .ForMember(u => u.Salt,
@@ -28,14 +35,11 @@ public class AutoMapperProfiles : Profile {
 
         // For user image
         CreateMap<UserImageDto, UserImage>()
-            .ForMember(u => u.ProfileImage,
-                m => m.MapFrom(dto => dto.ProfileImage.ToArray()));
+            .ForMember(u => u.Image,
+                m => m.MapFrom(dto => dto.Image.ToArray()));
         CreateMap<UserImage, UserImageDto>()
-            .ForMember(u => u.ProfileImage,
-                i => i.MapFrom(entity => new MemoryStream(entity.ProfileImage)));
-
-        CreateMap<User, UserDto>();
-        CreateMap<UserDto, User>();
+            .ForMember(u => u.Image,
+                i => i.MapFrom(entity => new MemoryStream(entity.Image)));
 
         #endregion
 

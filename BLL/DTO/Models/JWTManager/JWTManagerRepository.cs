@@ -34,7 +34,7 @@ public class JwtManagerRepository : IJwtManagerRepository {
             throw new ExceptionModelBase((int)HttpStatusCode.Unauthorized, "Bad refresh token", "User", "Refresh token");
 
         user.Token.TokenExpires = DateTime.UtcNow.AddDays(7);
-        await _uow.Users.Update(user);
+        await _uow.Users.UpdateAsync(user);
         _uow.Save();
 
         return GenerateToken(user);
@@ -50,7 +50,7 @@ public class JwtManagerRepository : IJwtManagerRepository {
         user.Token.TokenCreated = DateTime.UtcNow;
         user.Token.TokenExpires = DateTime.UtcNow.AddDays(7);
         user.Token.RefreshToken = GenerateRefreshToken();
-        await _uow.Users.Update(user);
+        await _uow.Users.UpdateAsync(user);
         _uow.Save();
 
         return new KeyValuePair<string, TokensDto>(GenerateToken(user), _mapper.Map<TokensDto>(user.Token));

@@ -34,10 +34,16 @@ public class CouplesRepository : EFRepository<Entities.Couple>, ICoupleRepositor
         return Read().Where(el => el.Id == id).AsQueryable();
     }
 
-    public override Task<bool> Update(Entities.Couple item) {
+    public override Task<bool> UpdateAsync(Entities.Couple item) {
         Context.Entry(item).State = EntityState.Modified;
 
         return Task.FromResult(true);
+    }
+
+    public override bool Update(Entities.Couple item) {
+        Context.Entry(item).State = EntityState.Modified;
+
+        return true;
     }
 
     public override async Task<bool> Delete(int id) {

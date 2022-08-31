@@ -25,6 +25,8 @@ public abstract class EFRepository<TEntity> : IRepository<TEntity> where TEntity
 
     public abstract IQueryable<TEntity> ReadById(int id);
 
-    public abstract Task<bool> Update(TEntity item);
+    public abstract Task<bool> UpdateAsync(TEntity item);
+    public abstract bool Update(TEntity item);
+
     public abstract Task<bool> Delete(int id);
 }

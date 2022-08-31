@@ -198,8 +198,8 @@ public class ScheduleRandomGenerator {
             Name = RString(),
             TelegramToken = RNum().ToString(),
             IsAdmin = RBool(),
-            //ProfileImage = new UserImage() {
-            //    ProfileImage = RByteArr(),
+            //Image = new UserImage() {
+            //    Image = RByteArr(),
             //    ContentType = "image/jpeg"
             //},
             ProfileImage = null,

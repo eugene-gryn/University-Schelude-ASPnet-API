@@ -12,8 +12,6 @@ public class CoupleDto {
     [Required] public DateTime End { get; set; }
 
     [Required] public int SubjectId { get; set; }
-    public SubjectDto? Subject { get; set; }
 
     [Required] public int GroupId { get; set; }
-    public GroupDto? Group { get; set; }
 }
