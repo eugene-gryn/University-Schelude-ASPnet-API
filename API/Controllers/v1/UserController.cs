@@ -2,6 +2,7 @@
 using BLL.DTO.Models.UserModels;
 using BLL.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using UserImageDto = API.ModelsDtos.UserDtos.UserImageDto;
 
@@ -20,7 +21,7 @@ public class UserController : ControllerBase {
     [HttpGet("users")]
     public async Task<ActionResult<List<UserInfoDto>>> UserList(int offset = 0, int limit = 10) {
         try {
-            return Ok(await _userS.GetUsers(User, offset, limit));
+            return Ok(await _userS.GetList(User, offset, limit));
         }
         catch (ExceptionModelBase e) {
             return StatusCode(e.StatusCode, $"{e.Message} - Model: {e.ModelName} | Action: {e.ActionName}");
@@ -31,9 +32,10 @@ public class UserController : ControllerBase {
     }
 
     [HttpGet("user")]
-    public async Task<ActionResult<UserDto>> GetUserById(int? id, string dependencies) {
+    public async Task<ActionResult<UserDto>> GetUserById(int? id, string? dependencies) {
         try {
-            return Ok(await _userS.GetUserById(User, id, dependencies.Split(',')));
+            string[]? dependenciesList = dependencies?.Split(',');
+            return Ok(await _userS.GetById(User, id, dependenciesList));
         }
         catch (ExceptionModelBase e) {
             return StatusCode(e.StatusCode, $"{e.Message} - Model: {e.ModelName} | Action: {e.ActionName}");
@@ -43,7 +45,7 @@ public class UserController : ControllerBase {
         }
     }
 
-    [HttpPost("users/icon-avatar")]
+    [HttpPatch("user/icon-avatar")]
     public async Task<ActionResult<string>> SetUserAvatar([FromQuery] int? id, IFormFile image) {
         try {
             if (image.Length > 500_000) return BadRequest("Image should be less than 500 KB size");
@@ -68,7 +70,7 @@ public class UserController : ControllerBase {
         }
     }
 
-    [HttpGet("users/icon-avatar")]
+    [HttpGet("user/icon-avatar")]
     public async Task<ActionResult<UserImageDto>> GetUserImage([FromQuery] int? id, bool dataBase64 = true) {
         try {
             var image = await _userS.GetImage(User, id);
@@ -91,38 +93,81 @@ public class UserController : ControllerBase {
             return StatusCode(500, "System get something wrong happens!" + e.Message);
         }
     }
-    //[HttpGet("users")]
-    //public async Task<ActionResult<UserRegisterDto>> UserById(int id)
-    //{
-    //    try
-    //    {
-    //        // TODO: Code here....
-    //        // TODO: DTO FULL INFO USER
-    //    }
-    //    catch (ExceptionModelBase e)
-    //    {
-    //        return BadRequest($"{e.Message} - Model: {e.ModelName} | Action: {e.ActionName}");
-    //    }
-    //    catch (Exception)
-    //    {
-    //        return StatusCode(500, "System get something wrong happens!");
-    //    }
-    //}
-    //
-    //[HttpPut("users")]
-    //public async Task<ActionResult<UserRegisterDto>> UpdateUserById(int id)
-    //{
-    //    try
-    //    {
-    //        // TODO: Code here....
-    //    }
-    //    catch (ExceptionModelBase e)
-    //    {
-    //        return BadRequest($"{e.Message} - Model: {e.ModelName} | Action: {e.ActionName}");
-    //    }
-    //    catch (Exception)
-    //    {
-    //        return StatusCode(500, "System get something wrong happens!");
-    //    }
-    //}
+    [AllowAnonymous]
+    [HttpGet("users/used-login={login}")]
+    public async Task<ActionResult<bool>> IsLoginAlreadyUsed(string login)
+    {
+        try {
+            return await _userS.IsLoginUsed(login);
+        }
+        catch (ExceptionModelBase e)
+        {
+            return BadRequest($"{e.Message} - Model: {e.ModelName} | Action: {e.ActionName}");
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "System get something wrong happens!");
+        }
+    }
+    
+    [HttpPut("users")]
+    public async Task<ActionResult<UserRegisterDto>> UpdateById(int? id, UserUpdateDto update)
+    {
+        try {
+            return Ok(await _userS.UpdateInfo(User, id, update));
+        }
+        catch (ExceptionModelBase e)
+        {
+            return BadRequest($"{e.Message} - Model: {e.ModelName} | Action: {e.ActionName}");
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "System get something wrong happens!");
+        }
+    }
+    [HttpPatch("users/{id}&admin={adminValue}")]
+    public async Task<ActionResult<bool>> UpdateAdmin(int id, bool adminValue)
+    {
+        try {
+            return Ok(await _userS.ChangeAdminProperty(User, id, adminValue));
+        }
+        catch (ExceptionModelBase e)
+        {
+            return BadRequest($"{e.Message} - Model: {e.ModelName} | Action: {e.ActionName}");
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "System get something wrong happens!");
+        }
+    }
+    [HttpPatch("user/password")]
+    public async Task<ActionResult<bool>> ChangePassword(int? id, string? old, string renew)
+    {
+        try {
+            return Ok(await _userS.ChangePassword(User, id, old, renew));
+        }
+        catch (ExceptionModelBase e)
+        {
+            return BadRequest($"{e.Message} - Model: {e.ModelName} | Action: {e.ActionName}");
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "System get something wrong happens!");
+        }
+    }
+    [HttpDelete("user")]
+    public async Task<ActionResult<bool>> Delete(int? id, string? password)
+    {
+        try {
+            return Ok(await _userS.Delete(User, id, password));
+        }
+        catch (ExceptionModelBase e)
+        {
+            return BadRequest($"{e.Message} - Model: {e.ModelName} | Action: {e.ActionName}");
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "System get something wrong happens!");
+        }
+    }
 }

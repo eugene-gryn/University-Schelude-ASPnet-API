@@ -11,7 +11,6 @@ public class UserDto {
     [Key] public int Id { get; set; }
 
     [Required(ErrorMessage = "User must have Login")]
-    [Column(TypeName = "VARCHAR")]
     [StringLength(20, MinimumLength = 4)]
     [Login]
     public string Login { get; set; } = null!;
@@ -21,7 +20,6 @@ public class UserDto {
     [Login]
     public string Name { get; set; } = null!;
 
-    [Column(TypeName = "VARCHAR")]
     [StringLength(15, MinimumLength = 1)]
     [TelegramToken]
     public string? TelegramToken { get; set; }

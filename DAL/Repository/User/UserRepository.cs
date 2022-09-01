@@ -64,9 +64,9 @@ public class UserRepository : EFRepository<Entities.User>, IUserRepository {
 
         if (user == null) return false;
 
-        var userOwnedGroups = user.UsersRoles.Where(role => role.IsOwner).Select(role => role.Group);
+        var userOwnedGroups = user.UsersRoles.Where(role => role.IsOwner).Select(role => role.Group).ToList();
 
-        Context.Groups.RemoveRange(userOwnedGroups!);
+        if (userOwnedGroups.All(g => g != null)) Context.Groups.RemoveRange(userOwnedGroups!);
         Context.Homework.RemoveRange(user.Homework);
         Context.Users.Remove(user);
 

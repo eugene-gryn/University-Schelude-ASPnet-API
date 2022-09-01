@@ -17,6 +17,6 @@ public class LoginAttribute : ValidationAttribute {
             return ValidationResult.Success;
         }
         
-        return new ValidationResult("Value is empty");
+        return ValidationResult.Success;
     }
 }
