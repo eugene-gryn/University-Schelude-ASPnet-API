@@ -33,8 +33,7 @@ public class UserRoleHandler : IRoleHandler {
         var id = await _jwtManager.GetUserId(user);
 
         if (await _uow.Groups.ReadById(groupId).AnyAsync())
-            throw new ExceptionModelBase((int)HttpStatusCode.NotFound, "Group with this id does not exist", "Group",
-                "User group role");
+            throw BaseService.EntityNotFound;
 
         var userRoles = await _uow.Users.ReadById(id)
             .Include(u => u.UsersRoles)
@@ -44,8 +43,8 @@ public class UserRoleHandler : IRoleHandler {
 
         UserId = id;
 
-        if (role == null) throw new ExceptionModelBase((int)HttpStatusCode.NotFound, "User does not consist in this group!", "User roles",
-            "User group role");
+        if (role == null) throw new ExceptionModelBase(HttpStatusCode.NotFound, ErrorTypes.UserDoNotHaveThisGroup,
+            "User does not consist in this group!");
 
         if (role.IsOwner) return UserGroupRoles.GroupOwner;
 

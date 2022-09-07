@@ -1,15 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Net;
+using System.Runtime.CompilerServices;
+using Microsoft.EntityFrameworkCore;
 
 namespace BLL.DTO.Models.ExceptionBase;
 
 public class ExceptionModelBase : Exception {
-    public int StatusCode { get; }
-    public string ModelName { get; }
-    public string ActionName { get; }
+    public ErrorTypes ErrorType { get; }
+    public int StatusCode;
 
-    public ExceptionModelBase(int statusCode, string descriptionIssue, string modelName, string actionName) : base(descriptionIssue) {
-        StatusCode = statusCode;
-        ModelName = modelName;
-        ActionName = actionName;
+    public ExceptionModelBase(HttpStatusCode code, ErrorTypes errorType, string errorDescription) : base(errorDescription) {
+        ErrorType = errorType;
+        StatusCode = (int)code;
     }
 }

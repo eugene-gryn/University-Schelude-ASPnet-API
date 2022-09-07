@@ -20,6 +20,8 @@ public class TestWorker {
         await context.Database.EnsureDeletedAsync();
         await context.Database.EnsureCreatedAsync();
 
+        Console.WriteLine("Start filling DB");
+
         var gen = new RandomDataGenerator.DataGenerator.ScheduleRandomGenerator();
 
         var password = new PasswordHandler();
@@ -36,7 +38,7 @@ public class TestWorker {
         uow.Save();
 
 
-        gen.MakeDataSet(5);
+        gen.MakeDataSet(50);
 
         gen.Users.ForEach(u => {
             u.Login = "loginUser" + u.Id;
@@ -49,5 +51,7 @@ public class TestWorker {
         uow.Save();
 
         await FillDbDataSet.FillUowData(uow, gen, refillGenerator: false);
+        
+        Console.WriteLine("End filling DB");
     }
 }

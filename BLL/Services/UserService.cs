@@ -29,8 +29,8 @@ public class UserService : BaseService {
         });
 
         if (tokens.Value == null)
-            throw new ExceptionModelBase((int)HttpStatusCode.BadRequest, "Wrong login or password", "User",
-                "Login tokenUser token");
+            throw new ExceptionModelBase(HttpStatusCode.Forbidden, ErrorTypes.WrongLoginOrPassword,
+                "User with this login and password not found :(");
 
         var user = await Uow.Users.Read().Where(u => u.Login == username)
             .Include(u => u.Token)
@@ -43,14 +43,15 @@ public class UserService : BaseService {
         return tokens;
     }
 
+
     public async Task<UserRegisterDto?> Register(UserRegisterDto user) {
         var res = await Uow.Users.Add(Mapper.Map<User>(user));
 
         if (res) Uow.Save();
 
         if (!res)
-            throw new ExceptionModelBase((int)HttpStatusCode.BadRequest, "Login already used", "User",
-                "Register new tokenUser");
+            throw new ExceptionModelBase(HttpStatusCode.BadRequest, ErrorTypes.NotUniqueUserLogin,
+                "User login must be unique :(");
 
         return user;
     }
@@ -83,18 +84,15 @@ public class UserService : BaseService {
 
     public async Task<bool> UploadImage(ClaimsPrincipal user, UserImageDto image, int? id) {
         var role = await Roles.GetUserRole(user);
-        var userNotFound = new ExceptionModelBase((int)HttpStatusCode.NotFound, "User with this Id not found",
-            "User Image", "Upload Image");
         var idToGetUser = role == UserRoles.Administrator && id != null ? id.Value : Roles.UserId!.Value;
 
 
         if (role == UserRoles.User && id != null && Roles.UserId != id)
-            throw new ExceptionModelBase((int)HttpStatusCode.Forbidden,
-                "You try to edit other user image", "User image", "UpdateAsync image");
+            throw NotThisUser;
 
         var userEntity = await Uow.Users.ReadById(idToGetUser)
             .Include(u => u.ProfileImage)
-            .SingleOrDefaultAsync() ?? throw userNotFound;
+            .SingleOrDefaultAsync() ?? throw UserNotFound;
 
         userEntity.ProfileImage = Mapper.Map<UserImage>(image);
         var res = await Uow.Users.UpdateAsync(userEntity);
@@ -105,34 +103,29 @@ public class UserService : BaseService {
 
     public async Task<UserImageDto?> GetImage(ClaimsPrincipal user, int? id) {
         var role = await Roles.GetUserRole(user);
-        var userNotFound =
-            new ExceptionModelBase((int)HttpStatusCode.BadRequest,
-                "User don't have profile image. Please provide image!", "User Image", "Get Image");
-        UserImageDto? userImage = null;
         var idToGetUser = role == UserRoles.Administrator && id != null ? id.Value : Roles.UserId!.Value;
 
+        UserImageDto? userImage = null;
+
         if (role == UserRoles.User && id != null && Roles.UserId != id)
-            throw new ExceptionModelBase((int)HttpStatusCode.Forbidden,
-                "You try to edit other user image", "User image", "UpdateAsync image");
+            throw NotThisUser;
 
         userImage = Mapper.Map<UserImageDto>((await Uow.Users.ReadById(idToGetUser)
             .Include(u => u.ProfileImage)
-            .SingleOrDefaultAsync())?.ProfileImage ?? throw userNotFound);
+            .SingleOrDefaultAsync())?.ProfileImage ??
+                                             throw new ExceptionModelBase(HttpStatusCode.BadRequest, ErrorTypes.UserDoNotHaveImage, "User don't have profile image. Please provide image!"));
 
         return userImage;
     }
 
     public async Task<UserDto?> GetById(ClaimsPrincipal user, int? id, string[]? dependencies) {
-        var userNotFound = new ExceptionModelBase((int)HttpStatusCode.NotFound, "User with this Id not found", "User",
-            "Get user info");
         var role = await Roles.GetUserRole(user);
-
-        UserDto? received = null;
         var idToGetUser = role == UserRoles.Administrator && id != null ? id.Value : Roles.UserId!.Value;
 
+        UserDto? received = null;
+
         if (role == UserRoles.User && id != null && Roles.UserId != id)
-            throw new ExceptionModelBase((int)HttpStatusCode.Forbidden,
-                "You trying to get info about other user!", "User info", "Get user info");
+            throw NotThisUser;
 
         var q = Uow.Users.ReadById(idToGetUser);
 
@@ -141,7 +134,7 @@ public class UserService : BaseService {
             if (dependencies.Contains("homework")) q = q.Include(u => u.Homework);
         }
 
-        received = Mapper.Map<UserDto>(await q.SingleOrDefaultAsync() ?? throw userNotFound);
+        received = Mapper.Map<UserDto>(await q.SingleOrDefaultAsync() ?? throw UserNotFound);
 
         return received;
     }
@@ -149,16 +142,14 @@ public class UserService : BaseService {
     public async Task<UserDto?> UpdateInfo(ClaimsPrincipal user, int? id, UserUpdateDto updateDto) {
         var role = await Roles.GetUserRole(user);
         if (role == UserRoles.User && id != null && Roles.UserId != id)
-            throw new ExceptionModelBase((int)HttpStatusCode.Forbidden,
-                "You trying to get info about other user!", "User update", "Update user info");
+            throw NotThisUser;
 
         var idToGetUser = role == UserRoles.Administrator && id != null ? id.Value : Roles.UserId!.Value;
 
         var userUpdate = await Uow.Users.ReadById(idToGetUser).SingleOrDefaultAsync();
 
         if (userUpdate == null)
-            throw new ExceptionModelBase((int)HttpStatusCode.NotFound, "User with this Id not found", "User",
-                "Update user info");
+            throw UserNotFound;
 
 
         if (!string.IsNullOrEmpty(updateDto.Name)) userUpdate.Name = updateDto.Name;
@@ -175,15 +166,13 @@ public class UserService : BaseService {
         return await Uow.Users.Read().AnyAsync(u => u.Login == login);
     }
 
-    // Test
     public async Task<bool> ChangeAdminProperty(ClaimsPrincipal user, int id, bool adminValue) {
         var role = await Roles.GetUserRole(user);
 
         if (role == UserRoles.Administrator) {
             var userUpdate = await Uow.Users.ReadById(id).SingleOrDefaultAsync();
             if (userUpdate == null)
-                throw new ExceptionModelBase((int)HttpStatusCode.NotFound, "User with this Id not found", "User",
-                    "Make user admin");
+                throw UserNotFound;
 
             userUpdate.IsAdmin = adminValue;
 
@@ -192,30 +181,32 @@ public class UserService : BaseService {
 
             return res;
         }
-        
-        throw new ExceptionModelBase((int)HttpStatusCode.Forbidden,
-                "You trying to make someone admin!", "User admin", "Make user admin!");
+
+        throw new ExceptionModelBase(HttpStatusCode.Forbidden, ErrorTypes.AdminAction,
+            "This action can do only admins!");
     }
 
-    // Test
     public async Task<KeyValuePair<string, TokensDto>> ChangePassword(ClaimsPrincipal user, int? id, string? old,
         string renew) {
         var role = await Roles.GetUserRole(user);
-        if (role == UserRoles.User && id != null && Roles.UserId != id) throw new ExceptionModelBase((int)HttpStatusCode.Forbidden,
-                "You trying to get info about other user!", "User password", "Change user password");
+        if (role == UserRoles.User && id != null && Roles.UserId != id)
+            throw NotThisUser;
 
         var idToGetUser = role == UserRoles.Administrator && id != null ? id.Value : Roles.UserId!.Value;
 
-        if (old == null && role == UserRoles.User) throw new ExceptionModelBase((int)HttpStatusCode.Forbidden,
-            "You need to provide old password for the change!", "User password", "Change user password");
+        if (old == null && role == UserRoles.User)
+            throw new ExceptionModelBase(HttpStatusCode.Forbidden, ErrorTypes.PasswordNeeded,
+                "You need to provide old password for the change!");
 
-        var userPassword = await Uow.Users.ReadById(idToGetUser).Include(u => u.Token).SingleOrDefaultAsync() 
-                           ?? throw new ExceptionModelBase((int)HttpStatusCode.NotFound, "User with this Id not found", "User", "Change user password");
+        var userPassword = await Uow.Users.ReadById(idToGetUser).Include(u => u.Token).SingleOrDefaultAsync()
+                           ?? throw UserNotFound;
 
-        if (role == UserRoles.User && !PasswordSingleton.Password.VerifyPassword(old!, userPassword.Password, userPassword.Salt))
-            throw new ExceptionModelBase((int)HttpStatusCode.BadRequest, "Old password is not equal!", "User password", "Change user password");
+        if (role == UserRoles.User &&
+            !PasswordSingleton.Password.VerifyPassword(old!, userPassword.Password, userPassword.Salt))
+            throw new ExceptionModelBase(HttpStatusCode.BadRequest, ErrorTypes.PasswordsNotEquals,
+                "To change password you need to provide an old password");
 
-        PasswordSingleton.Password.CreatePasswordHash(renew, out byte[] newHash, out byte[] newSalt);
+        PasswordSingleton.Password.CreatePasswordHash(renew, out var newHash, out var newSalt);
 
         userPassword.Password = newHash;
         userPassword.Salt = newSalt;
@@ -230,22 +221,24 @@ public class UserService : BaseService {
         return tokens;
     }
 
-    // Test
     public async Task<bool> Delete(ClaimsPrincipal user, int? id, string? password) {
         var role = await Roles.GetUserRole(user);
-        if (role == UserRoles.User && id != null && Roles.UserId != id) throw new ExceptionModelBase((int)HttpStatusCode.Forbidden,
-            "You trying delete other user!", "User", "Remove user");
+        if (role == UserRoles.User && id != null && Roles.UserId != id)
+            throw NotThisUser;
 
         var idToGetUser = role == UserRoles.Administrator && id != null ? id.Value : Roles.UserId!.Value;
 
-        if (password == null && role == UserRoles.User) throw new ExceptionModelBase((int)HttpStatusCode.Forbidden,
-            "You need to provide password to remove your account", "User", "Remove user");
+        if (password == null && role == UserRoles.User)
+            throw new ExceptionModelBase(HttpStatusCode.BadRequest, ErrorTypes.PasswordNeeded,
+                "You need to provide password to delete your account, if you not remember you password, try to contact admin or recover you password!");
 
         var userPassword = await Uow.Users.ReadById(idToGetUser).Include(u => u.Token).SingleOrDefaultAsync()
-                           ?? throw new ExceptionModelBase((int)HttpStatusCode.NotFound, "User with this Id not found", "User", "Remove user");
+                           ?? throw UserNotFound;
 
-        if (role == UserRoles.User && !PasswordSingleton.Password.VerifyPassword(password!, userPassword.Password, userPassword.Salt))
-            throw new ExceptionModelBase((int)HttpStatusCode.BadRequest, "Password is not equal!", "User", "Remove user");
+        if (role == UserRoles.User &&
+            !PasswordSingleton.Password.VerifyPassword(password!, userPassword.Password, userPassword.Salt))
+            throw new ExceptionModelBase(HttpStatusCode.BadRequest, ErrorTypes.PasswordsNotEquals,
+                "Password that you provided is not correct!");
 
         var res = await Uow.Users.Delete(idToGetUser);
         if (res) Uow.Save();

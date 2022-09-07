@@ -7,6 +7,7 @@ using AutoMapper;
 using BLL.DTO.Models.ExceptionBase;
 using BLL.DTO.Models.UserModels;
 using BLL.DTO.Models.UserModels.Password;
+using BLL.Services;
 using DAL.Entities;
 using DAL.UOW;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +17,10 @@ using Microsoft.IdentityModel.Tokens;
 namespace BLL.DTO.Models.JWTManager;
 
 public class JwtManagerRepository : IJwtManagerRepository {
+    protected static ExceptionModelBase BadToken = new(HttpStatusCode.Unauthorized,
+        ErrorTypes.WrongRefreshToken,
+        "Refresh token that you provided is not correct, try to re login and get new refresh token :)");
+
     private readonly IConfiguration _configuration;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _uow;
@@ -29,9 +34,9 @@ public class JwtManagerRepository : IJwtManagerRepository {
     public async Task<string> RefreshToken(int id, string refreshToken) {
         var user = await _uow.Users.ReadById(id).SingleOrDefaultAsync();
 
-        if (user == null) throw new ExceptionModelBase(400, "User with this id is not found", "User", "Refresh token");
+        if (user == null) throw BaseService.UserNotFound;
         if (user.Token.RefreshToken != refreshToken)
-            throw new ExceptionModelBase((int)HttpStatusCode.Unauthorized, "Bad refresh token", "User", "Refresh token");
+            throw BadToken;
 
         user.Token.TokenExpires = DateTime.UtcNow.AddDays(7);
         await _uow.Users.UpdateAsync(user);
@@ -39,13 +44,12 @@ public class JwtManagerRepository : IJwtManagerRepository {
 
         return GenerateToken(user);
     }
-
     public async Task<KeyValuePair<string, TokensDto>> ResetToken(int id, string refreshToken) {
         var user = await _uow.Users.ReadById(id).SingleOrDefaultAsync();
 
-        if (user == null) throw new ExceptionModelBase(400, "User with this id is not found", "User", "Refresh token");
+        if (user == null) throw BaseService.UserNotFound;
         if (user.Token.RefreshToken != refreshToken)
-            throw new ExceptionModelBase((int)HttpStatusCode.Unauthorized, "Bad refresh token", "User", "Refresh token");
+            throw BadToken;
 
         user.Token.TokenCreated = DateTime.UtcNow;
         user.Token.TokenExpires = DateTime.UtcNow.AddDays(7);
@@ -61,11 +65,11 @@ public class JwtManagerRepository : IJwtManagerRepository {
         return await _uow.Users.Read().Where(u => u.Login == login).Select(u => u.Id).SingleAsync();
     }
 
-    public string GetUserLogin(ClaimsPrincipal user) {
+    private string GetUserLogin(ClaimsPrincipal user) {
         var claim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
 
-        var exceptionNotFound = new ExceptionModelBase((int)HttpStatusCode.BadRequest, "Wrong token, try to relogin or refresh token!",
-            "User token", "Get user login from logged token");
+        var exceptionNotFound = new ExceptionModelBase(HttpStatusCode.Unauthorized, ErrorTypes.ErrorTokenValidation,
+            "Wrong token, try to re login or refresh token!");
 
         if (claim == null)
             throw exceptionNotFound;
@@ -99,14 +103,12 @@ public class JwtManagerRepository : IJwtManagerRepository {
     }
 
     public bool IsUserExist(ClaimsPrincipal user) {
-        try
-        {
+        try {
             var login = GetUserLogin(user);
 
             return _uow.Users.Read().Any(u => u.Login == login);
         }
-        catch (Exception)
-        {
+        catch (Exception) {
             return false;
         }
     }
@@ -118,16 +120,19 @@ public class JwtManagerRepository : IJwtManagerRepository {
 
         if (userLog == null ||
             !PasswordSingleton.Password.VerifyPassword(user.Password, userLog!.Password, userLog!.Salt))
-            throw new ExceptionModelBase((int)HttpStatusCode.BadRequest, "Wrong login or password", "User", "Login user token");
+            throw new ExceptionModelBase(HttpStatusCode.Forbidden, ErrorTypes.WrongLoginOrPassword,
+                "User with this login and password not found :(");
 
         if (string.IsNullOrEmpty(userLog.Token.RefreshToken)) {
             userLog.Token.TokenCreated = DateTime.UtcNow;
             userLog.Token.TokenExpires = DateTime.UtcNow.AddDays(7);
 
-            return new KeyValuePair<string, TokensDto>(GenerateToken(userLog), new TokensDto {
-                RefreshToken = GenerateRefreshToken(),
-                TokenCreated = userLog.Token.TokenCreated,
-                TokenExpires = userLog.Token.TokenExpires
+            return new KeyValuePair<string, TokensDto>(
+                GenerateToken(userLog),
+                new TokensDto {
+                    RefreshToken = GenerateRefreshToken(),
+                    TokenCreated = userLog.Token.TokenCreated,
+                    TokenExpires = userLog.Token.TokenExpires
             });
         }
 
