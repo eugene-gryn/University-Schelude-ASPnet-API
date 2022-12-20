@@ -113,6 +113,14 @@ public class JwtManagerRepository : IJwtManagerRepository {
         }
     }
 
+    public async Task<bool> IsUserBanned(ClaimsPrincipal user) {
+        var id = await GetUserId(user);
+
+        var userDb = await _uow.Users.ReadById(id).SingleOrDefaultAsync();
+
+        return userDb is {IsEnabled: true};
+    }
+
     public async Task<KeyValuePair<string, TokensDto>> RegisterToken(UserLoginDto user) {
         var userLog = await _uow.Users.Read().Where(u => u.Login == user.Login)
             .Include(u => u.Token)

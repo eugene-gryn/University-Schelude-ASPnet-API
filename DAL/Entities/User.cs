@@ -21,6 +21,8 @@ public class User {
 
     public bool IsAdmin { get; set; } = false;
 
+    public bool IsEnabled { get; set; } = true;
+
     public UserImage? ProfileImage { get; set; }
 
     public byte[] Password { get; set; } = { };

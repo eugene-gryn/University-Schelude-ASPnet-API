@@ -26,6 +26,8 @@ public class UserDto {
 
     public bool IsAdmin { get; set; } = false;
 
+    public bool IsEnabled { get; set; } = true;
+
     public SettingsDto Settings { get; set; } = new();
 
     [MaxLength(5)]

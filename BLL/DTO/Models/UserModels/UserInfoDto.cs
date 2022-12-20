@@ -22,6 +22,7 @@ public class UserInfoDto {
     public string? TelegramToken { get; set; }
 
     public bool IsAdmin { get; set; } = false;
+    public bool IsEnabled { get; set; } = true;
 
     public string? ImageLocation { get; set; }
 }

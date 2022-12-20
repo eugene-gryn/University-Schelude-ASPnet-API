@@ -14,7 +14,7 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 
 // TEST
-bool updateDb = false;
+bool updateDb = true;
 
 var th1 = new Thread((() => {
     var run = (new TestWorker()).Run();

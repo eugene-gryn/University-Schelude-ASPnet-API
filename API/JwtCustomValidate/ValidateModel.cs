@@ -26,10 +26,16 @@ public class ValidateModel {
 
         return Task.CompletedTask;
     }
+    private static async Task ValidateUserBanned(TokenValidatedContext context, IJwtManagerRepository jwt) {
+        if (context.Principal != null && !(await jwt.IsUserBanned(context.Principal)))
+            context.Fail("You are blocked from access to you account!");
+    }
 
     private static Task ValidateDateCreation(TokenValidatedContext context, IJwtManagerRepository jwt) {
         if (context.Principal != null && !jwt.IsValidCreationDate(context.Principal)) context.Fail("Token is outdated!");
 
         return Task.CompletedTask;
     }
+
+
 }

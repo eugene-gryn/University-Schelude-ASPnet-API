@@ -72,4 +72,11 @@ public interface IJwtManagerRepository {
     /// <param name="user">Token Claims for Authorized User</param>
     /// <returns>Returns true if user with this name is exist in DB</returns>
     bool IsUserExist(ClaimsPrincipal user);
+
+    /// <summary>
+    /// Gets info from DB to check if user has disabled status;
+    /// </summary>
+    /// <param name="user">Token Claims for Authorized User</param>
+    /// <returns>Returns true if user enabled in DB</returns>
+    Task<bool> IsUserBanned(ClaimsPrincipal user);
 }
