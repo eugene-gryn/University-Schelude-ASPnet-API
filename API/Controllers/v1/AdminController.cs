@@ -1,57 +1,48 @@
-﻿using System.ComponentModel.DataAnnotations;
-using API.ModelsDtos.Exceptions;
+﻿using API.ModelsDtos.Exceptions;
 using BLL.DTO.Models.ExceptionBase;
 using BLL.DTO.Models.UserModels;
 using BLL.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
+using System.ComponentModel.DataAnnotations;
 using UserImageDto = API.ModelsDtos.UserDtos.UserImageDto;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace API.Controllers.v1;
 
-/// <summary>
-///     Class with User API function
-/// </summary>
-/// <exception cref="ExceptionModelBase">401 Unauthorized - if token not provided!</exception>
-[Route("api/v1/")]
+[Route("api/v1/admin/")]
 [ApiController]
-[Authorize]
-public class UserController : ControllerBase {
+[Authorize(Roles = "Administrator")]
+public class AdminController : ControllerBase {
     private readonly UserService _userS;
 
-    public UserController(UserService userS) {
+    public AdminController(UserService userS) {
         _userS = userS;
     }
 
     /// <summary>
-    ///     Gets list of own user
+    ///     Gets all list of users
     /// </summary>
     /// <param name="offset">Offset in the id's on query</param>
     /// <param name="limit">Count of elems that need to be provided</param>
-    /// <returns>Logged user without any relations</returns>
+    /// <returns>List of user info without any relations</returns>
     /// <exception cref="ExceptionModelBase">401 Unauthorized (wrong-token) - If token parsing get wrong!</exception>
-    [HttpGet("current-user")]
-    public async Task<ActionResult<UserInfoDto>> GetCurrentUser()
-    {
-        try
-        {
-            return Ok((await _userS.GetList(User)).First());
+    [HttpGet("users")]
+    public async Task<ActionResult<List<UserInfoDto>>> UserList(int offset = 0, int limit = 10) {
+        try {
+            return Ok(await _userS.GetList(User, offset, limit));
         }
-        catch (ExceptionModelBase e)
-        {
+        catch (ExceptionModelBase e) {
             return StatusCode(e.StatusCode, new Error(e));
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             return StatusCode(500, "System get something wrong happens!" + e.Message);
         }
     }
 
     /// <summary>
-    ///     Get user details with dependency
+    ///     Get user details by id
     /// </summary>
+    /// <param name="id">User Id column value</param>
     /// <param name="dependencies">
     ///     params separated by ','
     ///     <c>"usersRoles"</c> - to connect user role in groups list
@@ -59,19 +50,17 @@ public class UserController : ControllerBase {
     /// </param>
     /// <exception cref="ExceptionModelBase">401 Unauthorized (wrong-token) - If token parsing get wrong!</exception>
     /// <exception cref="ExceptionModelBase">403 Forbidden (invalid-operation-access-to-user) - If token parsing get wrong!</exception>
+    /// <exception cref="ExceptionModelBase">404 NotFound (user-not-found) - If user id is not related to any entity</exception>
     [HttpGet("user")]
-    public async Task<ActionResult<UserDto>> GetUserWithRelations(string? dependencies) {
-        try
-        {
+    public async Task<ActionResult<UserDto>> GetUserById(int? id, string? dependencies) {
+        try {
             var dependenciesList = dependencies?.Split(',');
-            return Ok(await _userS.GetById(User, null, dependenciesList));
+            return Ok(await _userS.GetById(User, id, dependenciesList));
         }
-        catch (ExceptionModelBase e)
-        {
+        catch (ExceptionModelBase e) {
             return StatusCode(e.StatusCode, new Error(e));
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             return StatusCode(500, "System get something wrong happens!" + e.Message);
         }
     }
@@ -79,17 +68,20 @@ public class UserController : ControllerBase {
     /// <summary>
     ///     Sets image to user profile
     /// </summary>
+    /// <param name="id">Id of the user or null if need to own user image set</param>
     /// <param name="image">Image form file</param>
     /// <returns>Text result of the image upload - Ok(Successful image update!) or Not Ok(Fail, wrong image model!)</returns>
     /// <exception cref="ExceptionModelBase">400 BadRequest (image-too-big) - If image bigger than 500Kb</exception>
     /// <exception cref="ExceptionModelBase">400 BadRequest (not-image-type) - If file provided not image</exception>
     /// <exception cref="ExceptionModelBase">401 Unauthorized (wrong-token) - If token parsing get wrong!</exception>
+    /// <exception cref="ExceptionModelBase">
+    ///     403 Forbidden (invalid-operation-access-to-user) - If default user role try to set
+    ///     image another user
+    /// </exception>
     /// <exception cref="ExceptionModelBase">404 NotFound (user-not-found) - If user id is not related to any entity</exception>
     [HttpPatch("user/icon-avatar")]
-    public async Task<ActionResult<string>> SetUserAvatar(IFormFile image)
-    {
-        try
-        {
+    public async Task<ActionResult<string>> SetUserAvatar([FromQuery] int? id, IFormFile image) {
+        try {
             if (image.Length > 500_000)
                 return BadRequest(new Error("image-too-big", "Image should be less than 500 KB size!"));
             if (!image.ContentType.StartsWith("image"))
@@ -98,21 +90,18 @@ public class UserController : ControllerBase {
             using var ms = new MemoryStream();
             await image.CopyToAsync(ms);
 
-            var res = await _userS.UploadImage(User, new BLL.DTO.Models.UserModels.UserImageDto
-            {
+            var res = await _userS.UploadImage(User, new BLL.DTO.Models.UserModels.UserImageDto {
                 Image = ms,
                 ContentType = image.ContentType
-            }, null);
+            }, id);
 
 
             return Ok(res ? "Successful image update!" : "Fail, wrong image model!");
         }
-        catch (ExceptionModelBase e)
-        {
+        catch (ExceptionModelBase e) {
             return StatusCode(e.StatusCode, new Error(e));
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             return StatusCode(500, "System get something wrong happens!" + e.Message);
         }
     }
@@ -130,16 +119,13 @@ public class UserController : ControllerBase {
     ///     image another user
     /// </exception>
     [HttpGet("user/icon-avatar")]
-    public async Task<ActionResult<UserImageDto>> GetUserImage(bool dataBase64 = true)
-    {
-        try
-        {
-            var image = await _userS.GetImage(User, null);
+    public async Task<ActionResult<UserImageDto>> GetUserImage([FromQuery] int? id, bool dataBase64 = true) {
+        try {
+            var image = await _userS.GetImage(User, id);
 
             if (image == null) NotFound("User don't have profile avatar!");
 
-            var model = new UserImageDto
-            {
+            var model = new UserImageDto {
                 ProfileImage = Convert.ToBase64String(image!.Image.ToArray()),
                 ContentType = image.ContentType
             };
@@ -148,28 +134,31 @@ public class UserController : ControllerBase {
 
             return Ok(model);
         }
-        catch (ExceptionModelBase e)
-        {
+        catch (ExceptionModelBase e) {
             return StatusCode(e.StatusCode, new Error(e));
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             return StatusCode(500, "System get something wrong happens!" + e.Message);
         }
     }
 
     /// <summary>
-    ///     Gets boolean value of is login already used (for registration purposes)
+    ///     Update information about user
     /// </summary>
-    /// <param name="login">String login</param>
-    /// <returns>boolean result</returns>
-    [AllowAnonymous]
-    [HttpGet("users/used-login={login}")]
-    public async Task<ActionResult<bool>> IsLoginAlreadyUsed(string login)
+    /// <param name="id">Empty if current user (Id for required user *Admins only)</param>
+    /// <param name="update">Update class with special scheme</param>
+    /// <returns>Updated user information</returns>
+    /// <exception cref="ExceptionModelBase">401 Unauthorized (wrong-token) - If token parsing get wrong!</exception>
+    /// <exception cref="ExceptionModelBase">
+    ///     403 Forbidden (invalid-operation-access-to-user) - If user try to update info
+    ///     about other user
+    /// </exception>
+    [HttpPut("users")]
+    public async Task<ActionResult<UserDto>> UpdateById(int? id, UserUpdateDto update)
     {
         try
         {
-            return await _userS.IsLoginUsed(login);
+            return Ok(await _userS.UpdateInfo(User, id, update));
         }
         catch (ExceptionModelBase e)
         {
@@ -182,39 +171,55 @@ public class UserController : ControllerBase {
     }
 
     /// <summary>
-    ///     Update information about user
+    ///     Change property admin for other user
     /// </summary>
-    /// <param name="update">Update class with special scheme</param>
-    /// <returns>Updated user information</returns>
+    /// <param name="id">Id int value for required user</param>
+    /// <param name="adminValue">boolean value for change property (true if make admin, false if remove admin)</param>
+    /// <returns>boolean result of the operation</returns>
     /// <exception cref="ExceptionModelBase">401 Unauthorized (wrong-token) - If token parsing get wrong!</exception>
     /// <exception cref="ExceptionModelBase">
-    ///     403 Forbidden (invalid-operation-access-to-user) - If user try to update info
-    ///     about other user
+    ///     403 Forbidden (invalid-operation-access-to-user) - If user try to change property
+    ///     admin
     /// </exception>
-    [HttpPut("users")]
-    public async Task<ActionResult<UserDto>> UpdateCurrentUser(UserUpdateDto update)
+    /// <exception cref="ExceptionModelBase">
+    ///     403 Forbidden (restricted-admin-only-action) - This method is for admin purpose
+    ///     only
+    /// </exception>
+    [HttpPatch("users/{id}&admin={adminValue}")]
+    public async Task<ActionResult<bool>> UpdateAdmin(int id, bool adminValue)
     {
-        AdminController admin = new AdminController(_userS);
-
-        return await admin.UpdateById(null, update);
+        try
+        {
+            return Ok(await _userS.ChangeAdminProperty(User, id, adminValue));
+        }
+        catch (ExceptionModelBase e)
+        {
+            return StatusCode(e.StatusCode, new Error(e));
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "System get something wrong happens!");
+        }
     }
-
 
     /// <summary>
     ///     Function for change password for current user
     /// </summary>
-    /// <param name="old">Old password that actually used to login (can be empty for admins(!))</param>
+    /// <param name="id">Required user (admin only!) or can be current id</param>
     /// <param name="renew">(Required!) New password</param>
     /// <returns>boolean result for action</returns>
     /// <exception cref="ExceptionModelBase">401 Unauthorized (wrong-token) - If token parsing get wrong!</exception>
-    /// <exception cref="ExceptionModelBase">403 Forbidden (operation-password-needed) - If user does not provided any password</exception>
-    /// <exception cref="ExceptionModelBase">400 BadRequest (password-compare-not-equal) - If old password is not correct</exception>
+    /// <exception cref="ExceptionModelBase">
+    ///     403 Forbidden (invalid-operation-access-to-user) - If user try to change other
+    ///     user password
+    /// </exception>
+    /// <exception cref="ExceptionModelBase">404 NotFound (user-not-found) - If user id is not related to any entity</exception>
     [HttpPatch("user/password")]
-    public async Task<ActionResult<bool>> ChangePassword([Required]string old, [Required] string renew)
+    public async Task<ActionResult<bool>> ChangePassword(int id, [Required] string renew)
     {
         try
         {
-            return Ok(await _userS.ChangePassword(User, null, old, renew));
+            return Ok(await _userS.ChangePassword(User, id, null, renew));
         }
         catch (ExceptionModelBase e)
         {
@@ -229,18 +234,16 @@ public class UserController : ControllerBase {
     /// <summary>
     ///     Delete current user profile
     /// </summary>
-    /// <param name="password">Password to the account (empty for admins!)</param>
+    /// <param name="id">OPTIONAL current user id or any profile(for admins only)</param>
     /// <returns>Result of the operation</returns>
     /// <exception cref="ExceptionModelBase">401 Unauthorized (wrong-token) - If token parsing get wrong!</exception>
-    /// <exception cref="ExceptionModelBase">400 BadRequest (password-compare-not-equal) - If password is not correct</exception>
-    /// <exception cref="ExceptionModelBase">403 Forbidden (operation-password-needed) - If user does not provided any password</exception>
-    /// <exception cref="ExceptionModelBase">404 NotFound (user-not-found) - If user is not related to any entity</exception>
+    /// <exception cref="ExceptionModelBase">404 NotFound (user-not-found) - If user id is not related to any entity</exception>
     [HttpDelete("user")]
-    public async Task<ActionResult<bool>> Delete(string password)
+    public async Task<ActionResult<bool>> Delete(int? id)
     {
         try
         {
-            return Ok(await _userS.Delete(User, null, password));
+            return Ok(await _userS.Delete(User, id, null));
         }
         catch (ExceptionModelBase e)
         {
@@ -251,6 +254,4 @@ public class UserController : ControllerBase {
             return StatusCode(500, "System get something wrong happens!");
         }
     }
-
-
 }

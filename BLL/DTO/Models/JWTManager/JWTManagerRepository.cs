@@ -144,9 +144,11 @@ public class JwtManagerRepository : IJwtManagerRepository {
         return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
     }
 
+
     private string GenerateToken(User user) {
         var claims = new List<Claim> {
             new(ClaimTypes.Name, user.Login),
+            new(ClaimTypes.Role, user.GerRole().RoleString()),
             new(ClaimTypes.Expired, user.Token.TokenCreated.ToString("MM/dd/yyyy HH:mm:ss"))
         };
 
