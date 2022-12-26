@@ -18,6 +18,7 @@ public static class ErrorTypesToString {
             ErrorTypes.UserDoNotHaveThisGroup => "user-do-not-have-this-group",
             ErrorTypes.ErrorTokenValidation => "wrong-token",
             ErrorTypes.WrongId => "wrong-entity-id",
+            ErrorTypes.WrongCountNGroups => "wrong-count-user-groups",
             _ => throw new ArgumentOutOfRangeException(nameof(error), error, null)
         };
     }

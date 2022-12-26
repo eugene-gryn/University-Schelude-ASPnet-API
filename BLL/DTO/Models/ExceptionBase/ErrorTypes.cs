@@ -15,5 +15,6 @@ public enum ErrorTypes {
     WrongRefreshToken,
     UserDoNotHaveThisGroup,
     ErrorTokenValidation,
-    WrongId
+    WrongId,
+    WrongCountNGroups
 }

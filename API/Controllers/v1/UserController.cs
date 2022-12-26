@@ -6,6 +6,7 @@ using BLL.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using BLL.DTO.Models.GroupsModels;
 using UserImageDto = API.ModelsDtos.UserDtos.UserImageDto;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -252,5 +253,72 @@ public class UserController : ControllerBase {
         }
     }
 
+    /// <summary>
+    /// Gets request to respond with list user groups
+    /// </summary>
+    /// <returns>List of entities GroupGto</returns>
+    /// <exception cref="ExceptionModelBase">401 Unauthorized (wrong-token) - If token parsing get wrong!</exception>
+    /// <exception cref="ExceptionModelBase">403 Forbidden (operation-password-needed) - If user does not provided any password</exception>
+    [HttpGet("user/groups")]
+    public async Task<ActionResult<List<UserRoleDto>>> GetUserGroup() {
+        try {
+            return Ok(await _userS.GetUserGroups(User));
+        }
+        catch (ExceptionModelBase e)
+        {
+            return StatusCode(e.StatusCode, new Error(e));
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "System get something wrong happens!");
+        }
+    }
 
+    /// <summary>
+    /// Controller method that join user into group
+    /// </summary>
+    /// <param name="groupId">Group to join by ID</param>
+    /// <returns>true - if operation successful, false if group is private or groupId is wrong</returns>
+    /// <exception cref="ExceptionModelBase">400 BadRequest (wrong-count-user-groups) - If user attempt to broke limits(5) in group membership</exception>
+    /// <exception cref="ExceptionModelBase">401 Unauthorized (wrong-token) - If token parsing get wrong!</exception>
+    /// <exception cref="ExceptionModelBase">403 Forbidden (invalid-operation-access-to-user) - If token parsing get wrong!</exception>
+    [HttpPut("/user/groups")]
+    public async Task<ActionResult<bool>> JoinUserInGroup([Required] int groupId) {
+        try
+        {
+            return Ok(await _userS.JoinUserInGroup(User, groupId));
+        }
+        catch (ExceptionModelBase e)
+        {
+            return StatusCode(e.StatusCode, new Error(e));
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "System get something wrong happens!");
+        }
+    }
+
+    /// <summary>
+    /// Controller method that makes it possible to leave from group
+    /// </summary>
+    /// <param name="groupId">Group to leave from Id</param>
+    /// <returns>Result, can be true if operation successful or false of groupId is wrong or user not consist in this group</returns>
+    /// <exception cref="ExceptionModelBase">401 Unauthorized (wrong-token) - If token parsing get wrong!</exception>
+    /// <exception cref="ExceptionModelBase">403 Forbidden (invalid-operation-access-to-user) - If token parsing get wrong!</exception>
+
+    [HttpDelete("/user/groups")]
+    public async Task<ActionResult<bool>> LeaveUserFromGroup([Required] int groupId) {
+        try
+        {
+            return Ok(await _userS.LeaveUserFromGroup(User, groupId));
+        }
+        catch (ExceptionModelBase e)
+        {
+            return StatusCode(e.StatusCode, new Error(e));
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "System get something wrong happens!");
+        }
+    }
 }

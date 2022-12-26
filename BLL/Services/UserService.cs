@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using AutoMapper;
 using BLL.DTO.Models.ExceptionBase;
+using BLL.DTO.Models.GroupsModels;
 using BLL.DTO.Models.JWTManager;
 using BLL.DTO.Models.UserModels;
 using BLL.DTO.Models.UserModels.Password;
@@ -10,6 +11,7 @@ using DAL.Entities;
 using DAL.UOW;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using UserRole = DAL.Entities.UserRole;
 
 namespace BLL.Services;
 
@@ -241,6 +243,46 @@ public class UserService : BaseService {
                 "Password that you provided is not correct!");
 
         var res = await Uow.Users.Delete(idToGetUser);
+        if (res) Uow.Save();
+
+        return res;
+    }
+
+    public async Task<List<UserRoleDto>> GetUserGroups(ClaimsPrincipal user, int? id = null) {
+        var role = await Roles.GetUserRole(user);
+        if (role == UserRoles.User && id != null && Roles.UserId != id)
+            throw NotThisUser;
+
+        var idToGetUser = role == UserRoles.Administrator && id != null ? id.Value : Roles.UserId!.Value;
+
+        return Mapper.Map<List<UserRoleDto>>(await Uow.Users.GetUserGroups(idToGetUser));
+    }
+
+    public async Task<bool> JoinUserInGroup(ClaimsPrincipal user, int groupId, int? userId = null) {
+        var role = await Roles.GetUserRole(user);
+        if (role == UserRoles.User && userId != null && Roles.UserId != userId)
+            throw NotThisUser;
+        var idToGetUser = role == UserRoles.Administrator && userId != null ? userId.Value : Roles.UserId!.Value;
+
+        // Limit to user can join in groups is maximum 5 groups per user -> EXCEPTION
+        if (await Uow.Users.GroupCount(idToGetUser) >= 5) throw new ExceptionModelBase(HttpStatusCode.BadRequest, ErrorTypes.WrongCountNGroups,
+            "User limit to join groups is 5 (^_^)");
+
+        var res = await Uow.Users.GroupJoin(idToGetUser, groupId, role == UserRoles.Administrator);
+
+        if (res) Uow.Save();
+
+        return res;
+    }
+
+    public async Task<bool> LeaveUserFromGroup(ClaimsPrincipal user, int groupId, int? userId = null) {
+        var role = await Roles.GetUserRole(user);
+        if (role == UserRoles.User && userId != null && Roles.UserId != userId)
+            throw NotThisUser;
+        var idToGetUser = role == UserRoles.Administrator && userId != null ? userId.Value : Roles.UserId!.Value;
+
+        var res = await Uow.Users.GroupLeave(idToGetUser, groupId);
+
         if (res) Uow.Save();
 
         return res;
